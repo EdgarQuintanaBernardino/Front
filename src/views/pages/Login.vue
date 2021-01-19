@@ -1,17 +1,18 @@
 <template>
-  <CContainer class="d-flex align-items-center min-vh-100">
-    <CRow>
-      <CCol>
-        <CCardGroup>
-          <CCard class="p-4">
+<div class="c-app flex-row align-items-center" >
+  <CContainer >
+
+<b-row class="justify-content-center">
+    <b-col md="8">
+         <CCard class="p-4">
             <CCardBody>
               <CForm @submit.prevent="login" method="POST">
                 <h1>Login</h1>
-                <p class="text-muted">Sign In to your account</p>
+                <p class="text-muted">Ingresa con tus credenciales</p>
                 <CInput
                   v-model="email"
                   prependHtml="<i class='cui-user'></i>"
-                  placeholder="Username"
+                  placeholder="Correo Electronico"
                   autocomplete="username email"
                 >
                   <template #prepend-content><CIcon name="cil-user"/></template>
@@ -26,11 +27,11 @@
                   <template #prepend-content><CIcon name="cil-lock-locked"/></template>
                 </CInput>
                 <CRow>
-                  <CCol col="6" class="text-left">
-                    <CButton type="submit" color="primary" class="px-4">Login</CButton>
+                  <CCol col="12" class="text-left">
+                    <CButton type="submit" color="primary"   block
+                        pill class="px-4" style="height:70px;font-size:30px">Login</CButton>
                   </CCol>
                   <CCol col="6" class="text-right">
-                    <CButton color="link" class="px-0">Forgot password?</CButton>
                     <CButton color="link" class="d-md-none" @click="goRegister()">Register now!</CButton>
                   </CCol>
                 </CRow>
@@ -47,26 +48,11 @@
               </CForm>
             </CCardBody>
           </CCard>
-          <CCard
-            color="primary"
-            text-color="white"
-            class="text-center py-5 d-md-down-none"
-            body-wrapper
-          >
-            <h2>Sign up</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-            <CButton
-              color="primary"
-              class="active mt-3"
-              @click="goRegister()"
-            >
-              Register Now!
-            </CButton>
-          </CCard>
-        </CCardGroup>
-      </CCol>
-    </CRow>
+    </b-col>
+</b-row>
   </CContainer>
+  </div>
+
 </template>
 
 <script>
@@ -74,6 +60,7 @@ import "regenerator-runtime/runtime";
 
 import PacmanLoader from "vue-spinner/src/PacmanLoader.vue";
 import repologin from "./repologin.js";
+import Swal from "sweetalert2";
 
 import axios from "axios";
 
@@ -113,6 +100,14 @@ import axios from "axios";
           });
   
         }
+      },
+      mounted() {
+            Swal.fire({
+            title: "BLOQUEADO",
+            text: `Usuario Temporalmente Bloqueado
+          Comunícate a Soporte Técnico`,
+            icon: "error",
+          });
       },
        components: {
     PacmanLoader,
