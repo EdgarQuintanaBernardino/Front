@@ -34,6 +34,16 @@
                     <CButton color="link" class="d-md-none" @click="goRegister()">Register now!</CButton>
                   </CCol>
                 </CRow>
+                    <b-row>
+                    <b-col cols="4"></b-col>
+                    <b-col cols="4">
+                      <pacman-loader
+                        v-if="peticion"
+                        :color="color"
+                      ></pacman-loader>
+                    </b-col>
+                    <b-col cols="4"></b-col>
+                  </b-row>
               </CForm>
             </CCardBody>
           </CCard>
@@ -60,6 +70,10 @@
 </template>
 
 <script>
+import "regenerator-runtime/runtime";
+
+import PacmanLoader from "vue-spinner/src/PacmanLoader.vue";
+import repologin from "./repologin.js";
 
 import axios from "axios";
 
@@ -67,6 +81,9 @@ import axios from "axios";
       name: 'Login',
       data() {
         return {
+          peticion:true,
+                color: "#fdd901",
+
           email: '',
           password: '',
           showMessage: false,
@@ -96,7 +113,10 @@ import axios from "axios";
           });
   
         }
-      }
+      },
+       components: {
+    PacmanLoader,
+  },
     }
 
 </script>
