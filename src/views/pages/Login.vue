@@ -127,7 +127,7 @@ export default {
     this.item.email='';
     },
     coderesponse(result,self,alert){
-     return  result.data.code==200?self.success(result.data,self)
+     return  result.data.code==200?self.success(result.data,self,alert)
             :result.data.code==403?self.denegado(alert)
             :result.data.code==401?self.credentialinvalid(alert)
             :result.data.code==202?self.pendiente(alert)///pendiente
@@ -136,22 +136,23 @@ export default {
           pendiente(alert){
             alert.pending();
            },
-        success(result,self){
+        success(result,self,alert){
         let service = Service(); //local storage
         result.roles=result.roles.map((e)=>e.name);
-        result.roles.length>0?'':self.sinroles()
+        if(result.roles.length>0){
         result.user.photo == null ||result.data.user.photo == ""?'':result.data.user.photo = self.$prefijoamazon + result.data.use.photo;
         result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         self.$store.commit("setUserAction", result)
         service.logininicial(result);
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
+        }else{self.sinroles(alert)}      
         },
         denegado(alert){
             alert.denegado();
         },
-        sinroles(){
-            let alert=alertas();
+        sinroles(alert){
             alert.sinroles();
+
             return false;
         },
         credentialinvalid(alert){
