@@ -35,6 +35,8 @@ Vue.use(Vuelidate)
 Vue.use(BootstrapVue)
 Vue.prototype.$apiAdress = 'http://127.0.0.1:8000'
 Vue.prototype.$prefijoamazon = 'https://fileslyflow.s3-us-west-2.amazonaws.com/'
+Vue.prototype.$keysecret = 'evolucionweb'
+
 Vue.use(CoreuiVue)
 Vue.use(vuexI18n.plugin, store);
 Vue.i18n.add('en', Locales.en);

@@ -12,12 +12,38 @@ const denegado= async ()=>{
             };
             response(mensaje);
       }
-
+     const errorservidor= async ()=>{
+        let mensaje={
+            tittle:'Servidor',
+            text:'Error de Servidor,Intente mas tarde',
+            icon:'error'
+        };
+        response(mensaje);
+  }
+     
       const invalid=async()=>{
         let mensaje={
             tittle:'Error',
             text:'Usuario y/o Contraseña Incorrectas',
             icon:'error'
+        };
+        response(mensaje);
+
+      }
+      const sinroles=async()=>{
+        let mensaje={
+            tittle:'Consulta a Soporte Técnico',
+            text:'Aún no tienes acceso. Sin rol de acceso',
+            icon:'question'
+        };
+        response(mensaje);
+
+      }
+      const pending=async()=>{
+        let mensaje={
+            tittle:'Consulta a Soporte Técnico',
+            text:'Aún no tienes acceso. Pendiente',
+            icon:'question'
         };
         response(mensaje);
 
@@ -37,7 +63,10 @@ const denegado= async ()=>{
 
 export default ()=> ({
     denegado,
-    invalid
+    invalid,
+    sinroles,
+    errorservidor,
+    pending
     
    
 });

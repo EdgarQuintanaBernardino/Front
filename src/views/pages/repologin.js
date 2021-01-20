@@ -15,6 +15,26 @@ const login= async (credentials)=>{
    // return result;
 
 }
+const loginexample = async (credentials) => {
+
+
+    let result = await Axios.post(api,credentials).then((res) => {
+        return res;
+    }).catch((error) => {
+        let respuesta = JSON.parse(JSON.stringify(error))
+        let datos={code:401};
+        respuesta.data=datos;
+          
+       
+
+        if(respuesta.message=='Request failed with status code 401'){return respuesta;}
+        if(respuesta.message=='Request failed with status code 500'){ respuesta.data.code=500; return respuesta;}
+              
+    });
+    return result;
+
+
+}
 const loginu= async (credentials)=>{
     let result = await Axios.post(api, credentials);
     
@@ -32,6 +52,7 @@ const register= async (request)=>{
 
 export default ()=> ({
     login,
-    register
+    register,
+    loginexample
    
 });

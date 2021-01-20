@@ -80,6 +80,16 @@ const setPermisos=(empresas)=>{
     localStorage.setItem(permisos, JSON.stringify(empresas));
 
 }
+const logininicial=(result)=>{
+    setRoles(result.roles);
+    let user=result.user;
+    user.roles=null;
+    user.menuroles=null;
+    setUser(user);
+    setToken(result.token);
+  //  localStorage.setItem(permisos, JSON.stringify(empresas));
+
+}
 
 /**
  * Guarda el token JWT
@@ -184,5 +194,5 @@ export default  ()=> ({
     setonlyusers,
     getOnlyUsers,
     setonlyusersdelete,
-    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles
+    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles,logininicial
 });

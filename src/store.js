@@ -25,6 +25,7 @@ const mutations = {
       state.usuario = payload.user;
       state.token = payload.token;
       state.roles = payload.roles;
+
     }
 
   },

@@ -37,7 +37,7 @@
                         block
                         pill
                         :disabled="$v.$invalid || peticion"
-                        :hidden="peticion"
+                        v-if="!peticion"
                         ><b-icon icon="check-square" scale="1" variant="white" class="mr-2"></b-icon>{{ msj }}
                       </b-button>
                     </CCol>
@@ -60,9 +60,7 @@
                         :color="color"
                       ></pacman-loader>
                     </b-col>
-                    <b-col cols="4">    <b-icon icon="exclamation-circle-fill" variant="dark"></b-icon>
-
-</b-col>
+                    <b-col cols="4"> </b-col>
                   </b-row>
                 </CForm>
               </CCardBody>
@@ -84,6 +82,7 @@ import { required, minLength, email } from "vuelidate/lib/validators";
 export default {
   data: () => {
     return {
+      
       variable: "cil-lock-locked",
       item: {
         password: null,
@@ -123,69 +122,70 @@ export default {
     },
   },
   methods: {
-    async login(item) {
-      const alert=alertas();
+    resetlogin(){
+    this.item.password='';
+    this.item.email='';
+    },
+    coderesponse(result,self,alert){
+     return  result.data.code==200?self.success(result.data,self)
+            :result.data.code==403?self.denegado(alert)
+            :result.data.code==401?self.credentialinvalid(alert)
+            :result.data.code==202?self.pendiente(alert)///pendiente
+            :self.error500(alert);
+                },
+          pendiente(alert){
+            alert.pending();
+           },
+        success(result,self){
+        let service = Service(); //local storage
+        result.roles=result.roles.map((e)=>e.name);
+        result.roles.length>0?'':self.sinroles()
+        result.user.photo == null ||result.data.user.photo == ""?'':result.data.user.photo = self.$prefijoamazon + result.data.use.photo;
+        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
+        self.$store.commit("setUserAction", result)
+        service.logininicial(result);
+        result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
+        },
+        denegado(alert){
+            alert.denegado();
+        },
+        sinroles(){
+            let alert=alertas();
+            alert.sinroles();
+            return false;
+        },
+        credentialinvalid(alert){
+            alert.invalid();
+        },
+        error500(alert){
+            alert.errorservidor();
+        },
+      async login(item) {
       let self=this;
+      let alert=alertas();
       self.peticion = true;
       let dao = repologin(); //store
-      let service = Service(); //local storage
       try {
-        let result=await dao.login(item)
-       
-       
-      if (result.code == 403) {
-          alert.denegado();
-        return false;
-        }
-        if(result.code==200){
-        result.roles=result.roles.map((e)=>e.name);
-       if (result.user.photo == null ||result.data.user.photo == "") {
-       } else {let photo = self.$prefijoamazon + result.data.use.photo;
-          result.data.user.photo = photo;}
-        let token = this.CryptoJS.AES.encrypt(result.token.toString(),'evolucionweb').toString();
-         self.$store.commit("setUserAction", result)
-        service.setToken(token);
-        service.setUser(result.user); /// y una vez retornado se setea LA QUITAMOS PUESTO QUE EN LA PRIMERA VEZ QUE PEDIMOS TOKEN YA TENEMOS ID Y USER AUTENTICADO
-        service.setRoles(result.roles);   
-        console.log(result.nuevo)   
-         if(result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"){
-        self.$router.push(`/settings`);}
-        else{
-        self.$router.push(`/`); }
-
-}
-
-if(result.code==401){
-alert.invalid();
-return false;
-
-}
-      } catch (error) {
+        let result=await dao.loginexample(item)
+         self.coderesponse(result,self,alert);
+          } catch (error) {
         console.log(error);
       alert.invalid();
-    
-      } finally {
-        //  this.isLoading= false;
-        this.peticion = false;
-        this.item.password='';
-         this.item.email='';
+          } finally {
+        self.peticion = false;
+         self.resetlogin();
       }
     },
   },
 
   name: "Login",
   created() {
-    // let hash=sha256('ya que vida');
-    /// console.log(" noas");
     let service = Service();
-
     service.logout();
-
+    this.resetlogin();
     this.$store.commit("setUserAction", null);
-  },
-  mounted() {
-  },
-  components: {
+    },
+   components: {
     PacmanLoader,
   },
 };
