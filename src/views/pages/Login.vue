@@ -141,8 +141,8 @@ export default {
         result.roles=result.roles.map((e)=>e.name);
         if(result.roles.length>0){
         result.user.photo == null ||result.data.user.photo == ""?'':result.data.user.photo = self.$prefijoamazon + result.data.use.photo;
-        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         self.$store.commit("setUserAction", result)
+        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         service.logininicial(result);
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
         }else{self.sinroles(alert)}      
@@ -152,7 +152,6 @@ export default {
         },
         sinroles(alert){
             alert.sinroles();
-
             return false;
         },
         credentialinvalid(alert){
@@ -167,7 +166,7 @@ export default {
       self.peticion = true;
       let dao = repologin(); //store
       try {
-        let result=await dao.loginexample(item)
+        let result=await dao.login(item)
          self.coderesponse(result,self,alert);
           } catch (error) {
         console.log(error);

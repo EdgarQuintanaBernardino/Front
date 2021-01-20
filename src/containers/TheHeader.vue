@@ -26,6 +26,14 @@
         />
       </CHeaderNavItem>
       <CHeaderNavItem class="px-3">
+        <CSelect
+          class="mt-3"
+          :options="roles"
+          :value="roleactive"
+          @update:value="selectRole"
+        />
+      </CHeaderNavItem>
+      <CHeaderNavItem class="px-3">
         <button 
           @click="() => $store.commit('toggle', 'darkMode')" 
           class="c-header-nav-btn"
@@ -60,8 +68,11 @@ import TheHeaderDropdownAccnt from './TheHeaderDropdownAccnt'
 import TheHeaderDropdownNotif from './TheHeaderDropdownNotif'
 import TheHeaderDropdownTasks from './TheHeaderDropdownTasks'
 import TheHeaderDropdownMssgs from './TheHeaderDropdownMssgs'
+
+
 import CMenu from './Menu'
 import axios from 'axios'
+import repomenu from './repomenus';
 
 export default {
   name: 'TheHeader',
@@ -70,12 +81,15 @@ export default {
     TheHeaderDropdownNotif,
     TheHeaderDropdownTasks,
     TheHeaderDropdownMssgs,
-    CMenu
+    CMenu,
+    
   },
   data: function(){
     return {
       langs: [],
       locale: 'en',
+      roleactive:'',
+      roles:[],
     }
   },
   methods:{
@@ -85,23 +99,31 @@ export default {
       //location.reload()
       this.locale=option;
       this.$emit('change-locale', option)
+    },
+     selectRole: function(option){
+      this.$store.commit('setRoleactive',option)
+      this.roleactive=option;
+      this.$emit('change-Role', option)
     }
   },
   mounted () {
+
     let self = this;
+    let repo=repomenu();
     if(typeof localStorage.locale !== 'undefined'){
       this.locale = localStorage.getItem("locale")
     }
-    axios.get( this.$apiAdress + '/api/langlist?token=' + localStorage.getItem("api_token") )
-    .then(function (response) {
-      self.langs = [];
-      for(let i =0; i<response.data.length; i++){
-        self.langs.push({
-          value: response.data[i].short_name,
-          label: response.data[i].name
+        let local={locale:this.locale,menu:'top_menu'}
+
+       repo.getroles(local).then((response) => {
+          self.roles = [];
+            for(let i =0; i<response.length; i++){
+         self.roles.push({
+           value: response[i].name,
+           label: response[i].name
         });
-      }
-    }).catch(function (error) {
+       }
+      }).catch(function (error) {
       console.log(error)
       self.$router.push({ path: '/login' })
     });

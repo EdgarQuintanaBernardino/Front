@@ -2,12 +2,12 @@
 /**
  * Clave en el localstorage de la lalve JWT
  */
-const key = "auth.token";
+const key = "token";
 
 /**
  * Clave de datos de usuario
  */
-const keyUser = "auth.user";
+const keyUser = "user";
 
 const KeyRoleactive='auth.roleactive'
 const permisos='auth.permisos'
@@ -16,12 +16,13 @@ const permisos='auth.permisos'
  * Borra el cache del usuario
  */
 
- const rolesUser ="auth.roles";
+ const rolesUser ="roles";
  const empresarUser='auth.empresas';
  const myusers='auth.onlyusers';
  const myusersdelete='auth.onlyusersdelete';
  const allpermisos='auth.allpermisos';
  const allroles='auth.allroles';
+ const locale='locale';
 
 
 const logout = async ()=> {
@@ -84,9 +85,9 @@ const logininicial=(result)=>{
     setRoles(result.roles);
     let user=result.user;
     user.roles=null;
-    user.menuroles=null;
     setUser(user);
     setToken(result.token);
+    setLocale(user.lang); 
   //  localStorage.setItem(permisos, JSON.stringify(empresas));
 
 }
@@ -98,7 +99,9 @@ const logininicial=(result)=>{
 const setToken = (token)=>{
     localStorage.setItem(key, token);
 }
-
+const setLocale = (token)=>{
+    localStorage.setItem(locale, token);
+}
 /**
  * Borra el token y regresca el localStorage
  */

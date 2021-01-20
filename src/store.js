@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
 Vue.use(Vuex)
 
 const state = {
@@ -13,6 +14,10 @@ const state = {
 }
 
 const mutations = {
+  setRoleactive(state,payload){
+          state.usuario.menuroles=payload;
+
+  },
   setUserAction(state, payload) {
 
     if (payload ==null) {
@@ -44,8 +49,13 @@ const mutations = {
     state[variable] = !state[variable]
   }
 }
+const getters={
+  getroleactive(state){return state.user.menuroles},
+  gettoken(state){ return  state.token;}
 
+}
 export default new Vuex.Store({
   state,
-  mutations
+  mutations,
+  getters,
 })

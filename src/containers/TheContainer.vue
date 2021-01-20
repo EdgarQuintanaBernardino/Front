@@ -1,9 +1,9 @@
 <template>
   <div class="c-app" :class="{ 'c-dark-theme': $store.state.darkMode }">
-    <TheSidebar :locale="locale"/>
+    <TheSidebar :locale="locale" :roleactive="roleactive"/>
     <TheAside/>
     <CWrapper>
-      <TheHeader v-on:change-locale="changeLocale"/>
+      <TheHeader v-on:change-locale="changeLocale"  v-on:change-Role="changeRole"/>
       <div class="c-body">
         <main class="c-main">
           <CContainer fluid>
@@ -35,11 +35,15 @@ export default {
   data(){
     return {
       locale: 'en',
+      roleactive:'',
     }
   },
   methods: {
     changeLocale(value){
       this.locale = value;
+    },
+    changeRole(value){
+      this.roleactive = value;
     }
   }
 }

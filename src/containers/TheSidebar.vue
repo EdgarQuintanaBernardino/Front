@@ -31,10 +31,10 @@
 
 <script>
 import axios from 'axios'
-
+import repomenu from './repomenus';
 export default {
   name: 'TheSidebar',
-  props: ['locale'],
+  props: ['locale','roleactive'],
   data () {
     return {
       // minimize: false,
@@ -120,23 +120,41 @@ export default {
       }
       return this.buffor;
     },
-    downloadSidebarData(){
+
+    changerole(role){
+      let repo= repomenu();
+        let roleactive={
+          option:role,
+        };
+       repo.changeR(roleactive).then((res) => {
+         //self.nav = self.rebuildData(res);
+         this.downloadSidebarData();
+         console.log(res);
+      }); 
+
+
+    },
+    downloadSidebarData()
+    {
       let self = this;
-      let locale = 'en';
+      let idioma = 'en';
+      let repo= repomenu();
       if(typeof localStorage.locale !== 'undefined'){
-        locale = localStorage.getItem("locale")
+        idioma = localStorage.getItem("locale")
       }
-      axios.get( this.$apiAdress + '/api/menu?token=' + localStorage.getItem("api_token") + '&locale=' + this.locale )
-      .then(function (response) {
-        self.nav = self.rebuildData(response.data);
-      }).catch(function (error) {
-        console.log(error)
-        self.$router.push({ path: '/login' })
+     let local={locale:idioma}
+       repo.rendermenu(local).then((res) => {
+         self.nav = self.rebuildData(res);
       });
-    }
+         }
   },
   watch: {
     locale: function(newVal, oldVal) { // watch it
+      this.downloadSidebarData()
+    },
+     roleactive: function(newVal, oldVal) { // watch it
+      
+      this.changerole(this.roleactive);
       this.downloadSidebarData()
     }
   },

@@ -33,10 +33,11 @@
 </template>
 
 <script>
-import axios from 'axios'
+import repomenu from './repomenus';
+
 export default {
-  name: 'Menu',
-    props: ['locale'],
+      name: 'Menu',
+    props: ['locale','role'],
 
   data () {
     return {
@@ -49,24 +50,24 @@ export default {
     watch: {
     locale: function(newVal, oldVal) { // watch it
       this.topmenu();
+    },
+    role:function(){
+
     }
     },
   methods: {
     topmenu(){
+       let repo= repomenu();
        let self = this;
-    let locale = 'en';
+      let idioma = 'en';
     if(typeof localStorage.locale !== 'undefined'){
-      locale = localStorage.getItem("locale")
+      idioma = localStorage.getItem("locale")
     }
-    axios.get(    this.$apiAdress + '/api/menu?token=' + localStorage.getItem("api_token") + '&menu=' + 'top_menu' + '&locale=' + locale)
-    .then(function (response) {
-      self.nav = self.rebuildData(response.data);
-    }).catch(function (error) {
-      console.log(error);
-      self.$router.push({ path: '/login' });
-    });
-
-    },
+     let local={locale:idioma,menu:'top_menu'}
+       repo.rendermenu(local).then((res) => {
+         self.nav = self.rebuildData(res);
+      });
+       },
     dropdown(data){
       let result = {
             _name: 'CSidebarNavDropdown',
