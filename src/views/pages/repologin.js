@@ -10,8 +10,7 @@ const apiregister=`${server}/auth/register`;
 
 const login= async (credentials)=>{
     let result = await Axios.post(api, credentials);
-    
-    return result.data;
+     return result.data;
 
    // return result;
 
