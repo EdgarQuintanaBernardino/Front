@@ -13,9 +13,9 @@
     <CHeaderBrand class="mx-auto d-lg-none" to="/">
       <CIcon name="logo" height="48" alt="Logo"/>
     </CHeaderBrand>
+        
 
-    <CMenu  :locale="locale"/>
-
+    <CMenu :locale="locale" :roleactive="roleactive"/>
     <CHeaderNav>
       <CHeaderNavItem class="px-3">
         <CSelect
@@ -68,11 +68,12 @@ import TheHeaderDropdownAccnt from './TheHeaderDropdownAccnt'
 import TheHeaderDropdownNotif from './TheHeaderDropdownNotif'
 import TheHeaderDropdownTasks from './TheHeaderDropdownTasks'
 import TheHeaderDropdownMssgs from './TheHeaderDropdownMssgs'
+import loading from'@/assets/loaders/reloj'
 
 
 import CMenu from './Menu'
-import axios from 'axios'
 import repomenu from './repomenus';
+import responses from'@/assets/repositoriosjs/respuestas'
 
 export default {
   name: 'TheHeader',
@@ -82,23 +83,70 @@ export default {
     TheHeaderDropdownTasks,
     TheHeaderDropdownMssgs,
     CMenu,
+    loading
     
   },
   data: function(){
     return {
       langs: [],
       locale: 'en',
-      roleactive:'',
+      roleactive: 'user',
       roles:[],
+      show:false,
     }
   },
   methods:{
+    renderoptionroles(){
+    let self = this;
+    let repo=repomenu();
+    
+      let local={locale:this.locale,menu:'top_menu'}
+
+       repo.getroles(local).then((res) => {
+           let respuestas=responses()
+          let response=respuestas.valida(res);
+          self.roles = [];
+            for(let i =0; i<response.length; i++){
+         self.roles.push({
+           value: response[i].name,
+           label: response[i].name
+        });
+       }
+      this.renderlenguaje();
+
+      }).catch(function (error) {
+      console.log(error)
+      self.$router.push({ path: '/login' })
+    });
+
+    },
     selectLocale: function(option){
       localStorage.setItem("locale", option)
       this.$i18n.set( option )
       //location.reload()
       this.locale=option;
       this.$emit('change-locale', option)
+    },
+    renderlenguaje(){
+       let self = this;
+      let repo=repomenu();
+    if(typeof localStorage.locale !== 'undefined'){
+      this.locale = localStorage.getItem("locale")
+    }
+     repo.getlenguajes().then(function (res) {
+       let respuestas=responses()
+      let response=respuestas.valida(res.data);
+      self.langs = [];
+      for(let i =0; i<response.length; i++){
+        self.langs.push({
+          value: response[i].short_name,
+          label: response[i].name
+        });
+      }
+    }).catch(function (error) {
+      console.log(error)
+      self.$router.push({ path: '/login' })
+    });
     },
      selectRole: function(option){
       this.$store.commit('setRoleactive',option)
@@ -107,26 +155,9 @@ export default {
     }
   },
   mounted () {
+   this.roleactive=localStorage.getItem('roles');
 
-    let self = this;
-    let repo=repomenu();
-    if(typeof localStorage.locale !== 'undefined'){
-      this.locale = localStorage.getItem("locale")
-    }
-        let local={locale:this.locale,menu:'top_menu'}
-
-       repo.getroles(local).then((response) => {
-          self.roles = [];
-            for(let i =0; i<response.length; i++){
-         self.roles.push({
-           value: response[i].name,
-           label: response[i].name
-        });
+      this.renderoptionroles();
        }
-      }).catch(function (error) {
-      console.log(error)
-      self.$router.push({ path: '/login' })
-    });
-  }
 }
 </script>

@@ -34,10 +34,12 @@
 
 <script>
 import repomenu from './repomenus';
+import responses from'@/assets/repositoriosjs/respuestas'
+import alertas from '@/assets/repositoriosjs/alertas.js';
 
 export default {
       name: 'Menu',
-    props: ['locale','role'],
+    props: ['locale','roleactive'],
 
   data () {
     return {
@@ -51,9 +53,9 @@ export default {
     locale: function(newVal, oldVal) { // watch it
       this.topmenu();
     },
-    role:function(){
-
-    }
+    roleactive:function(){
+      this.topmenu()  
+  }
     },
   methods: {
     topmenu(){
@@ -65,7 +67,9 @@ export default {
     }
      let local={locale:idioma,menu:'top_menu'}
        repo.rendermenu(local).then((res) => {
-         self.nav = self.rebuildData(res);
+              let respuestas=responses();
+        let response=respuestas.valida(res);
+       self.nav = self.rebuildData(response);
       });
        },
     dropdown(data){
@@ -92,7 +96,13 @@ export default {
       }
       return result;
     },
+     out(){
+        let alert=alertas();
+        alert.denegado();
+    this.$router.push({ path: '/login' })
+    },
     rebuildData(data){
+      try{
       this.buffor = [];
       for(let k=0; k<data.length; k++){
         switch(data[k]['slug']){
@@ -132,10 +142,14 @@ export default {
         }
       }
       return this.buffor;
+    }catch(error){
+      
+    }
     }
   },
   mounted () {
-   this.topmenu();
+    //console.log("topmenu mounted")
+  /// this.topmenu();
   }
 }
 </script>

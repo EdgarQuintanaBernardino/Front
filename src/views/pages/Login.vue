@@ -77,7 +77,7 @@ import "regenerator-runtime/runtime";
 import PacmanLoader from "vue-spinner/src/PacmanLoader.vue";
 import repologin from "./repologin.js";
 import Service from "@/services/SessionStorage";
-import alertas from'./alertaslogin.js';
+import alertas from '@/assets/repositoriosjs/alertas.js';
 import { required, minLength, email } from "vuelidate/lib/validators";
 export default {
   data: () => {
@@ -138,7 +138,7 @@ export default {
            },
         success(result,self,alert){
         let service = Service(); //local storage
-        result.roles=result.roles.map((e)=>e.name);
+        result.roles=result.user.menuroles;
         if(result.roles.length>0){
         result.user.photo == null ||result.data.user.photo == ""?'':result.data.user.photo = self.$prefijoamazon + result.data.use.photo;
         self.$store.commit("setUserAction", result)

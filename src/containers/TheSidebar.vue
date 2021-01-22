@@ -30,8 +30,11 @@
 </template>
 
 <script>
-import axios from 'axios'
 import repomenu from './repomenus';
+import Service from "@/services/SessionStorage";
+import responses from'@/assets/repositoriosjs/respuestas'
+import alertas from '@/assets/repositoriosjs/alertas.js';
+
 export default {
   name: 'TheSidebar',
   props: ['locale','roleactive'],
@@ -77,6 +80,7 @@ export default {
       return result;
     },
     rebuildData(data){
+      try{
       this.buffor = [{
         _name: 'CSidebarNav',
         _children: []
@@ -119,23 +123,57 @@ export default {
         }
       }
       return this.buffor;
+      }catch(error){
+        this.out();
+      }
     },
-
-    changerole(role){
+changelocale(locale){
+      let service=Service();
       let repo= repomenu();
-        let roleactive={
+        let localeactive={
+          option:locale,
+        };
+       service.setLocale(locale);
+       repo.changeL(localeactive).then((res) => {
+
+         let respuestas=responses()
+        let response=respuestas.validarol(res);
+        console.log(response)
+        if(response==200){
+          
+         this.downloadSidebarData();
+        }else{
+          this.out();
+        }
+      }); 
+    },
+    changerole(role){
+      let service=Service();
+      let repo= repomenu();
+        let roleactivein={
           option:role,
         };
-       repo.changeR(roleactive).then((res) => {
-         //self.nav = self.rebuildData(res);
+       service.setRoles(role);
+       repo.changeR(roleactivein).then((res) => {
+
+               let respuestas=responses()
+        let response=respuestas.validarol(res);
+        if(response==200){
          this.downloadSidebarData();
-         console.log(res);
+        }else{
+          this.out();
+        }
       }); 
-
-
+    },
+    out(){
+        let alert=alertas();
+        alert.denegado();
+    this.$router.push({ path: '/login' })
     },
     downloadSidebarData()
     {
+      try{
+      console.log("sidebar")
       let self = this;
       let idioma = 'en';
       let repo= repomenu();
@@ -144,18 +182,23 @@ export default {
       }
      let local={locale:idioma}
        repo.rendermenu(local).then((res) => {
-         self.nav = self.rebuildData(res);
-      });
+                let respuestas=responses();
+        let response=respuestas.valida(res);
+       self.nav = self.rebuildData(response);
+   
+    });
+      }catch(error){
+          this.out();
+      }
          }
   },
   watch: {
     locale: function(newVal, oldVal) { // watch it
-      this.downloadSidebarData()
+      this.changelocale(newVal)
     },
      roleactive: function(newVal, oldVal) { // watch it
-      
-      this.changerole(this.roleactive);
-      this.downloadSidebarData()
+     this.changerole(newVal);
+    //  this.downloadSidebarData()
     }
   },
   mounted () {
@@ -167,6 +210,7 @@ export default {
       const sidebarClosed = this.show === 'responsive' || this.show === false
       this.show = sidebarClosed ? true : 'responsive'
     })
+    
     this.downloadSidebarData()
   }
 }

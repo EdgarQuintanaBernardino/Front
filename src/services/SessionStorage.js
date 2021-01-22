@@ -136,7 +136,7 @@ const setUser = (user)=>{
 };
 
 const setRoles=(roles)=>{
-    localStorage.setItem(rolesUser, JSON.stringify(roles));
+    localStorage.setItem(rolesUser, roles);
 
 }
 const setRoleActive=(role)=>{
@@ -197,5 +197,5 @@ export default  ()=> ({
     setonlyusers,
     getOnlyUsers,
     setonlyusersdelete,
-    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles,logininicial
+    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles,logininicial,setLocale
 });
