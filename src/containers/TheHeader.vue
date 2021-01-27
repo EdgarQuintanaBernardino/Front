@@ -1,4 +1,5 @@
 <template>
+<div>
   <CHeader with-subheader>
     <CToggler
       in-header
@@ -13,54 +14,45 @@
     <CHeaderBrand class="mx-auto d-lg-none" to="/">
       <CIcon name="logo" height="48" alt="Logo"/>
     </CHeaderBrand>
-        
 
-    <CMenu :locale="locale" :roleactive="roleactive"/>
+
+    <CMenu :locale="locale" :roleactive="roleactive"  v-on:succes-menu="succesmenutop" :hidden="api"/>
+
     <CHeaderNav>
-      <CHeaderNavItem class="px-3">
-        <CSelect
-          class="mt-3"
-          :options="langs"
-          :value="locale"
-          @update:value="selectLocale"
-        />
+        
+       <CHeaderNavItem class="px-3">
+
+      <select2 :selectexample='locale' :optionsroles='langs' :show="show" v-on:change-Lang="selectLocale"></select2>
+
       </CHeaderNavItem>
-      <CHeaderNavItem class="px-3">
-        <CSelect
-          class="mt-3"
-          :options="roles"
-          :value="roleactive"
-          @update:value="selectRole"
-        />
+       <CHeaderNavItem class="px-3">
+        <selectcustom :selectexample='selectexample' :optionsroles='optionsroles' :show="show" v-on:change-Role="changeRole" v-if="false"></selectcustom>
+
+      </CHeaderNavItem>
+        <CHeaderNavItem class="px-3">
+        <selectcustom :selectexample="metodo" :optionsroles='optionsmetodos' :show="show" v-on:change-Role="changemetodo" v-if="false"></selectcustom>
+
       </CHeaderNavItem>
       <CHeaderNavItem class="px-3">
         <button 
-          @click="() => $store.commit('toggle', 'darkMode')" 
+          @click="() => $store.commit('changetheme')" 
           class="c-header-nav-btn"
         >
           <CIcon v-if="$store.state.darkMode" name="cil-sun"/>
           <CIcon v-else name="cil-moon"/>
         </button>
       </CHeaderNavItem>
-      <TheHeaderDropdownNotif/>
-      <TheHeaderDropdownTasks/>
-      <TheHeaderDropdownMssgs/>
+   
       <TheHeaderDropdownAccnt/>
-      <CHeaderNavItem class="px-3">
-        <button
-          in-header
-          class="c-header-nav-btn"
-          @click="$store.commit('toggle', 'asideShow')"
-        >
-          <CIcon size="lg" name="cil-applications-settings" class="mr-2"/>
-        </button>
-      </CHeaderNavItem>
+    
+
     </CHeaderNav>
  
     <CSubheader class="px-3">
       <CBreadcrumbRouter class="border-0 mb-0"/>
     </CSubheader>
   </CHeader>
+  </div>
 </template>
 
 <script>
@@ -68,51 +60,69 @@ import TheHeaderDropdownAccnt from './TheHeaderDropdownAccnt'
 import TheHeaderDropdownNotif from './TheHeaderDropdownNotif'
 import TheHeaderDropdownTasks from './TheHeaderDropdownTasks'
 import TheHeaderDropdownMssgs from './TheHeaderDropdownMssgs'
-import loading from'@/assets/loaders/reloj'
+import selectcustom from'./select.vue'
+import select2 from'./selectlan.vue'
 
 
 import CMenu from './Menu'
 import repomenu from './repomenus';
 import responses from'@/assets/repositoriosjs/respuestas'
-
 export default {
   name: 'TheHeader',
+     
+   props:['reloj'],
+
   components: {
     TheHeaderDropdownAccnt,
     TheHeaderDropdownNotif,
     TheHeaderDropdownTasks,
     TheHeaderDropdownMssgs,
-    CMenu,
-    loading
+    CMenu,selectcustom,select2
+    
     
   },
   data: function(){
     return {
       langs: [],
       locale: 'en',
-      roleactive: 'user',
-      roles:[],
+      roleactive: false,
+      selectexample:'',
+      optionsroles:[],
+      metodo:2,
       show:false,
+      api:true,
+      optionsmetodos:[]
     }
   },
   methods:{
+    changemetodo(option){
+     this.cargando(true);
+     localStorage.setItem("metodo", option)
+     this.cargando(false);
+      },
+    succesmenutop(){
+    this.loadingmenu();
+    },
     renderoptionroles(){
+      this.optionsmetodos=[];
+      this.optionsmetodos.push({'value':1,'label':'back-end'},{'value':2,'label':'front-end'});
     let self = this;
     let repo=repomenu();
-    
-      let local={locale:this.locale,menu:'top_menu'}
-
+          let local={locale:localStorage.getItem('locale'),menu:'top_menu'}
        repo.getroles(local).then((res) => {
            let respuestas=responses()
           let response=respuestas.valida(res);
-          self.roles = [];
+          self.optionsroles = [];
             for(let i =0; i<response.length; i++){
-         self.roles.push({
+         self.optionsroles.push({
            value: response[i].name,
            label: response[i].name
         });
        }
-      this.renderlenguaje();
+       
+this.metodo=parseInt(localStorage.getItem('metodo'));
+       this.selectexample=localStorage.getItem('roles')
+      self.renderlenguaje();
 
       }).catch(function (error) {
       console.log(error)
@@ -121,9 +131,9 @@ export default {
 
     },
     selectLocale: function(option){
+      this.loadingmenu();
       localStorage.setItem("locale", option)
       this.$i18n.set( option )
-      //location.reload()
       this.locale=option;
       this.$emit('change-locale', option)
     },
@@ -147,17 +157,34 @@ export default {
       console.log(error)
       self.$router.push({ path: '/login' })
     });
-    },
-     selectRole: function(option){
-      this.$store.commit('setRoleactive',option)
-      this.roleactive=option;
-      this.$emit('change-Role', option)
-    }
-  },
-  mounted () {
-   this.roleactive=localStorage.getItem('roles');
 
+    },
+    selectRole:function(){},
+     changeRole: function(option){
+    // this.roleactive=option;///dispara el menu top
+        this.$store.commit('cargaboton',true);
+        localStorage.setItem('roles',option);
+         this.loadingmenu();
+    
+   this.$emit('change-Role', option)
+    },
+    cargando(payload){
+          this.show=payload;
+          this.api=payload;
+    },
+    loadingmenu(){
+      this.show=this.$store.getters.getcargamenutop;
+      this.api=this.$store.getters.getcargamenutop;
+    }
+     },
+  mounted () {
       this.renderoptionroles();
+       },
+       watch:{
+          reloj:function(newval,oldvar){
+            this.roleactive=!this.roleactive;
+            this.renderoptionroles();
+           }
        }
 }
 </script>

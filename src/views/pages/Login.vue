@@ -140,8 +140,9 @@ export default {
         let service = Service(); //local storage
         result.roles=result.user.menuroles;
         if(result.roles.length>0){
-        result.user.photo == null ||result.data.user.photo == ""?'':result.data.user.photo = self.$prefijoamazon + result.data.use.photo;
+        result.user.photo == null ||result.user.photo == ""?'':result.user.photo = self.$prefijoamazon + result.user.photo;
         self.$store.commit("setUserAction", result)
+        self.$store.commit('set','fotouser',result.user.photo);
         result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         service.logininicial(result);
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);

@@ -130,7 +130,7 @@ export default {
       this.loading = true
       let self = this;
       this.items = [];
-      axios.post( this.$apiAdress + '/api/lazyTable?page=' + self.activePage, 
+      axios.post( this.$apiAdress + '/api/lazyTable', 
         {
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,

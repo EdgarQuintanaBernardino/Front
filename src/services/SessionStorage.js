@@ -23,7 +23,7 @@ const permisos='auth.permisos'
  const allpermisos='auth.allpermisos';
  const allroles='auth.allroles';
  const locale='locale';
-
+ const keyMetodo='metodo';
 
 const logout = async ()=> {
     await localStorage.clear();
@@ -47,6 +47,14 @@ const getallroles = () =>{
     }
 
     return null;
+}
+const getMetodo = () =>{
+
+
+        return  localStorage.getItem(keyMetodo);
+
+
+
 }
 const setallpermisos=(permisos)=>{
     localStorage.setItem(allpermisos, JSON.stringify(permisos));
@@ -87,8 +95,9 @@ const logininicial=(result)=>{
     user.roles=null;
     setUser(user);
     setToken(result.token);
-    setLocale(user.lang); 
-  //  localStorage.setItem(permisos, JSON.stringify(empresas));
+    setLocale(result.sistema.lang); 
+    setMetodo(result.sistema.metodo);
+    localStorage.setItem('tema',result.sistema.tema);
 
 }
 
@@ -134,7 +143,9 @@ const getToken = ()=>{
 const setUser = (user)=>{
     localStorage.setItem(keyUser, JSON.stringify(user));
 };
-
+const setMetodo = (metodo)=>{
+    localStorage.setItem(keyMetodo, metodo);
+};
 const setRoles=(roles)=>{
     localStorage.setItem(rolesUser, roles);
 
@@ -197,5 +208,5 @@ export default  ()=> ({
     setonlyusers,
     getOnlyUsers,
     setonlyusersdelete,
-    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles,logininicial,setLocale
+    getOnlyUsersDelete,adduserdelete,getallpermisos,setallpermisos,getallroles,setallroles,logininicial,setLocale,getMetodo,setMetodo
 });

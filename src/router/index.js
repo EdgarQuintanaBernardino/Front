@@ -131,6 +131,10 @@ const ShowMenuElement = () => import('@/views/menuElements/ShowMenuElement')
 const DeleteMenuElement = () => import('@/views/menuElements/DeleteMenuElement')
 
 const Media = () => import('@/views/media/Media')
+////mis vistas
+const profile = () => import('@/views/users/Profile')
+const settings = () => import('@/views/users/Settings')
+const users_users = () => import('@/views/users/user_user')
 
 Vue.use(Router)
 
@@ -144,20 +148,19 @@ let router = new Router({
 
 router.beforeEach((to, from, next) => {
   let roles = localStorage.getItem("roles");
-  if(roles != null){
-    roles = roles.split(',')
-  }
+  
   if(to.matched.some(record => record.meta.requiresAdmin)) {
-    if(roles != null && roles.indexOf('admin') >= 0 ){
+    if(roles != null && roles=='admin'){
       next()
     }else{
+      console.log(roles)
       next({
         path: '/login',
         params: { nextUrl: to.fullPath }
       })
     }
   }else if(to.matched.some(record => record.meta.requiresUser)) {
-    if(roles != null && roles.indexOf('user') >= 0 ){
+    if(roles != null && roles=='user'||roles=="admin"){
       next()
     }else{
       next({
@@ -181,12 +184,27 @@ function configRoutes () {
       component: TheContainer,
       children: [
         {
+          path: '/settings',
+          name: 'settings',
+          component: settings
+        },
+        {
+          path: '/contactos',
+          name: 'Contactos',
+          component: users_users
+        },
+        {
           path: 'media',
           name: 'Media',
           component: Media,
           meta:{
             requiresAdmin: true
           }
+        },
+        {
+          path: '/profile',
+          name: 'Profile',
+          component: profile
         },
         {
           path: 'dashboard',

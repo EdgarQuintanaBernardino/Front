@@ -10,14 +10,24 @@ const state = {
   darkMode: false,
   usuario:null,
   token:null,
+  cargatop:false,
+  fotouser:null
 
 }
 
 const mutations = {
+  setfoto(state,payload){
+    state.usuario.photo=payload;
+  },
+  cargaboton(state,payload){
+    state.cargatop=payload;
+  },
   setRoleactive(state,payload){
-          state.usuario.menuroles=payload;
+    this.commit('cargaboton',true);
+    state.usuario.menuroles=payload;
 
   },
+  
   setUserAction(state, payload) {
 
     if (payload ==null) {
@@ -25,15 +35,22 @@ const mutations = {
       state.usuario = payload;
       state.token = payload;
       state.roles = payload;
+      state.darkMode=false;
+
     
     } else {
       state.usuario = payload.user;
       state.token = payload.token;
       state.roles = payload.roles;
+      payload.sistema.tema=="false"?'':state.darkMode=!state.darkMode;
+      }
+       
 
-    }
+    
+    
 
   },
+ 
   toggleSidebarDesktop (state) {
     const sidebarOpened = [true, 'responsive'].includes(state.sidebarShow)
     state.sidebarShow = sidebarOpened ? false : 'responsive'
@@ -47,11 +64,20 @@ const mutations = {
   },
   toggle (state, variable) {
     state[variable] = !state[variable]
+  },
+  changetheme(state){
+        let payload=!state.darkMode;
+          state.darkMode=payload;
+        localStorage.setItem('tema',payload.toString());
   }
 }
 const getters={
   getroleactive(state){return state.user.menuroles},
-  gettoken(state){ return  state.token;}
+  gettoken(state){ return  state.token;},
+  getcargamenutop(state){ return  state.cargatop;},
+  getphoto(state){ return  state.usuario.photo;}
+
+
 
 }
 export default new Vuex.Store({

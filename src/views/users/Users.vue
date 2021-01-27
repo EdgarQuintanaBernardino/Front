@@ -124,7 +124,7 @@ export default {
         self.you = response.data.you;
       }).catch(function (error) {
         console.log(error);
-        self.$router.push({ path: '/login' });
+      //  self.$router.push({ path: '/login' });
       });
     }
   },

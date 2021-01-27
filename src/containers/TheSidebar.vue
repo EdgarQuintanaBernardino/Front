@@ -101,7 +101,7 @@ export default {
             }else{
               this.buffor[0]._children.push(
                   {
-                      _name: 'CSidebarNavItem',
+                     _name: 'CSidebarNavItem',
                       name: data[k]['name'],
                       to:   data[k]['href'],
                       icon: data[k]['icon'],
@@ -134,29 +134,26 @@ changelocale(locale){
           option:locale,
         };
        service.setLocale(locale);
-       repo.changeL(localeactive).then((res) => {
+       this.downloadSidebarData();
+      //  repo.changeL(localeactive).then((res) => {
 
-         let respuestas=responses()
-        let response=respuestas.validarol(res);
-        console.log(response)
-        if(response==200){
-          
-         this.downloadSidebarData();
-        }else{
-          this.out();
-        }
-      }); 
+      //    let respuestas=responses()
+      //   let response=respuestas.validarol(res);
+      //   if(response==200){
+      //    this.downloadSidebarData();
+      //   }else{
+      //     this.out();
+      //   }
+      // }); 
     },
     changerole(role){
-      let service=Service();
       let repo= repomenu();
         let roleactivein={
           option:role,
         };
-       service.setRoles(role);
        repo.changeR(roleactivein).then((res) => {
 
-               let respuestas=responses()
+        let respuestas=responses()
         let response=respuestas.validarol(res);
         if(response==200){
          this.downloadSidebarData();
@@ -173,7 +170,6 @@ changelocale(locale){
     downloadSidebarData()
     {
       try{
-      console.log("sidebar")
       let self = this;
       let idioma = 'en';
       let repo= repomenu();
@@ -182,11 +178,13 @@ changelocale(locale){
       }
      let local={locale:idioma}
        repo.rendermenu(local).then((res) => {
-                let respuestas=responses();
+         let respuestas=responses();
         let response=respuestas.valida(res);
        self.nav = self.rebuildData(response);
    
     });
+    this.$emit('success-api')
+
       }catch(error){
           this.out();
       }

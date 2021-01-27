@@ -39,7 +39,8 @@ Vue.prototype.$keysecret = 'evolucionweb'
 Vue.use(CoreuiVue)
 Vue.use(vuexI18n.plugin, store);
 Vue.i18n.add('en', Locales.en);
-Vue.i18n.add('pl', Locales.pl);
+Vue.i18n.add('es', Locales.es);
+
 let locale = 'en';
 if(typeof localStorage.locale !== 'undefined'){
   locale = localStorage.getItem("locale")

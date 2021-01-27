@@ -1,9 +1,11 @@
 <template>
     <CHeaderNav class="d-md-down-none mr-auto">
+
       <CHeaderNavItem 
         v-for="n in nav"
         v-bind:key="n.name"
-      >
+      >   
+
         <CHeaderNavLink
           v-if="n._name == 'CSidebarNavItem'"
           :to="n.href"
@@ -25,19 +27,26 @@
             v-bind:key="d.name"
             :to="d.to"
           >
-            {{ d.name }}
+            {{ d.name}}
           </CDropdownItem>
         </CDropdown>
       </CHeaderNavItem>
+
     </CHeaderNav>
+
 </template>
 
 <script>
 import repomenu from './repomenus';
 import responses from'@/assets/repositoriosjs/respuestas'
 import alertas from '@/assets/repositoriosjs/alertas.js';
+import loading from'@/assets/loaders/reloj'
 
 export default {
+  components:{
+      loading,
+    
+  },
       name: 'Menu',
     props: ['locale','roleactive'],
 
@@ -65,11 +74,15 @@ export default {
     if(typeof localStorage.locale !== 'undefined'){
       idioma = localStorage.getItem("locale")
     }
+    
      let local={locale:idioma,menu:'top_menu'}
        repo.rendermenu(local).then((res) => {
+                 this.$store.commit('cargaboton',false);
+
               let respuestas=responses();
         let response=respuestas.valida(res);
        self.nav = self.rebuildData(response);
+        this.$emit('succes-menu');
       });
        },
     dropdown(data){
@@ -141,9 +154,11 @@ export default {
           break;
         }
       }
+
       return this.buffor;
     }catch(error){
       
+      this.$router.push({ path: '/login' })
     }
     }
   },

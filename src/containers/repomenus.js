@@ -4,6 +4,7 @@ import Axios from "axios";
 import Vue from 'vue'
 
 const server =Vue.prototype.$apiAdress;
+let setMetodoapi=`${server}/api/user/setMetodo`;
 
 let rendermenuapi=`${server}/api/menu`;
 let rolesuser=`${server}/api/users/getroles`;
@@ -24,6 +25,23 @@ const rendermenu = async (request) => {
 
     });
     return result;
+}
+const setMetodo = async (request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(setMetodoapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+      //
+      return validaerror(error);
+    });
+    return result;
+
+
 }
 const changeR = async (request) => {
     let tokenin = store.getters.gettoken;
@@ -89,5 +107,5 @@ export default () => ({
     getroles,
     changeR,
     getlenguajes,
-    changeL
+    changeL,setMetodo
 });

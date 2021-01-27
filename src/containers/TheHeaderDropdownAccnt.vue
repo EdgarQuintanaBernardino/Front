@@ -9,7 +9,7 @@
       <CHeaderNavLink>
         <div class="c-avatar">
           <img
-            src="img/avatars/6.jpg"
+            :src="getfoto"
             class="c-avatar-img "
           />
         </div>
@@ -41,11 +41,11 @@
     >
       <strong>Settings</strong>
     </CDropdownHeader>
-    <CDropdownItem>
-      <CIcon name="cil-user" /> Profile
+    <CDropdownItem  to="/profile">
+      <CIcon name="cil-user" /> {{$t('lybflow.profile')}}
     </CDropdownItem>
-    <CDropdownItem>
-      <CIcon name="cil-settings" /> Settings
+    <CDropdownItem to="/settings">
+      <CIcon name="cil-settings"  /> {{$t('lybflow.settings')}}
     </CDropdownItem>
     <CDropdownItem>
       <CIcon name="cil-dollar" /> Payments
@@ -60,7 +60,7 @@
       <CIcon name="cil-shield-alt" /> Lock Account
     </CDropdownItem>
     <CDropdownItem @click="logout()">
-      <CIcon name="cil-lock-locked" /> Logout
+      <CIcon name="cil-lock-locked" /> Salir
     </CDropdownItem>
   </CDropdown>
 </template>
@@ -77,14 +77,32 @@ export default {
   methods:{
     logout(){
       let self = this;
-      axios.post( this.$apiAdress + '/api/logout?token=' + localStorage.getItem("api_token"),{})
+      axios.post( this.$apiAdress + '/api/logout?token=' + this.$store.getters.gettoken,{
+        locale:localStorage.getItem('locale'),
+        metodo:localStorage.getItem('metodo'),
+        tema:localStorage.getItem('tema')
+      })
       .then(function (response) {
-        localStorage.setItem('roles', '');
+      
         self.$router.push({ path: '/login' });
       }).catch(function (error) {
+                self.$router.push({ path: '/login' });
+
         console.log(error); 
       });
     }
+  },  computed:{
+     getfoto(){
+       let foto=this.$store.getters.getphoto;
+        if(foto==""||foto==null){
+          return 'https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png';
+        }else{
+        return foto;
+        }
+
+
+
+    },
   }
 }
 </script>

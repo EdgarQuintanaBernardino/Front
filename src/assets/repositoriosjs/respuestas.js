@@ -2,44 +2,82 @@ import "regenerator-runtime/runtime"
 
 import alertas from '@/assets/repositoriosjs/alertas.js';
 import Service from "@/services/SessionStorage";
+import router from '@/router/index'
 
+const alerts =alertas();
+
+const filtraerror=(error)=>{
+    let respuesta = JSON.parse(JSON.stringify(error))
+    let datos={code:401};
+    respuesta.data=datos;
+     if(respuesta.message=='Request failed with status code 401'){return respuesta;}
+    if(respuesta.message=='Request failed with status code 500'){ respuesta.data.code=500; return respuesta;}
+
+}
+const verifyresponse=(result)=>{
+    
+    return    result.code==200?successprofile(result.data)
+              :result.data.code==403?denegado2()
+              :result.data.code==401?credentialinvalid2()
+              :error500();
+                  }
 const valida=(result)=>{
- let alert= alertas();
  
  return    result.code==200?success(result.data)
-           :result.data.code==403?denegado(alert)
-           :result.data.code==401?credentialinvalid(alert)
-           :error500(alert);
+           :result.data.code==403?denegado()
+           :result.data.code==401?credentialinvalid()
+           :error500();
                }
 const validarol=(result)=>{
-                let alert= alertas();
            return    result.code==200?result.code
-                     :result.data.code==403?denegado(alert)
-                     :result.data.code==401?credentialinvalid(alert)
-                     :error500(alert); }
+                     :result.code==401?sinroles()
+                     :result.data.code==403?denegado()
+                     :result.data.code==401?credentialinvalid()
+                     :error500(); }
 
-        function pendiente(alert){
-           alert.pending();
+        function pendiente(){
+           alerts.pending();
           }
       function success(result){
-         return result;
+        return result;
        }
-      function denegado(alert){
-           alert.denegado();
+
+       function successprofile(result){
+        alerts.perfilactualizado();
+        return result;
        }
-      function sinroles(alert){
-           alert.sinroles();
-           return false;
+      function denegado2(){
+        router.push({ path: '/login' })
+           alerts.denegado();
        }
-      function credentialinvalid(alert){
-           alert.invalid();
+       function denegado(){
+        alerts.denegado();
+    }
+      function sinroles(){
+           alerts.sinroles();
+           router.push({ path: '/login' })
+        }
+      function credentialinvalid(){
+           alerts.invalid();
        }
-      function error500(alert){
-           alert.errorservidor();
+       function credentialinvalid2(){
+        alerts.invalid();
+        router.push({ path: '/login' })
+
+    }
+  
+    function sucessfotoperfil (){
+        alerts.imagenupload();
+    }
+      function error500(){
+           alerts.errorservidor();
        }
        export default ()=> ({
          valida,
-         validarol
+         validarol,
+         filtraerror,
+         verifyresponse,
+         sucessfotoperfil
     
        
     });
