@@ -18,6 +18,8 @@
           </CBadge>
         </td>
       </template>
+
+
       <template #show_details="{item, index}">
         <td class="py-2">
           <CButton

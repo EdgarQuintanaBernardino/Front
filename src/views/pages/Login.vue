@@ -143,8 +143,10 @@ export default {
         result.user.photo == null ||result.user.photo == ""?'':result.user.photo = self.$prefijoamazon + result.user.photo;
         self.$store.commit("setUserAction", result)
         self.$store.commit('set','fotouser',result.user.photo);
-        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
+        self.$store.commit('setmetodo',result.sistema.metodo==2?true:false);
+
         service.logininicial(result);
+        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
         }else{self.sinroles(alert)}      
         },

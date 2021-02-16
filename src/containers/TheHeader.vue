@@ -26,11 +26,11 @@
 
       </CHeaderNavItem>
        <CHeaderNavItem class="px-3">
-        <selectcustom :selectexample='selectexample' :optionsroles='optionsroles' :show="show" v-on:change-Role="changeRole" v-if="false"></selectcustom>
+        <selectcustom :selectexample='selectexample' :optionsroles='optionsroles' :show="show" v-on:change-Role="changeRole" v-if="true"></selectcustom>
 
       </CHeaderNavItem>
         <CHeaderNavItem class="px-3">
-        <selectcustom :selectexample="metodo" :optionsroles='optionsmetodos' :show="show" v-on:change-Role="changemetodo" v-if="false"></selectcustom>
+        <selectcustom :selectexample="metodo" :optionsroles='optionsmetodos' :show="show" v-on:change-Role="changemetodo" v-if="true"></selectcustom>
 
       </CHeaderNavItem>
       <CHeaderNavItem class="px-3">
@@ -88,7 +88,7 @@ export default {
       roleactive: false,
       selectexample:'',
       optionsroles:[],
-      metodo:2,
+      metodo:0,
       show:false,
       api:true,
       optionsmetodos:[]
@@ -98,6 +98,8 @@ export default {
     changemetodo(option){
      this.cargando(true);
      localStorage.setItem("metodo", option)
+     let enviar=option==2?true:false;
+     this.$store.commit('setmetodo',enviar);
      this.cargando(false);
       },
     succesmenutop(){

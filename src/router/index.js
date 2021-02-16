@@ -135,6 +135,8 @@ const Media = () => import('@/views/media/Media')
 const profile = () => import('@/views/users/Profile')
 const settings = () => import('@/views/users/Settings')
 const users_users = () => import('@/views/users/user_user')
+const empresas = () => import('@/views/empresas/empresas')
+
 
 Vue.use(Router)
 
@@ -192,6 +194,11 @@ function configRoutes () {
           path: '/contactos',
           name: 'Contactos',
           component: users_users
+        },
+        {
+          path: '/empresas',
+          name: 'Empresas',
+          component: empresas
         },
         {
           path: 'media',

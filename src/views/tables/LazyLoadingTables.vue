@@ -95,8 +95,8 @@ export default {
     return {
       lazyTableFields: ['author', 'title', 'content', 'applies_to_date', 'status', 'note_type'],
       items: [],
-      activePage: 1,
-      maxPages: 1,
+      activePage: 4,
+      maxPages: 4,
       sorter: {column: '', asc: false},
       tableFilter: '',
       columnFilter: {},
@@ -106,6 +106,7 @@ export default {
   },
   watch: {
     activePage(){
+
       this.getNotes();
     },
   	sorter: {
@@ -115,14 +116,18 @@ export default {
       deep: true
     },
     tableFilter(){
+      console.log(this.tableFilter)
       this.getNotes();
     },
     columnFilter(){
+
+      console.log(this.columnFilter)
       this.getNotes();
     }
   },
   methods: {
     changeItemsLimit( val ){
+
       this.itemsLimit = val;
       this.getNotes();
     },
@@ -142,6 +147,7 @@ export default {
         self.items = self.items.concat(response.data.data);
         self.maxPages = response.data.last_page;
         self.loading = false
+        console.log(response)
       }).catch(function (error) {
         self.loading = false
         console.log(error);
@@ -152,7 +158,7 @@ export default {
     },
   }, 
   mounted: function(){
-    this.getNotes();
+  this.getNotes();
   },
 }
 </script>

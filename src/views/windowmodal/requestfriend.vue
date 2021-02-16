@@ -4,7 +4,6 @@
       id="modal-prevent-request"
       ref="modal-request"
       @show="eventdetected"
-      @hidden="resetModal"
       size="xl"
       hide-footer
     >
@@ -126,7 +125,6 @@
                 label-cols-md="auto"
                 class="mb-0"
                 label-size="sm"
-                :description="searchDesc"
                 :disabled="disabled"
               >
                 <b-form-input
@@ -197,27 +195,28 @@ Desbloquea Usuario</b-button>
 </template>
 <script>
 import "regenerator-runtime/runtime";
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
-import MaskedInput from "vue-text-mask";
 import Swal from "sweetalert2";
 import repoupdateuser from "@/assets/repositoriosjs/repoupdateprofileuser.js";
-import localstorage from "@/services/SessionStorage.js";
 import RingLoader from "vue-spinner/src/RingLoader.vue";
 import { required, minLength, email } from "vuelidate/lib/validators";
-import Service from "@/services/SessionStorage";
+import alertas from '@/assets/repositoriosjs/alertas.js';
 
-const btnenv = "";
 export default {
-  name: "edituser",
+  name: "requestfriend",
   data() {
     return {
               mainProps: { blank: true, blankColor: '#777', width: 55, height: 55, class: 'm1' },
-
+yourusers:[],
        options:[],
-              optionsu:[],
+     optionsu:[],//users bloqueados
       completeu:[],
        complete:[],
        deleteusers:[],
+       userencontrado:[],
+       usersmebloquearon:[],
+       requestsend:[],///soli send
+       requestin:[], //soli in
+
 search:"",
 searchu:"",
       btnpassword:false,
@@ -245,7 +244,7 @@ searchu:"",
     };
   },
   methods: {
-      restaurauser(item){
+        restaurauser(item){
             Swal.fire({
         title: "¿Desbloquear?",
         text: "¿Deseas desbloquear al usuario '" + item.name + "' ?",
@@ -261,559 +260,121 @@ searchu:"",
       });
       },
       async restoreuser(item){
+        let alert=alertas();
          this.animationall = true;
-
       this.btnadios = true;
       this.update = false;
       let dao = repoupdateuser();
-     // let service=Service();
-      try {
-
+          try {
         await dao
           .unlockuser(item)
           .then((res) => {
-
-
-            if (res.message) {
-              this.$router.push(`/pages/login`);
-              Swal.fire("Error!", "Acceso No Autorizado", "error");
-            }
-            if (res.code == 200) {
-
-               let listadelete=res.delete;///localstorage deletes getonlyusers
-               let listamyusers=res.data;///localstorage deletes
-
-          this.$emit("itemsusers",listamyusers);
-          this.$emit("deletesusers",listadelete);
-
-
-
-              Swal.fire(
-                "Desbloqueado!",
-                "El usuario se ha Desbloqueado Con Éxito.",
-                "success"
-              );
-                setTimeout(() => {
+            this.$parent.usersdelete=this.$parent.usersdelete.filter((e)=>e.id!=item.id);
+            
+             alert.userdesbloqueado();
+              setTimeout(() => {
               this.hideModal();
-            }, 500);
-            }
+            }, 500);         
           })
           .catch((eror) => {
-            Swal.fire("Error!", "Ocurrio un Error vuelve a intentar", "error");
+            alert.errorgenerico();
             console.log(eror.message);
           });
       } catch (error) {
         console.log(error.message);
       } finally {
       this.animationall = false;
-        //this.$forceUpdate();
         this.update = true;
         this.btnadios = false;
       }
       },
- onOptionClick({ option, addTag }) {
-        addTag(option)
-        this.search = ''
-      },
-     async empresasall(){
-
-       try{
-       let  repoitems=repoupdateuser();
-   await repoitems.allempresas().then((res) => {
-                if (res.message) {
-            this.$router.push(`/pages/login`);
-          }
-          if (res.code == 200) {
-            this.complete=res.data.map((f)=>{return {id:f.id,text:f.nombre}; });
-           /// this.$store.commit('setcuentas',res)
-          this.options = res.data.map((f) => {
-
-          return f.nombre;
-        });
-          }
-        });
-       }catch(error){
-         console.log(error);
-       }
-     },
-    async empresacreate() {
-      let checa=this.form.email;
-
-      let verify=this.$store.getters.getusersdelete.filter((f)=>f.email==checa);
-      if(verify.length>0){
-           Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email se encuentra en tus usuarios BORRADOS,¿Deseas Restaurarlo?`,
-          icon: "error",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Restauralo!",
-      }).then((result) => {
-        if (result.value) {
-          this.show = true;
-          this.restoreuser(verify[0]);
-        }
-      });
-this.form.email="";
-
-                return false;
-
-      }
-   verify=this.$store.getters.getonlyusers.filter((f)=>f.email==checa);
-      if(verify.length>0){
-           Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email se encuentra en tus usuarios ACTIVOS`,
-          icon: "error",
-                  });
-this.form.email="";
-
-                return false;
-
-      }
-     this.animationall = true;
-
-      this.btnadios = true;
-      this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-      let ids=[];
-      let idempresa= this.form.empresas.forEach(element => {
-              this.complete.forEach(element2=>{
-              if(element===element2.text){
-                            ids.push(element2.id);
-                          }
-                    });
-
-      });
-
-      this.form.empresas=ids;
-      try {
-        const repo = repoupdateuser();
-
-        await repo.adduser(this.form).then((res) => {
-          //this.resetModal();
-            if (res.message=="Request failed with status code 422") {
-          Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email ya INGRESADO`,
-          icon: "error",
-                  });
-                      return false;
-          }
-          if(res.message){
-    this.$router.push(`/pages/login`);
-             Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Acceso Denegado`,
-          icon: "error",
-        });
-          }
-        if (res.code == 200) {
-
-          this.$emit("itemsusers", res.data);
-          //
-
-          Swal.fire({
-            title: "Usuario",
-            text: `Usario Agregado con éxito`,
-            icon: "success",
-          }).then((res) => {
-            setTimeout(() => {
-              this.hideModal();
-            }, 500);
-          });
-        }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo Agregar el usuario",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.animationall = false;
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
-    },
-    async empresaupdate() {
-      this.animationall = true;
-
-      this.btnadios = true;
-      this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-let ids=[];
-      let idempresa= this.form.empresas.forEach(element => {
-              this.complete.forEach(element2=>{
-              if(element===element2.text){
-                            ids.push(element2.id);
-                          }
-                    });
-
-      });
-
-      this.form.empresas=ids;
-      try {
-        const repo = repoupdateuser();
-
-        await repo.updateuseradmin(this.form).then((res) => {
-          //this.resetModal();
-
-              if (res.message) {
-            this.$router.push(`/pages/login`);
-             Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `Acceso Denegado`,
-          icon: "error",
-        });
-          }
-        if (res.code == 200) {
-
-          this.$emit("itemsusers", res.data);
-          //
-
-          Swal.fire({
-            title: "Usuario",
-            text: `Usario editado con éxito`,
-            icon: "success",
-          }).then((res) => {
-            setTimeout(() => {
-              this.hideModal();
-            }, 1000);
-          });
-        }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.animationall = false;
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
-    },
-    async resetpassword() {
-      Swal.fire({
-        title: "¿Reset Password?",
-        text:
-          "¿Deseas Resetear el password de '" +
-          this.$store.state.useredit.name +
-          "'?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Resetealo!",
-      }).then((result) => {
-        if (result.value) {
-          this.show = true;
-          this.resetpasswordnow();
-        }
-      });
-    },
-    async resetpasswordnow() {
-      this.animationall = true;
-
-      this.btnadios = true;
-      this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-
-      try {
-        const repo = repoupdateuser();
-
-        await repo.resetpassword(this.form).then((res) => {
-          // this.resetModal();
-          if (res.message) {
-            this.$router.push(`/pages/login`);
-             Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `Acceso Denegado`,
-          icon: "error",
-        });
-          }
-        if (res.code == 200) {
-          this.$emit("itemsusers", res.data);
-
-          Swal.fire({
-            title: "Usuario",
-            text: `Usario editado con éxito`,
-            icon: "success",
-          });
-        }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.animationall = false;
-        //  this.hideModal();
-
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
-    },
-    async eventdetected() {
-      this.optionsu=this.$parent.deletesusers;
-
-///console.log(this.$parent.deletesusers);
-      this.updateModaledit();
-    },
-    updateModaledit() {
-      try {
-        this.form.id ="";
-        this.form.name = "";
-        this.form.email = "";
-
-      } catch (error) {
-        console.log(error);
-      } finally {
-        this.animationall = false;
-      }
-    },
-    resetModal() {
-      (this.form.id = ""),
-        (this.form.email = ""),
-        (this.form.name = ""),
-        (this.form.fechanacimiento = ""),
-        (this.form.telefono = ""),
-        (this.form.rfc = ""),
-        (this.form.photo = ""),
-        (this.form.cp = ""),
-        (this.form.calle = ""),
-        (this.form.colonia = ""),
-        (this.form.municipio = ""),
-        (this.form.estado = ""),
-        (this.form.numero_int = ""),
-        (this.form.numero_ext = ""),
-        (this.form.referencias = ""),
-        (this.form.nickname = ""),
-        (this.animationall = false);
-        this.form.empresas=[];
-    },
-    hideModal() {
+     async eventdetected() {
+       
+      this.optionsu=this.$parent.usersdelete;///usuarios bloqueados la lista
+      this.usersmebloquearon=this.$parent.usersmebloquearon;
+    //  this.yourusers=this.$parent.$parent.items;
+      this.requestsend = this.$parent.requestsend;
+       this.requestin = this.$parent.requestin;
+      this.animationall=false;
+      this.resetModal();
+},
+        hideModal() {
       this.$refs["modal-request"].hide();
     },
-    async buscarcp() {
-      if (this.form.cp.length != 5) {
-        return false;
-      }
-      const repo = repoupdateuser();
-      try {
-        this.cprofile = true;
-        let cp = this.form.cp;
-        let resultadosepomex = await repo.consultasepomex(cp); //consulta
-        let estadosin = repo.resultestados(resultadosepomex); //return estados
-        this.estados = estadosin; //seteamos estados array
-        if (this.form.estado == "" || this.form.estado == null) {
-          this.form.estado = estadosin[0]; ///damos un valor por defecto
-        }
-        let municipiosin = repo.resultmunicipios(resultadosepomex);
-        this.municipios = municipiosin;
-        if (this.form.municipio == "" || this.form.municipio == null) {
-          this.form.municipio = municipiosin[0];
-        }
-
-        this.colonias = repo.resultcolonias(resultadosepomex);
-        if (this.form.colonia == "" || this.form.colonia == null) {
-          this.form.colonia = this.colonias[0];
-        }
-      } catch (error) {
-        this.colonias = [];
-        this.form.colonia = null;
-        this.estados = [];
-        this.form.estado = null;
-        this.municipios = null;
-        this.form.municipio = null;
-        this.errormesg =
-          "código postal inválido y/o no encontrado, Intente nuevamente";
-      } finally {
-        this.cprofile = false;
-      }
-    },
-
-    actualizar() {
-      this.update = !this.update;
-      if (this.msj == "Actualiza tus datos") {
-        this.msj = "Comienza ahora";
-      } else {
-        this.msj = "Actualiza tus datos";
-
-        /// this.form.name = user.name;
-        // this.form.email = user.email;
-        //this.form.fechanacimiento = user.fecNac;
-        /// this.form.telefono = user.telefono;
-        ///  this.form.rfc = user.rfc;
-        //  this.form.direccion = user.direccion;
-
-        //  Swal.fire({
-        //  title: "Perfil",
-        //  text: `No se realizo ningun cambio`,
-        //   icon: "success",
-        // });
-      }
-    },
-    async updateuser(form) {
-      if (this.$v.$invalid) {
-        return false;
-      }
-
+   async updateuser(form) {
+      let alert=alertas();
+      if (this.$v.$invalid){return false;}
       this.animationall = true;
-
-
-let youremail=this.CryptoJS.AES.decrypt(this.$store.getters.getuser.email,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8)
-
-
-if(this.form.email==youremail){
-        this.animationall = false;
-
- Swal.fire({
-            title: "Error",
-            text: `El correo electrónico ingresado es el TUYO`,
-            icon: "warning",
-          });
-          this.form.email="";
-          this.form.name="";
-          return false;
-}
-
-      const repo = repoupdateuser();
-    //  const storage = localstorage();
-      try {
-
-
-
-let yourusers=[];
-let yourdeletes=[];
-               yourusers=this.$parent.items;
-
-               yourdeletes=this.$parent.deletesusers;
-
-let encuentra=[];
-        encuentra=yourusers.filter(f=>f.email==this.form.email);
-
-       if(encuentra.length>=1){
- Swal.fire({
-            title: "Error",
-            text: `El correo electrónico ingresado ya se encuentra en tu lista de amigos`,
-            icon: "warning",
-          });
-          this.form.email="";
-          this.form.name="";
-          return false;
-
-       }
-    encuentra=yourdeletes.filter(f=>f.email==this.form.email);
-  if(encuentra.length>=1){
- Swal.fire({
-            title: "Error",
-            text: `El correo electrónico ingresado ya se encuentra en tu lista de Bloqueados`,
-            icon: "warning",  showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Restauralo!",
-      }).then((result) => {
-        if (result.value) {
-          this.show = true;
-             this.form.email="";
-          this.form.name="";
-          this.restoreuser(encuentra[0]);
-        }
-      });
-return false;
-
-       }
-
-
-
-           this.form.key=this.$store.getters.gettoken;
+if(this.form.email==this.$store.state.usuario.email){
+         alert.yourmail();
+         this.resetModal();
+         return false;
+}     
+ const repo = repoupdateuser();
+      try {   
+ if(this.encuentra(this.usersmebloquearon)||
+ this.encuentra(this.yourusers)||
+ this.encuentra(this.requestin)||
+ this.encuentra(this.optionsu)||
+ this.encuentra(this.requestsend)){
+this.encuentra(this.usersmebloquearon)?alert.listanegra():'';
+this.encuentra(this.yourusers)?alert.listaamigos():'';
+this.encuentra(this.requestin)?alert.solicitudrecibida():'';
+this.encuentra(this.requestsend)?alert.solicitudenviada():'';
+this.encuentra(this.optionsu)?this.desbloquealo():'';
+  this.resetModal();
+  return false;
+  
+  }
+      this.form.key=this.$store.state.token;
         await repo.sendorsolicita(form).then((res) => {
-
-
-
-       //  storage.setUser(res);
-        //  this.$store.commit("setUsersStoremut", res);
-
-           this.form.email="";
-          this.form.name="";
-                  console.log(res);
-
-   if (res.message) {
-              this.$router.push(`/pages/login`);
-              Swal.fire("Error!", "Acceso No Autorizado", "error");
-            }
-
-
-            if(res.code ==403){
-
-    Swal.fire({
-          title: "Invitación",
-          text: `Acceso Denegado Para Enviar Solicitud a Este Usuario`,
-          icon: "error",
-        });
-
-            }
-            if (res.code == 200) {
-          this.$emit("itemsusers",res.data);
-          this.$emit("deletesusers",res.delete);
-          this.$emit("requestin",res.requestin);
-          this.$emit("requestsend",res.requestsend);
-         this.hideModal();
-
-          Swal.fire({
-            title: "Invitación",
-            text: `Usuario ha sido Invitado con éxito`,
-            icon: "success",
-
-          });
-            }
-            if(res.code==195){
-    Swal.fire({
-          title: "Invitación",
-          text: `A este email, ya se envió una invitación`,
-          icon: "error", });
-
-
-            }
-                 if(res.code==196){
-    Swal.fire({
-          title: "Invitación",
-          text: `De este email tienes una invitación Activa`,
-          icon: "error", });
-
-
-            }
-
+            this.resetModal();   
         });
       } catch (error) {
         console.log(error);
-        Swal.fire({
-          title: "Invitación",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+          alert.errorgenerico();
       } finally {
         this.animationall = false;
       }
-    },
+ 
+     
+  },
+  desbloquealo(){
+Swal.fire({
+            title: "Pregunta",
+            text: `El correo electrónico ingresado ya se encuentra en tu lista de Bloqueados,¿Quiere desbloquearlo?`,
+            icon: "question",  showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Si, Desbloquealo!",
+      }).then((result) => {
+          this.resetModal();
+        if (result.value) {
+          this.show = true;
+          this.restoreuser(this.userencontrado);
+        }else{
+
+        }
+             });
+  },
+  encuentra(arrayin){
+
+    if(Object.keys(arrayin).length === 0 ){
+    return false;
+  }
+    let encuentra=[];
+    let respuesta=false;
+  encuentra=arrayin.filter(f=>f.email==this.form.email);
+  encuentra.length>=1?respuesta=true:respuesta=false;
+  respuesta?this.userencontrado=encuentra[0]:'';
+         return respuesta;
+  },
+  
+   resetModal(){
+   this.form.email="";
+   this.form.name="";
+    this.animationall = false;
+   },
   },
   validations: {
     form: {
@@ -851,93 +412,10 @@ return false;
         }
         return ''
       },
-      criteria() {
-        // Compute the search criteria
-        return this.search.trim().toLowerCase()
-      },
-      availableOptions() {
-        const criteria = this.criteria
-        // Filter out already selected options
-        const options = this.options.filter(opt => this.form.empresas.indexOf(opt) === -1)
-        if (criteria) {
-          // Show only options that match criteria
-          return options.filter(opt => opt.toLowerCase().indexOf(criteria) > -1);
-        }
-        // Show all options available
-        return options
-      },
-      searchDesc() {
-        if (this.criteria && this.availableOptions.length === 0) {
-          return 'Ninguna empresa coincide con la busqueda'
-        }
-        return ''
-      },
-    regresaempresaedit() {
-      return this.$store.state.useredit;
-    },
-    validacp() {
-      if (this.form.cp == null) {
-        return true;
-      } else {
-        if (this.form.cp.length == 5) {
-          this.buscarcp();
-          return false;
-        } else {
-          return true;
-        }
-      }
-    },
-
-    validaname() {
-      if (this.$v.form.name.$invalid) {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    validaemail() {
-      if (this.$v.form.email.$invalid) {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    validafon() {
-      let conteo = 0;
-      if (this.$v.form.telefono.$model == "" ||this.$v.form.telefono.$model == null) {
-      } else {
-        conteo = this.$v.form.telefono.$model.split("#").length;
-      }
-      if (conteo != 1) {
-        return false;
-      } else {
-        if (this.$v.form.telefono.$model.length == 0) {
-          return false;
-        } else {
-          return true;
-        }
-      }
-    },
-    activabtn() {
-      //si regresa true se oculta
-
-      if (!this.$v.$invalid) {
-        ///formulario valido
-        if (this.validafon) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    },
+     
   },
-  mounted: function () {
-   // this.empresasall();
-  },
+ 
   components: {
-    MaskedInput,
     RingLoader,
   },
 };

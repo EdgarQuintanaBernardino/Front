@@ -14,6 +14,24 @@ const filtraerror=(error)=>{
     if(respuesta.message=='Request failed with status code 500'){ respuesta.data.code=500; return respuesta;}
 
 }
+const verifyrequesttables=(result)=>{
+    
+    return    result.status==200?success(result.data)
+    :result.data.code==403?denegado2()
+    :result.data.code==401?credentialinvalid2()
+    :error500();
+                  }
+const verifyrequest=(result)=>{
+    
+    return    result.code==200?successrequest(result.data)
+              :result.code==195?solicitudyaenviada()
+              :result.code==196?solicitudyarecibida()
+              :result.code==197?userbloqueadoporti()
+              :result.code==403?listanegra2()
+              :result.code==408?yourusers()
+
+              :error500();
+                  }
 const verifyresponse=(result)=>{
     
     return    result.code==200?successprofile(result.data)
@@ -28,10 +46,26 @@ const valida=(result)=>{
            :result.data.code==401?credentialinvalid()
            :error500();
                }
+               const validafriends=(result)=>{
+                   
+ 
+                return    result.code==200?success(result)
+                          :result.data.code==403?denegado()
+                          :result.data.code==401?credentialinvalid()
+                          :error500();
+                              }
+                              const validafriendslock=(result)=>{
+                   
+ 
+                                return    result.data.code==200?success(result)
+                                          :result.data.code==403?denegado()
+                                          :result.data.code==401?credentialinvalid()
+                                          :error500();
+                                              }
 const validarol=(result)=>{
            return    result.code==200?result.code
                      :result.code==401?sinroles()
-                     :result.data.code==403?denegado()
+                     :result.data.code==403?denegado2()
                      :result.data.code==401?credentialinvalid()
                      :error500(); }
 
@@ -41,7 +75,33 @@ const validarol=(result)=>{
       function success(result){
         return result;
        }
+        function solicitudyaenviada(){
+            alerts.solicitudenviada();
+            return false;
+       }
+       function yourusers(){
+        alerts.listaamigos();
+        return false;
+   }
+       function solicitudyarecibida(){
 
+        alerts.solicitudrecibida();
+        return false;
+       }
+       function userbloqueadoporti(){
+                    alerts.yourlock();
+                    return false;
+        
+       }
+       function listanegra2(){
+        alerts.listanegra();
+        return false;
+
+}
+function successrequest(result){
+    alerts.solicitudenviadaok();
+    return result;
+}
        function successprofile(result){
         alerts.perfilactualizado();
         return result;
@@ -59,6 +119,8 @@ const validarol=(result)=>{
         }
       function credentialinvalid(){
            alerts.invalid();
+           router.push({ path: '/login' })
+
        }
        function credentialinvalid2(){
         alerts.invalid();
@@ -71,13 +133,17 @@ const validarol=(result)=>{
     }
       function error500(){
            alerts.errorservidor();
+           
        }
        export default ()=> ({
+        verifyrequesttables,
+        verifyrequest,
          valida,
          validarol,
          filtraerror,
          verifyresponse,
          sucessfotoperfil
+         ,validafriends,validafriendslock
     
        
     });

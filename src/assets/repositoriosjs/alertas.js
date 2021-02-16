@@ -107,6 +107,139 @@ const denegado= async ()=>{
       router.push({ path: '/login' })
 
     }
+    const bloqueado=async()=>{
+      let mensaje={
+        tittle:'"Bloqueado',
+        text:'"El usuario se ha Bloqueado Con Éxito.',
+        icon:'success'
+    };
+     response(mensaje);
+    
+
+    }
+const solicitudaceptada=async()=>{
+  let mensaje={
+    tittle:'"Aceptada!',
+    text:'Solicitud Aceptada con éxito',
+    icon:'success'
+};
+ response(mensaje);
+
+}
+const requestcancelada=async()=>{
+  let mensaje={
+    tittle:'"Cancelada!',
+    text:'Solicitud Cancelada con éxito',
+    icon:'success'
+};
+ response(mensaje);
+
+}
+
+const solicitudrechazada=async()=>{
+  let mensaje={
+    tittle:'"Rechazada!',
+    text:'Solicitud rechazada con éxito',
+    icon:'success'
+};
+
+ response(mensaje);
+
+}
+const solicitudenviadaok=async()=>{
+  let mensaje={
+    tittle:'"Enviada!',
+    text:'Solicitud enviada con éxito',
+    icon:'success'
+};
+
+ response(mensaje);
+
+}
+
+const yourlock=async()=>{
+  let mensaje={
+    tittle:'"Error!',
+    text:'No puedes enviar solicitud a este usuario,esta en tu lista de usuarios bloqueados',
+    icon:'error'
+};
+response(mensaje);
+
+}
+const listanegra=async()=>{
+  let mensaje={
+    tittle:'"Error!',
+    text:'No puedes enviar solicitud a este usuario,Acceso Denegado',
+    icon:'error'
+};
+response(mensaje);
+
+}
+const solicitudenviada=async()=>{
+  let mensaje={
+    tittle:'"Error!',
+    text:'Ya enviaste una solicitud a este usuario',
+    icon:'error'
+};
+response(mensaje);
+
+}
+const solicitudrecibida=async()=>{
+  let mensaje={
+    tittle:'"Error!',
+    text:'Ya tienes una solicitud de este usuario',
+    icon:'error'
+};
+response(mensaje);
+
+}
+
+const errorgenerico=async()=>{
+  let mensaje={
+    tittle:'"Error!',
+    text:'Ocurrio un Error vuelve a intentar',
+    icon:'error'
+};
+response(mensaje);
+
+}
+const yourmail=async()=>{
+  let mensaje={
+    tittle:'Error!',
+    text:'El correo electrónico ingresado es el TUYO',
+    icon:'error'
+};
+response(mensaje);
+
+}
+
+
+const userdesbloqueado=async()=>{
+  let mensaje={
+    tittle:'Desbloqueado!',
+    text:'Usuario desbloqueado con éxito',
+    icon:'success'
+};
+response(mensaje);
+
+}
+const listaamigos=async()=>{
+  let mensaje={
+    tittle:'Error!',
+    text:'El correo electrónico ingresado ya se encuentra en tu lista de amigos',
+    icon:'question'
+};
+response(mensaje);
+
+}
+ const bloquearusuario=async(item)=>{
+ 
+
+
+}
+
+
+
       const response=async(response)=>{
            return Swal.fire({
             title: response.tittle,
@@ -137,11 +270,22 @@ const denegado= async ()=>{
       
       }
 export default ()=> ({
+  yourlock,
+  solicitudenviadaok,
+  solicitudrecibida,
+  solicitudenviada,
+  listanegra,
+  userdesbloqueado,
+  listaamigos,
+  yourmail,
+  requestcancelada,
+  bloquearusuario,
+  errorgenerico,
     denegado,
     invalid,
     sinroles,
     errorservidor,
-    pending,perfilactualizado,imagenupload,errortoken,imagenotvalid,errorcp,successpass,intentos
+    pending,perfilactualizado,imagenupload,errortoken,imagenotvalid,errorcp,successpass,intentos,solicitudaceptada,solicitudrechazada,bloqueado
     
    
 });

@@ -11,11 +11,15 @@ const state = {
   usuario:null,
   token:null,
   cargatop:false,
-  fotouser:null
+  fotouser:null,
+  metodo:'',
 
 }
 
 const mutations = {
+  setmetodo(state,payload){
+    state.metodo=payload;
+  },
   setfoto(state,payload){
     state.usuario.photo=payload;
   },
@@ -75,7 +79,9 @@ const getters={
   getroleactive(state){return state.user.menuroles},
   gettoken(state){ return  state.token;},
   getcargamenutop(state){ return  state.cargatop;},
-  getphoto(state){ return  state.usuario.photo;}
+  getphoto(state){ return  state.usuario.photo;},
+  getmetodo(state){ return  state.metodo;}
+
 
 
 

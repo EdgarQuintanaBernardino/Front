@@ -61,7 +61,7 @@ let deletepago=`${server}/user/deletepago`;
 let restoreuser=`${server}/user/restore`;
 let userscambia=`${server}/user/onlyupdate`;
 let allusers=`${server}/user/alllist`;
-let allonluusers=`${server}/user/allusers`;///solo tus amigos
+let allonluusers=`${server}/user/allusersonlypost`;///solo tus amigos
 
 let sendorrequest=`${server}/user/createorrequest`;///solo tus amigos
 let lockuserapi=`${server}/user/lockuser`;///solo tus amigos
@@ -89,10 +89,34 @@ let createpermisoscuentaapi=`${server}/empresa/deletesharedcompanies`;
 
 let sharedcuentasapi=`${server}/cuenta/sharedcuentas`;
 let deletecuentasharedapi=`${server}/cuenta/deletecuentashared`;
+let yourrequestapi=`${server}/user/yourrequest`;
+let invitaramigoapi=`${server}/user/allusers`;
+let yourusersbackapi=`${server}/user/interfaceuser`;
+
+
 
 const response=respuestas();
 const alerts=alertas();
 
+
+
+const yourrequest = async (request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(yourrequestapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+      //
+      return response.filtraerror(error);
+    });
+    return result;
+
+
+}
 const update = async (request) => {
 
     let tokenin = store.getters.gettoken;
@@ -754,13 +778,28 @@ const sendorsolicita =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(sendorrequest, request, configin).then((res) => {
-      return res.data;
+    return response.verifyrequest(res.data)
   }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
+    return response.filtraerror(error);
   });
   return result;
 }
+const yourusersback =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(yourusersbackapi, request, configin).then((res) => {
+      return response.verifyrequesttables(res)
+    // return res;
+    }).catch((error) => {
+      return response.filtraerror(error);
+    });
+    return result;
+  }
 
 const lockuser =async (request) => {
 
@@ -771,11 +810,10 @@ const lockuser =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(lockuserapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
+      return response.validafriendslock(res)
+      }).catch((error) => {
+    return response.filtraerror(error);
+       });
   return result;
 }
 
@@ -789,10 +827,9 @@ const unlockuser =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(unlockuserapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
+    return response.validafriends(res)
+}).catch((error) => {
+  return response.filtraerror(error);
   });
   return result;
 }
@@ -806,12 +843,11 @@ const cancelrequest =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(cancelrequestapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
+    return response.validafriends(res)
+}).catch((error) => {
+  return response.filtraerror(error);
+});
+return result;
 }
 const cancelrequestin =async (request) => {
 
@@ -822,10 +858,10 @@ const cancelrequestin =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(cancelrequestinapi, request, configin).then((res) => {
-      return res.data;
+    return response.validafriends(res)
   }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
+    return response.filtraerror(error);
+   
   });
   return result;
 }
@@ -838,11 +874,10 @@ const aceptrequest =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(aceptrequestapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
+    return response.validafriends(res)
+}).catch((error) => {
+      return response.filtraerror(error);
+    });
   return result;
 }
 const lockuserrequest =async (request) => {
@@ -854,13 +889,27 @@ const lockuserrequest =async (request) => {
       headers: { Authorization: `Bearer ${tokenin}` }
   };
   let result = await Axios.post(lockuserrequestapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
+    return response.validafriends(res.data)
+}).catch((error) => {
+      return response.filtraerror(error);
+    });
   return result;
 }
+const invitaramigo =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(invitaramigoapi, request, configin).then((res) => {
+      return response.validafriends(res.data)
+  }).catch((error) => {
+        return response.filtraerror(error);
+      });
+    return result;
+  }
 
 const getempresas =async (request) => {
 
@@ -1072,6 +1121,9 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    yourusersback,
+    invitaramigo,
+    yourrequest,
     deletefotogaleriashared,
     destroyproductshared,
     updateproductoshared,

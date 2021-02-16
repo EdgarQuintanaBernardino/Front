@@ -33,6 +33,8 @@ import {
   cifPl
 } from '@coreui/icons'
 import {
+  cilIndustry,
+
   cilAlignCenter,
   cilAlignLeft,
   cilAlignRight,
@@ -124,6 +126,8 @@ import { logo } from './logo'
 
 
 export const iconsSet = Object.assign({}, { logo }, {
+  cilIndustry,
+
   cilAlignCenter,
   cilAlignLeft,
   cilAlignRight,
