@@ -262,16 +262,13 @@ searchu:"",
       async restoreuser(item){
         let alert=alertas();
          this.animationall = true;
-      this.btnadios = true;
-      this.update = false;
       let dao = repoupdateuser();
           try {
         await dao
           .unlockuser(item)
           .then((res) => {
             this.$parent.usersdelete=this.$parent.usersdelete.filter((e)=>e.id!=item.id);
-            
-             alert.userdesbloqueado();
+              alert.userdesbloqueado();
               setTimeout(() => {
               this.hideModal();
             }, 500);         
@@ -284,9 +281,7 @@ searchu:"",
         console.log(error.message);
       } finally {
       this.animationall = false;
-        this.update = true;
-        this.btnadios = false;
-      }
+           }
       },
      async eventdetected() {
        

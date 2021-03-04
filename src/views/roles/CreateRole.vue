@@ -4,7 +4,7 @@
       <CCard no-header>
         <CCardBody>
           <h3>
-            Create Role
+            Crear  Rol
           </h3>
           <CAlert
             :show.sync="dismissCountDown"
@@ -16,8 +16,8 @@
 
           <CInput label="Name" type="text" placeholder="Name" v-model="role.name"></CInput>
 
-          <CButton color="primary" @click="store()">Create</CButton>
-          <CButton color="primary" @click="goBack">Back</CButton>
+          <CButton color="success" class="mr-2" @click="store()">Crear</CButton>
+          <CButton color="danger" @click="goBack">Regresar</CButton>
         </CCardBody>
       </CCard>
     </CCol>
@@ -42,7 +42,7 @@ export default {
           name: '',
         },
         message: '',
-        dismissSecs: 7,
+        dismissSecs: 1,
         dismissCountDown: 0,
         showDismissibleAlert: false
     }
@@ -54,21 +54,25 @@ export default {
     },
     store() {
         let self = this;
-        axios.post(   this.$apiAdress + '/api/roles?token=' + localStorage.getItem("api_token"),
+        axios.post(   this.$apiAdress + '/api/roles?token=' +  this.$store.getters.gettoken ,
           {
             name: self.role.name,
           }
         )
         .then(function (response) {
+          console.log(response)
             self.note = {
               title: '',
               content: '',
               applies_to_date: '',
               status_id: null,
               note_type: '',
+              
             };
+
             self.message = 'Successfully created role.';
-            self.showAlert();
+            self.showAlert();   
+
         }).catch(function (error) {
             if(error.response.data.message == 'The given data was invalid.'){
               self.message = '';
@@ -83,6 +87,9 @@ export default {
               self.$router.push({ path: 'login' }); 
             }
         });
+              this.goBack();
+
+               
     },
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown
@@ -93,7 +100,7 @@ export default {
   },
   mounted: function(){
     let self = this;
-    axios.get(   this.$apiAdress + '/api/roles/create?token=' + localStorage.getItem("api_token"))
+    axios.get(   this.$apiAdress + '/api/roles/create?token=' +  this.$store.getters.gettoken )
     .then(function (response) {
         self.statuses = response.data;
     }).catch(function (error) {

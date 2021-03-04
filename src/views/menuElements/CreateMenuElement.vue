@@ -156,7 +156,7 @@ export default {
     },
     updateSelectParent(){
         let self = this;
-        axios.get(   this.$apiAdress + '/api/menu/element/get-parents?token=' + localStorage.getItem("api_token") + '&menu=' + self.menuelement.menu
+        axios.get(   this.$apiAdress + '/api/menu/element/get-parents?token=' +  this.$store.getters.gettoken + '&menu=' + self.menuelement.menu
         )
         .then(function (response) {
           self.parents = [{label: 'Has no parent', value: 'none'}]
@@ -171,7 +171,7 @@ export default {
     store() {
         let self = this;
         console.log( self.menuelement )
-        axios.post(   this.$apiAdress + '/api/menu/element/store?token=' + localStorage.getItem("api_token"),
+        axios.post(   this.$apiAdress + '/api/menu/element/store?token=' +  this.$store.getters.gettoken,
           self.menuelement
         )
         .then(function (response) {
@@ -201,7 +201,7 @@ export default {
     },
     getData() {
       let self = this;
-      axios.get(   this.$apiAdress + '/api/menu/element/create?token=' + localStorage.getItem("api_token") + '&id=' + self.$route.params.menu )
+      axios.get(   this.$apiAdress + '/api/menu/element/create?token=' + this.$store.getters.gettoken + '&id=' + self.$route.params.menu )
       .then(function (response) {
         self.role = response.data.roles
         self.menulist = response.data.menulist

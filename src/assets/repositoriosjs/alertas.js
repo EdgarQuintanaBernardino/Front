@@ -13,6 +13,22 @@ const denegado= async ()=>{
             };
             response(mensaje);
       }
+      const useradd= async ()=>{
+        let mensaje={
+            tittle:'Agregado',
+            text:'Usuario agregado con éxito',
+            icon:'success'
+        };
+        response(mensaje);
+  }
+  const passwordsucccess= async ()=>{
+    let mensaje={
+        tittle:'Password',
+        text:'Password reseteado con éxito',
+        icon:'success'
+    };
+    response(mensaje);
+}
      const errorservidor= async ()=>{
         let mensaje={
             tittle:'Servidor',
@@ -213,6 +229,15 @@ response(mensaje);
 
 }
 
+const roleactualizado=async()=>{
+  let mensaje={
+    tittle:'Roles & Permisos',
+    text:'Roles & Permisos Actualizados Con éxito',
+    icon:'success'
+};
+response(mensaje);
+
+}
 
 const userdesbloqueado=async()=>{
   let mensaje={
@@ -270,6 +295,9 @@ response(mensaje);
       
       }
 export default ()=> ({
+  roleactualizado,
+  passwordsucccess,
+  useradd,
   yourlock,
   solicitudenviadaok,
   solicitudrecibida,

@@ -22,12 +22,12 @@
                 <h2>
                   <b-icon icon="person-check-fill" aria-hidden="true" class="mr-3"></b-icon>
 
-               {{this.$store.getters.gettitulomodalusuario}} Usuario
+               {{this.config.titulo}}Usuario
                 </h2>
               </CCardHeader>
               <CCardBody>
                 <b-row>
-                  <b-col cols="12" v-if="this.$store.state.flaguser==0">
+                  <b-col cols="12" v-if="this.config.showdelete">
 <b-form-group >
     <CCardHeader class="mt-3 bg-dark text-white text-center mb-3" >
                   <h3>Usuarios Eliminados</h3>
@@ -340,7 +340,7 @@ Restaura Usuario</b-button>
                       </b-input-group>
                     </b-col>
                     <b-col cols="12" class="mt-3">
-<b-form-group >
+<b-form-group v-if="false" >
     <CCardHeader class="mt-3 bg-danger text-white text-center mb-3" >
                   <h3>Empresa</h3>
                   <span>*Recuerda que al asignar una empresa podra tener acceso a la misma</span>
@@ -397,12 +397,12 @@ Restaura Usuario</b-button>
       </b-form-tags>
     </b-form-group>
                     </b-col>
-                    <b-col cols="12"  class="mt-3" v-if="this.$store.state.flaguser==1">
+                    <b-col cols="12"  class="mt-3" v-if="this.config.showreset">
                       <label class="text-center">
                         <h5>RESETEAR PASSWORD</h5>
                       </label>
                       <b-input-group size="md">
-                        <b-button variant="danger" pill block @click="resetpassword()" v-if="btnpassword">
+                        <b-button variant="danger" pill block @click="resetpassword()" v-if="this.config.showreset">
                           <b-icon
                             icon="exclamation-circle-fill"
                             variant="warning"
@@ -423,9 +423,10 @@ Restaura Usuario</b-button>
                       pill
                       size="lg"
                       variant="outline-success"
-                      :hidden="activabtn||update"
+                                       v-if="this.config.typebtn=='edit'&&!$v.$invalid"
+
                       @click.prevent="updateuser(form)"
-                    >Actualiza tus datos</b-button>
+                    >Actualiza Usuario</b-button>
                   </div>
                   <b-row>
                     <b-col cols="5"></b-col>
@@ -441,8 +442,8 @@ Restaura Usuario</b-button>
                     <b-button
                       block
                       variant="outline-success"
-                      @click.prevent="empresacreate(form)"
-                      v-if="this.$store.state.flaguser==0&&!$v.$invalid"
+                      @click.prevent="empresacreate()"
+                      v-if="this.config.typebtn=='new'&&!$v.$invalid"
                       pill
                     >
                       <h3>
@@ -472,24 +473,34 @@ Restaura Usuario</b-button>
 </template>
 <script>
 import "regenerator-runtime/runtime";
-import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 import MaskedInput from "vue-text-mask";
 import Swal from "sweetalert2";
 import repoupdateuser from"@/assets/repositoriosjs/repoupdateprofileuser.js";
-import localstorage from "@/services/SessionStorage.js";
 import RingLoader from "vue-spinner/src/RingLoader.vue";
 import { required, minLength, email } from "vuelidate/lib/validators";
-import Service from "@/services/SessionStorage";
+import alertas from '@/assets/repositoriosjs/alertas';
 
-const btnenv = "";
 export default {
+  props:['configin'],
   name: "edituser",
+  watch:{
+            configin:function(newval,oldvar){
+                this.config=newval;
+                
+        }
+  },
   data() {
     return {
-              mainProps: { blank: true, blankColor: '#777', width: 55, height: 55, class: 'm1' },
+///
+        config:[],
+        userin:[],
+        itemencontrado:[],
+
+      ///
+     mainProps: { blank: true, blankColor: '#777', width: 55, height: 55, class: 'm1' },
 
        options:[],
-              optionsu:[],
+      optionsu:[],
       completeu:[],
        complete:[],
        deleteusers:[],
@@ -530,12 +541,11 @@ searchu:"",
       loader: true,
       errorcp: false,
       errormesg: "",
+
     };
   },
   methods: {
-      restaurauser(item){
-
-
+  restaurauser(item){
             Swal.fire({
         title: "¿Restaurar?",
         text: "¿Deseas volver a incluir en tu lista de contactos al usuario '" + item.name + "' ?",
@@ -551,135 +561,69 @@ searchu:"",
         }
       });
       },
-      async restoreuser(itemback){
+     async restoreuser(item){
+        let alert=alertas();
          this.animationall = true;
-      this.btnadios = true;
-      this.update = false;
       let dao = repoupdateuser();
-      let service=Service();
-      try {
+          try {
         await dao
-          .cambiabandera(itemback)
+          .unlockuseradmin(item)
           .then((res) => {
-            if (res.message) {
-              this.$router.push(`/pages/login`);
-              Swal.fire("Error!", "Acceso No Autorizado", "error");
-            }
-            if (res.code == 204) {
 
-
-               let listadeleteinicial=this.$store.getters.getusersdelete;///localstorage deletes getonlyusers  /////encriptados
-               let listamyusers=this.$parent.items; //localstorage deletes   ////no encriptados
-                   // console.log(item)////item puro
-             let listadelete= listadeleteinicial;
-
-            let item=[];
-             listadelete.forEach(////lista delete desencriptando solo el id para la comparativa
-                (itemin) =>{itemin.id=parseInt(this.CryptoJS.AES.decrypt(itemin.id.toString(),this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8));
-
-                          if(itemin.id==itemback.id){
-                            item=itemin;
-                            return false;
-                          }
-                }
-              );
-
-
-               let nuevalistadelete=listadelete.filter((itemin) => itemin.id != itemback.id);
-
-
-                 nuevalistadelete.forEach(////lista delete sin el restaurado
-                (itemin) =>itemin.id=this.CryptoJS.AES.encrypt(itemin.id.toString(), this.$store.getters.gettoken).toString()
-
-              );
-
-
-
-                  //  item.id=itemback.id;
-                //item.id=parseInt(this.CryptoJS.AES.decrypt(item.id.toString(),this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8));
-
-                 item.email=this.CryptoJS.AES.decrypt(item.email.toString(),this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-             for(var a=0;a<item.permissions.length;a++){
-            item.permissions[a].id=parseInt(this.CryptoJS.AES.decrypt(item.permissions[a].id,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8));
-            item.permissions[a].descripcion=this.CryptoJS.AES.decrypt(item.permissions[a].descripcion,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.permissions[a].name=this.CryptoJS.AES.decrypt(item.permissions[a].name,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.permissions[a]['pivot']['model_id']=this.CryptoJS.AES.decrypt(  item.permissions[a]['pivot']['model_id'],this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.permissions[a]['pivot']['permission_id']=this.CryptoJS.AES.decrypt(  item.permissions[a]['pivot']['permission_id'],this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8); }
-            for(var b =0;b<item.roles.length;b++){
-            item.roles[b].id=parseInt(this.CryptoJS.AES.decrypt(item.roles[b].id,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8));
-            item.roles[b].name=this.CryptoJS.AES.decrypt(item.roles[b].name,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            for(var a=0;a<item.roles[b].permissions.length;a++){
-            item.roles[b].permissions[a].id=parseInt(this.CryptoJS.AES.decrypt(item.roles[b].permissions[a].id,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8));
-            item.roles[b].permissions[a].descripcion=this.CryptoJS.AES.decrypt(item.roles[b].permissions[a].descripcion,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.roles[b].permissions[a].name=this.CryptoJS.AES.decrypt(item.roles[b].permissions[a].name,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.roles[b].permissions[a]['pivot']['role_id']=this.CryptoJS.AES.decrypt(  item.roles[b].permissions[a]['pivot']['role_id'],this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-            item.roles[b].permissions[a]['pivot']['permission_id']=this.CryptoJS.AES.decrypt( item.roles[b].permissions[a]['pivot']['permission_id'],this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-                  }}
-
-
-               listamyusers.push(item);//// nueva lista de users
-
-          this.$emit("itemsusers",listamyusers);
-
-            this.optionsu=nuevalistadelete;
-           //   this.$store.commit('setonlyusers',listamyusers);
-              this.$store.commit('usersdelete',nuevalistadelete);
-              service.setonlyusersdelete(nuevalistadelete);
-          //    service.setonlyusers(listamyusers);///localstorage
-
-              Swal.fire(
-                "Restaurado!",
-                "El usuario se ha Restaurado Con Éxito.",
-                "success"
-              );
-                setTimeout(() => {
-              this.hideModal();
-            }, 500);
-            }
-          })
+            this.$store.getters.getmetodo?this.restaurauserfront(item):this.restaurauserback(item);
+            this.optionsu=this.optionsu.filter((e)=>e.id!=item.id);
+                this.$emit('userdesbloqueado',res)
+            
+         })
           .catch((eror) => {
-            Swal.fire("Error!", "Ocurrio un Error vuelve a intentar", "error");
+            alert.errorgenerico();
             console.log(eror.message);
           });
       } catch (error) {
         console.log(error.message);
       } finally {
       this.animationall = false;
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
+           }
       },
+      restaurauserfront(item){
+       this.$parent.datosall.otheritems=this.$parent.datosall.otheritems.filter((e)=>e.id!=item.id);
+      },
+ restaurauserback(item){
+       this.$parent.datosallback.otheritems=this.$parent.datosallback.otheritems.filter((e)=>e.id!=item.id);
+      },
+
+
+    deleteitem(item){
+      this.optionsu=this.optionsu.filter((r)=>r.id !=item.id);
+
+    },
+    additemforuuser(item){
+      this.deleteitem(item);////elimina el registro en las optiones de las que se te estan dando 
+      this.$parent.datosall.items.push(item);
+      this.$parent.datosall.otheritems=this.$parent.datosall.otheritems.filter((r)=>r.id!=item.id);
+      this.itemencontrado=[];
+    },
+    verificaamigos(checa,array){
+
+
+
+    },
+          
  onOptionClick({ option, addTag }) {
         addTag(option)
         this.search = ''
       },
-     async empresasall(){
-
-       try{
-       let  repoitems=repoupdateuser();
-   await repoitems.allempresas().then((res) => {
-                if (res.message) {
-            this.$router.push(`/pages/login`);
-          }
-          if (res.code == 200) {
-            this.complete=res.data.map((f)=>{return {id:f.id,text:f.nombre}; });
-           /// this.$store.commit('setcuentas',res)
-          this.options = res.data.map((f) => {
-
-          return f.nombre;
-        });
-          }
-        });
-       }catch(error){
-         console.log(error);
-       }
+     verificaemail(email,array){
+       let busca= array.filter((r)=>r.email==email);
+       if(busca.length>0){
+         this.itemencontrado=busca[0];
+         return true;}
+         else{
+          return false; 
+         }
      },
-    async empresacreate() {
-      let checa=this.form.email;
-        let busca=this.optionsu.filter((r)=>r.email==checa);
-      if(busca.length>0){
-           Swal.fire({
+     emailencontrado(){
+         Swal.fire({
           title: "No se pudo agregar el usuario",
           text: `Email se encuentra en tus usuarios BORRADOS,¿Deseas Restaurarlo?`,
           icon: "error",
@@ -689,107 +633,78 @@ searchu:"",
         confirmButtonText: "Si, Restauralo!",
       }).then((result) => {
         if (result.value) {
-
-          busca[0].email=this.CryptoJS.AES.encrypt(busca[0].email, this.$store.getters.gettoken).toString()
-
-
-          this.show = true;
-
-          this.restoreuser(busca[0]);
+         this.show = true;
+          this.restoreuser(this.itemencontrado);
         }
       });
-this.form.email="";
-
-                return false;
-
-      }
-
-   let verify=this.$parent.items.filter((f)=>f.email==checa);
-
-    if(verify.length>0){
-           Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email se encuentra en tus usuarios ACTIVOS`,
-          icon: "error",
-                  });
-this.form.email="";
-
-                return false;
-
-      }
-     this.animationall = true;
-
+     },
+    
+    async empresacreate() {
+      this.animationall = true;
       this.btnadios = true;
       this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-      let ids=[];
-      let idempresa= this.form.empresas.forEach(element => {
-              this.complete.forEach(element2=>{
-              if(element===element2.text){
-                            ids.push(element2.id);
-                          }
-                    });
+      let alerts=alertas();
+      let checa=this.form.email;
+      if(this.verificaemail(checa,this.optionsu)){
+            this.emailencontrado();
+             this.form.email="";
+                     this.animationall = false;
 
-      });
+            return false;
+        }
 
-      this.form.empresas=ids;
+
+  if(this.$store.getters.getmetodo){
+  if(this.verificaemail(checa,this.$parent.datosall.items)){
+          alerts.listaamigos();
+         this.form.email="";
+                 this.animationall = false;
+
+            return false;
+        }
+}else{
+    if(this.verificaemail(checa,this.$parent.datosallback.items)){
+          alerts.listaamigos();
+         this.form.email="";
+                 this.animationall = false;
+
+            return false;
+        }
+
+}
+  
+
+      
+  
       try {
         const repo = repoupdateuser();
 
         await repo.adduser(this.form).then((res) => {
-          //this.resetModal();
-            if (res.message=="Request failed with status code 422") {
-          Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email ya INGRESADO`,
-          icon: "error",
-                  });
-                      return false;
-          }
-          if(res.message){
-    this.$router.push(`/pages/login`);
-             Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Acceso Denegado`,
-          icon: "error",
-        });
-          }
-        if (res.code == 200) {
-
-          this.$emit("itemsusers", res.data);
-          //
-
-          Swal.fire({
-            title: "Usuario",
-            text: `Usario Agregado con éxito`,
-            icon: "success",
-          }).then((res) => {
-            setTimeout(() => {
+              if(!res){
+              }else{
+                
+           this.$emit('adduserevent',res);
+            alerts.useradd();
+              setTimeout(() => {
               this.hideModal();
             }, 500);
-          });
-        }
+              }
         });
       } catch (error) {
         console.log(error);
-        Swal.fire({
-          title: "No se pudo Agregar el usuario",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+        
+        alerts.errorgenerico();
       } finally {
         this.animationall = false;
         //this.$forceUpdate();
         this.update = true;
         this.btnadios = false;
+        this.email="";
       }
     },
     async empresaupdate() {
      let checa=this.form.email;
         let busca=this.optionsu.filter((r)=>r.email==checa);
-
       if(busca.length>0){
            Swal.fire({
           title: "No se pudo actualizar el usuario",
@@ -894,7 +809,7 @@ let ids=[];
         title: "¿Reset Password?",
         text:
           "¿Deseas Resetear el password de '" +
-          this.$store.state.useredit.name +
+         this.$parent.user.name +
           "'?",
         icon: "warning",
         showCancelButton: true,
@@ -910,95 +825,43 @@ let ids=[];
     },
     async resetpasswordnow() {
       this.animationall = true;
-
-      this.btnadios = true;
-      this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-
+      let alerts=alertas();
       try {
         const repo = repoupdateuser();
-
         await repo.resetpassword(this.form).then((res) => {
-          // this.resetModal();
-          if (res.message) {
-            this.$router.push(`/pages/login`);
-             Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `Acceso Denegado`,
-          icon: "error",
-        });
-          }
-        if (res.code == 200) {
-          this.$emit("itemsusers", res.data);
-
-          Swal.fire({
-            title: "Usuario",
-            text: `Usario editado con éxito`,
-            icon: "success",
-          });
-        }
+            alerts.passwordsucccess();
+    
         });
       } catch (error) {
         console.log(error);
-        Swal.fire({
-          title: "No se pudo editar el usuario",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+       alerts.errorgenerico();
       } finally {
         this.animationall = false;
-        //  this.hideModal();
 
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
       }
     },
     async eventdetected() {
-      let verify=this.$store.getters.getusersdelete.map((f) => {
-        return { id: f.id, name: f.name,email:f.email,photo:f.photo };});
-
-          for(var i=0;i<verify.length;i++){
-
-         verify[i].email=await this.CryptoJS.AES.decrypt(verify[i].email,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-          verify[i].id=await this.CryptoJS.AES.decrypt(verify[i].id,this.$store.getters.gettoken).toString(this.CryptoJS.enc.Utf8);
-          verify[i].id=parseInt(verify[i].id);
-
-          }
-
-
-
-      this.optionsu=verify;
-
-      if (this.$store.state.flaguser == 0) {
-        this.resetModal();
-      } else {
-        this.updateModaledit();
-        this.btnpassword=this.$store.getters.getpermisopassword;
-      }
-    },
+    this.$parent.user.id?this.updateModaledit():this.resetModal();
+     },
     updateModaledit() {
       try {
-          let optionnames=this.regresaempresaedit.empresa.map((f)=>f.nombre);
-          this.form.empresas=optionnames;
-        this.form.id = this.regresaempresaedit.id;
-        this.form.name = this.regresaempresaedit.name;
-        this.form.email = this.regresaempresaedit.email;
-        this.form.fechanacimiento = this.regresaempresaedit.fecNac;
-        this.form.telefono = this.regresaempresaedit.telefono;
-        this.form.rfc = this.regresaempresaedit.rfc;
-        this.form.photo = this.regresaempresaedit.photo;
-        this.form.calle = this.regresaempresaedit.calle;
-        this.form.cp = this.regresaempresaedit.cp;
-        this.form.colonia = this.regresaempresaedit.colonia;
-        this.form.municipio = this.regresaempresaedit.municipio;
-        this.form.estado = this.regresaempresaedit.estado;
-        this.form.numero_ext = this.regresaempresaedit.numero_ext;
-        this.form.numero_int = this.regresaempresaedit.numero_int;
-        this.form.referencias = this.regresaempresaedit.referencias;
-        this.form.nickname = this.regresaempresaedit.nickname;
+        let user=this.$parent.user;
+        this.form.id =user.id;
+        this.form.name = user.name;
+        this.form.email = user.email;
+        this.form.fechanacimiento = user.f_nacimiento;
+        this.form.telefono =user.telefono;
+     //   this.form.rfc = this.regresaempresaedit.rfc;
+     //   this.form.photo = this.regresaempresaedit.photo;
+        this.form.calle = user.calle;
+        this.form.cp =user.cp;
+        this.form.colonia = user.colonia;
+        this.form.municipio = user.municipio;
+        this.form.estado = user.estado;
+        this.form.numero_ext = user.n_ext;
+        this.form.numero_int = user.n_int;
+        this.form.referencias = user.referencias;
+        this.form.nickname =user.nickname;
 
       } catch (error) {
         console.log(error);
@@ -1007,8 +870,10 @@ let ids=[];
       }
     },
     resetModal() {
-      (this.form.id = ""),
-        (this.form.email = ""),
+              this.optionsu=[];
+
+         this.form.id = "",
+        this.form.email = "",
         (this.form.name = ""),
         (this.form.fechanacimiento = ""),
         (this.form.telefono = ""),
@@ -1023,8 +888,12 @@ let ids=[];
         (this.form.numero_ext = ""),
         (this.form.referencias = ""),
         (this.form.nickname = ""),
-        (this.animationall = false);
+        this.animationall = false;
         this.form.empresas=[];
+        this.userin=[];
+        this.config=[];
+     // console.log(this.$parent.datosall.otheritems);
+     this.$store.getters.getmetodo?this.regresainactivos():this.regresainactivosback();
     },
     hideModal() {
       this.$refs["modal-useredit"].hide();
@@ -1066,57 +935,48 @@ let ids=[];
         this.cprofile = false;
       }
     },
+     regresainactivos(){
+        this.optionsu=[];
 
-    actualizar() {
-      this.update = !this.update;
-      if (this.msj == "Actualiza tus datos") {
-        this.msj = "Comienza ahora";
-      } else {
-        this.msj = "Actualiza tus datos";
+        for(let i=0;i<this.$parent.datosall.otheritems.length;i++){
 
-        /// this.form.name = user.name;
-        // this.form.email = user.email;
-        //this.form.fechanacimiento = user.fecNac;
-        /// this.form.telefono = user.telefono;
-        ///  this.form.rfc = user.rfc;
-        //  this.form.direccion = user.direccion;
+          if(this.$parent.datosall.otheritems[i].status=="Inactive"){
+          this.optionsu.push(this.$parent.datosall.otheritems[i]);
+          }else{
+          }
 
-        //  Swal.fire({
-        //  title: "Perfil",
-        //  text: `No se realizo ningun cambio`,
-        //   icon: "success",
-        // });
-      }
+        }
+    
+    },
+      regresainactivosback(){
+        this.optionsu=[];
+        for(let i=0;i<this.$parent.datosallback.otheritems.length;i++){
+
+          if(this.$parent.datosallback.otheritems[i].status=="Inactive"){
+          this.optionsu.push(this.$parent.datosallback.otheritems[i]);
+          }else{
+          }
+
+        }
+    
     },
     async updateuser(form) {
+
       if (this.$v.$invalid) {
         return false;
       }
+               this.animationall = true;
 
-      document.getElementById("chek").click();
-      this.showanimation = true;
       const repo = repoupdateuser();
-      const storage = localstorage();
       try {
-        await repo.update(form).then((res) => {
-
-          storage.setUser(res);
-          this.$store.commit("setUsersStoremut", res);
-          Swal.fire({
-            title: "Perfil",
-            text: `Actializado con éxito`,
-            icon: "success",
-          });
-        });
+        await repo.updateuseradmin(this.form).then((res) => {
+         this.$emit('edituser',res);
+          this.hideModal();
+         });
       } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "Perfil",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+        console.log(error)
       } finally {
-        this.showanimation = false;
+            this.animationall = false;
       }
     },
   },
@@ -1177,9 +1037,7 @@ let ids=[];
         }
         return ''
       },
-    regresaempresaedit() {
-      return this.$store.state.useredit;
-    },
+   
     validacp() {
       if (this.form.cp == null) {
         return true;
@@ -1193,20 +1051,6 @@ let ids=[];
       }
     },
 
-    validaname() {
-      if (this.$v.form.name.$invalid) {
-        return false;
-      } else {
-        return true;
-      }
-    },
-    validaemail() {
-      if (this.$v.form.email.$invalid) {
-        return false;
-      } else {
-        return true;
-      }
-    },
     validafon() {
       let conteo = 0;
       if (this.$v.form.telefono.$model == "" ||this.$v.form.telefono.$model == null) {
@@ -1223,27 +1067,11 @@ let ids=[];
         }
       }
     },
-    activabtn() {
-      //si regresa true se oculta
-
-      if (!this.$v.$invalid) {
-        ///formulario valido
-        if (this.validafon) {
-          return false;
-        } else {
-          return true;
-        }
-      } else {
-        return true;
-      }
-    },
+ 
   },
-  mounted: function () {
-  //  this.empresasall();
-  },
-  components: {
+   components: {
     MaskedInput,
     RingLoader,
-  },
-};
+  }
+}
 </script>

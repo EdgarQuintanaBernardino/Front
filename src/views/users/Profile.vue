@@ -519,7 +519,7 @@ export default {
           if (user) {
        if(user.photo==null||user.photo==""){
         }else{
-        user.data.photo=self.$prefijoamazon+user.photo;
+        user.photo=self.$prefijoamazon+user.photo;
         }
             storage.setUser(user);
             this.$store.commit("set",'usuario',user);

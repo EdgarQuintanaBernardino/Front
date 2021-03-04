@@ -68,7 +68,7 @@ export default {
     },
     getMenus () {
       let self = this;
-      axios.get(   this.$apiAdress + '/api/menu/menu?token=' + localStorage.getItem("api_token") )
+      axios.get(   this.$apiAdress + '/api/menu/menu?token=' + this.$store.getters.gettoken )
       .then(function (response) {
         console.log(response.data);
         self.items = response.data.menulist;

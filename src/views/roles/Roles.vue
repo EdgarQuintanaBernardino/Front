@@ -5,7 +5,7 @@
       <CCard>
         <CCardBody>
             <h4>Roles</h4>
-            <CButton color="primary" @click="createRole()">Create Role</CButton>
+            <CButton color="primary" @click="createRole()">Crear Rol</CButton>
             <CAlert
               :show.sync="dismissCountDown"
               color="primary"
@@ -78,7 +78,7 @@ export default {
       you: null,
       message: '',
       showMessage: false,
-      dismissSecs: 7,
+      dismissSecs: 2,
       dismissCountDown: 0,
       showDismissibleAlert: false
     }
@@ -104,16 +104,18 @@ export default {
       this.$router.push({path: editLink});
     },
     deleteRole ( id ) {
+      
       let self = this;
       let noteId = id;
-      axios.post(   this.$apiAdress + '/api/roles/' + id + '?token=' + localStorage.getItem("api_token"), {
+      axios.post(   this.$apiAdress + '/api/roles/' + id + '?token=' +  this.$store.getters.gettoken , {
         _method: 'DELETE'
       })
       .then(function (response) {
         if(response.data.status === 'success'){
-            self.message = 'Successfully deleted role.';
+            self.message = 'Rol Eliminado con éxito.';
             self.showAlert();
-            self.getRoles();
+            //self.getRoles();
+                self.deleteitem(id);
         }else if(response.data.status === 'rejected'){
             self.message = "Can't delete. Role has assigned one or more menu elements.";
             self.showAlert();
@@ -125,7 +127,7 @@ export default {
     },
     moveUp( id ){
       let self = this;
-      axios.get(   this.$apiAdress + '/api/roles/move/move-up?id=' + id + '&token=' + localStorage.getItem("api_token"))
+      axios.get(   this.$apiAdress + '/api/roles/move/move-up?id=' + id + '&token=' +  this.$store.getters.gettoken )
       .then(function (response) {
           self.message = 'Successfully move role.';
           self.showAlert();
@@ -137,7 +139,7 @@ export default {
     },
     moveDown( id ){
       let self = this;
-      axios.get(   this.$apiAdress + '/api/roles/move/move-down?id=' + id + '&token=' + localStorage.getItem("api_token"))
+      axios.get(   this.$apiAdress + '/api/roles/move/move-down?id=' + id + '&token=' + this.$store.getters.gettoken )
       .then(function (response) {
           self.message = 'Successfully move role.';
           self.showAlert();
@@ -156,9 +158,12 @@ export default {
     showAlert () {
       this.dismissCountDown = this.dismissSecs
     },
+    deleteitem(id){
+        this.items=this.items.filter((r)=>r.id!=id);
+    },
     getRoles (){
       let self = this;
-      axios.get(   this.$apiAdress + '/api/roles?token=' + localStorage.getItem("api_token") )
+      axios.get(   this.$apiAdress + '/api/roles?token=' + this.$store.getters.gettoken )
       .then(function (response) {
         self.items = response.data;
       }).catch(function (error) {
@@ -169,6 +174,10 @@ export default {
   },
   mounted: function(){
     this.getRoles();
+  },
+  created:function(){
+          this.getRoles();
+
   }
 }
 </script>

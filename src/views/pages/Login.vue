@@ -49,7 +49,7 @@
 
                       <CButton class="btn btn-info m-2" to="register"
                         > <b-icon-arrow-up></b-icon-arrow-up>Registrate Aquí</CButton
-                      >
+                      ></CButton>
                     </CCol>
                   </CRow>
                   <b-row>
@@ -144,9 +144,9 @@ export default {
         self.$store.commit("setUserAction", result)
         self.$store.commit('set','fotouser',result.user.photo);
         self.$store.commit('setmetodo',result.sistema.metodo==2?true:false);
+        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
 
         service.logininicial(result);
-        result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
         }else{self.sinroles(alert)}      
         },
@@ -170,6 +170,7 @@ export default {
       let dao = repologin(); //store
       try {
         let result=await dao.login(item)
+        console.log(result.data.token)
          self.coderesponse(result,self,alert);
           } catch (error) {
         console.log(error);

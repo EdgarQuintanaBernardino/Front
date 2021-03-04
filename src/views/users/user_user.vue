@@ -162,7 +162,19 @@ let datosgenericos={
             initrows:response.data.length,
             totalRow:response.data.length,
             acciones:[3],
-            maxPages:response.last_page
+            maxPages:response.last_page,
+            ///header
+            header:false,///bolean heeader
+            headername:'Usuarios',
+            btnadd:true,
+            iconadd:'person-plus-fill',
+            animation:'fade',
+            fontscale:'2',
+            classicon:'mr-2',
+            namebtn:'Agrega Usuarios',
+            badgevariant:'primary',
+            btnvariant:'info',
+            btnstyle:'float:right'
 
                 }
                 this.totalrowsend=res.count;
@@ -203,7 +215,20 @@ let datosgenericos={
             resuelve:12,
             initrows:response.data.length,
             totalRow:response.data.length,
-            acciones:[3]
+            acciones:[3],
+            header:false,///bolean heeader
+            headername:'Usuarios',
+            btnadd:true,
+            iconadd:'person-plus-fill',
+            animation:'fade',
+            fontscale:'2',
+            classicon:'mr-2',
+            namebtn:'Agrega Usuarios',
+            badgevariant:'primary',
+            btnvariant:'info',
+            btnstyle:'float:right'
+
+
                 }
                             this.datosall=datosgenericos;
 

@@ -13,6 +13,7 @@ const server="http://127.0.0.1:8000/api";
 //const server='https://api.lybflow.com';
 
 let api = `${server}/user/update`;
+let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
 let apiempresa = `${server}/empresa/create`;
 let apiempresaupdate = `${server}/empresa/update`;
 let apicuentaupdate = `${server}/cuenta/update`;
@@ -31,6 +32,9 @@ let apiempresadelete = `${server}/empresa/delete`;
 let apicuentaadelete = `${server}/cuenta/delete`;
 let apigetusers = `${server}/user/all`;
 let updateusers = `${server}/user/updateuser`;
+let updateusersadmin = `${server}/user/lockadmin`;
+let unlockusersadminapi = `${server}/user/unlockadmin`;
+
 let apiresetpassword = `${server}/user/resetpassword`;
 let apiradduser = `${server}/user/create`;
 let deleteuserin = `${server}/user/destroy`;
@@ -60,7 +64,7 @@ let actualizapago=`${server}/user/updatepago`;
 let deletepago=`${server}/user/deletepago`;
 let restoreuser=`${server}/user/restore`;
 let userscambia=`${server}/user/onlyupdate`;
-let allusers=`${server}/user/alllist`;
+let allusers=`${server}/user/allusers`;///verify
 let allonluusers=`${server}/user/allusersonlypost`;///solo tus amigos
 
 let sendorrequest=`${server}/user/createorrequest`;///solo tus amigos
@@ -92,6 +96,7 @@ let deletecuentasharedapi=`${server}/cuenta/deletecuentashared`;
 let yourrequestapi=`${server}/user/yourrequest`;
 let invitaramigoapi=`${server}/user/allusers`;
 let yourusersbackapi=`${server}/user/interfaceuser`;
+let yourusersbackadminapi=`${server}/user/interfaceuseradmin`;
 
 
 
@@ -384,10 +389,11 @@ const getroles_permisos = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(getrolesypermisos, request, configin).then((res) => {
-        return res.data;
+        return response.verifyrequesttables(res)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
+
     });
     return result;
 }
@@ -412,13 +418,45 @@ const updateuseradmin = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(updateusers, request, configin).then((res) => {
-        return res.data;
+        return response.verifyresponse(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
+
     });
     return result;
 }
+const lockuseradmin = async (request) => {
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(updateusersadmin, request, configin).then((res) => {
+        return response.verifyresponseadmin(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+
+    });
+    return result;
+}
+const unlockuseradmin = async (request) => {
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(unlockusersadminapi, request, configin).then((res) => {
+        return response.verifyresponseadmin(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+
+    });
+    return result;
+}
+
 const resetpassword = async (request) => {
     let tokenin = store.getters.gettoken;
 
@@ -426,10 +464,9 @@ const resetpassword = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiresetpassword, request, configin).then((res) => {
-        return res.data;
+        return response.verifyadduser(res.data);
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.validaadduser(error)
     });
     return result;
 }
@@ -440,10 +477,9 @@ const adduser = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiradduser, request, configin).then((res) => {
-        return res.data;
+        return response.verifyadduser(res.data);
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.validaadduser(error)
     });
     return result;
 }
@@ -520,10 +556,11 @@ const addupdaterolesuser = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(updaterolesuser, request, configin).then((res) => {
-        return res.data;
+        return response.verifyresponserole(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta);
+        return response.filtraerror(error);
+
     });
     return result;
 }
@@ -715,10 +752,11 @@ const cambiabandera =async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(restoreuser, request, configin).then((res) => {
-        return res.data;
+        return response.nocontent(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta);
+        return response.filtraerror(error);
+
     });
     return result;
 }
@@ -793,6 +831,22 @@ const yourusersback =async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(yourusersbackapi, request, configin).then((res) => {
+      return response.verifyrequesttables(res)
+    // return res;
+    }).catch((error) => {
+      return response.filtraerror(error);
+    });
+    return result;
+  }
+  const yourusersbackadmin =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(yourusersbackadminapi, request, configin).then((res) => {
       return response.verifyrequesttables(res)
     // return res;
     }).catch((error) => {
@@ -1121,6 +1175,9 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    yourusersbackadmin,
+    unlockuseradmin,
+    lockuseradmin,
     yourusersback,
     invitaramigo,
     yourrequest,

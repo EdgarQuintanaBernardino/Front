@@ -17,6 +17,25 @@ const state = {
 }
 
 const mutations = {
+  setUserActionMain(state,payload){
+    console.log(payload);
+    if (payload ==null) {
+
+      state.usuario = payload;
+      state.token = payload;
+      state.roles = payload;
+      state.darkMode=false;
+      
+
+    
+    } else {
+      state.usuario = JSON.parse(payload.user);
+      state.token = payload.token;
+      state.roles = payload.roles;
+      payload.tema=="false"?'':state.darkMode=!state.darkMode;
+      }
+
+  },
   setmetodo(state,payload){
     state.metodo=payload;
   },
@@ -54,7 +73,7 @@ const mutations = {
     
 
   },
- 
+  
   toggleSidebarDesktop (state) {
     const sidebarOpened = [true, 'responsive'].includes(state.sidebarShow)
     state.sidebarShow = sidebarOpened ? false : 'responsive'

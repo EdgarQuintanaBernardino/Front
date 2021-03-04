@@ -228,20 +228,20 @@ metodo?this.getitems():this.getitemsback();
                     columns:[
                         { key: "name", label: "Nombre Usuario", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
-                             { key: "roles", label: "Roles", class: "text-center",sorteable:true},
+                         { key: "roles", label: "Roles", class: "text-center",sorteable:true},
                         { key: "nickname", label: "NickName", class: "text-center"},
                    
                         { key: "actions", label: "Acciones", class: "text-center"},
 
                       
                         ],
-            totalfilasmostradas:15,
+            totalfilasmostradas:5,
             items:response.data,
             otheritems:res.other,
             resuelve:12,////el col
             initrows:response.data.length,
             totalRow:res.count,
-            acciones:[1,2],
+            acciones:[1,2,3],
             maxPages:response.last_page,
             ///header
             header:true,///bolean heeader
@@ -251,8 +251,8 @@ metodo?this.getitems():this.getitemsback();
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Usuarios',
-            badgevariant:'danger',
+            namebtn:'Agrega Usuarios prueba',
+            badgevariant:'primary',
             btnvariant:'info',
             btnstyle:'float:right'
 
@@ -315,10 +315,10 @@ metodo?this.getitems():this.getitemsback();
                         { key: "actions", label: "Acciones", class: "text-center"},
 
                             ],
-            totalfilasmostradas:5,
+            totalfilasmostradas:15,
             items:response.data,
             otheritems:response.other,
-            resuelve:12,
+            resuelve:4,
             initrows:response.data.length,
             totalRow:response.data.length,
             acciones:[1,2,3],
@@ -331,7 +331,7 @@ metodo?this.getitems():this.getitemsback();
             classicon:'mr-2',
             namebtn:'Agrega Usuarios',
             badgevariant:'primary',
-            btnvariant:'info',
+            btnvariant:'danger',
             btnstyle:'float:right'
 
 

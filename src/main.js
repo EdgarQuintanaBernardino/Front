@@ -47,6 +47,52 @@ if(typeof localStorage.locale !== 'undefined'){
 }
 Vue.i18n.set(locale);
 
+
+try{
+  let user='user'; ///usuario registrador anteriormente
+  let token='token';  // token valido del usuario
+  let roles='roles'; ///roles para este usuario
+  let tema="tema";
+  let metodo="metodo";
+
+
+if(localStorage.getItem(user)&&localStorage.getItem(token)){
+
+
+  let usuario={
+
+    user:null,
+    token:null,
+    roles:null,
+    tema:null,
+    metodo:null
+   
+
+  };
+
+
+ usuario.user=localStorage.getItem(user);
+
+  usuario.token=Vue.CryptoJS.AES.decrypt(localStorage.getItem(token).toString(),Vue.prototype.$keysecret).toString(Vue.CryptoJS.enc.Utf8);
+  usuario.roles=localStorage.getItem(roles);
+  usuario.tema=localStorage.getItem(tema);
+ usuario.metodo=localStorage.getItem(metodo);
+ 
+    store.commit('setUserActionMain',usuario);
+}else{
+  console.log("notfound")
+  store.commit('setUserActionMain',null);
+
+}
+
+
+}catch(error){
+
+  console.log(error)
+}
+
+
+
 new Vue({
   el: '#app',
   router,

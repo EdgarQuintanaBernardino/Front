@@ -56,13 +56,13 @@ export default {
   },
   mounted: function(){
     let self = this;
-    axios.get(   this.$apiAdress + '/api/bread/' + self.$route.params.id + '?token=' + localStorage.getItem("api_token"))
+    axios.get(   this.$apiAdress + '/api/bread/' + self.$route.params.id + '?token=' +  this.$store.getters.gettoken)
     .then(function (response) {
       self.form = response.data.form
       self.formFields = response.data.formFields
     }).catch(function (error) {
       console.log(error);
-      self.$router.push({ path: '/login' })
+    //  self.$router.push({ path: '/login' })
     });
   }
 }

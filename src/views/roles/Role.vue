@@ -9,7 +9,7 @@
             Role name: {{ name }}
           </h4>
 
-          <CButton color="primary" @click="goBack">Back</CButton>
+          <CButton color="danger" @click="goBack">Regresar</CButton>
         </CCardBody>
       </CCard>
     </CCol>
@@ -40,7 +40,7 @@ export default {
   },
   mounted: function(){
     let self = this;
-    axios.get(   this.$apiAdress + '/api/roles/' + self.$route.params.id + '?token=' + localStorage.getItem("api_token"))
+    axios.get(   this.$apiAdress + '/api/roles/' + self.$route.params.id + '?token=' +  this.$store.getters.gettoken )
     .then(function (response) {
       self.name = response.data.name
     }).catch(function (error) {

@@ -108,6 +108,7 @@
                     >
                       <b-form-tags v-model="form.valuep" no-outer-focus class="mb-2">
                         <template v-slot="{ tags, disabled, addTag, removeTag }">
+
                           <ul v-if="tags.length > 0" class="list-inline d-inline-block mb-2">
                             <li v-for="tag in tags" :key="tag" class="list-inline-item">
                               <b-form-tag
@@ -152,7 +153,7 @@
                               <b-dropdown-item
                                 v-for="option in availableOptionsp"
                                 :key="option"
-                                @click="onOptionClick({ option, addTag })"
+                                @click="onOptionClickp({ option, addTag })"
                               >
                                 <span class="text-dark">{{ option }}</span>
                               </b-dropdown-item>
@@ -208,6 +209,9 @@ import { required, minLength, email } from "vuelidate/lib/validators";
 const btnenv = "";
 export default {
   name: "edituser",
+  watch:{
+       
+  },
   data() {
     return {
       titlemodal: "",
@@ -227,15 +231,22 @@ export default {
         valuep: [],
       },
 
+
       resultado: [],
       show: true,
       update: true,
       onof: false,
       loader: true,
       errormesg: "",
-    };
+      tags:[]
+      };
   },
   methods: {
+  
+    onOptionClickp({ option, addTag }) {
+      addTag(option);
+      this.form.search = "";
+    },
     onOptionClick({ option, addTag }) {
       addTag(option);
       this.form.search = "";
@@ -243,11 +254,6 @@ export default {
 
     async updaterols() {
       this.animationall = true;
-
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-
       try {
         const repo = repoupdateuser();
             let formedit={
@@ -258,41 +264,14 @@ export default {
 
 
         await repo.addupdaterolesuser(formedit).then((res) => {
-          //this.resetModal();
-
-
-          if (res.message) {
-            this.$router.push(`/pages/login`);
-          }
-          if (res.message == "Request failed with status code 422") {
-            Swal.fire({
-              title: "Ningun Cambio Hecho ",
-              text: `error 422 `,
-              icon: "error",
-            });
-          }
-          if (res.code == 200) {
-           this.$emit("itemsusers", res.data);
-
-            Swal.fire({
-              title: "Roles & Permisos",
-              text: `Roles & Permisos Actualizados Con éxito`,
-              icon: "success",
-            }).then((res) => {
-              setTimeout(() => {
-                this.hideModal();
-              }, 500);
-            });
-          }
+        this.$emit('addroleupdate',res);
+          this.hideModal();
+      
+          
         });
       } catch (error) {
         console.log(error);
-        Swal.fire({
-          title: "No se pudo Agregar el rol",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
+            } finally {
         this.animationall = false;
         //this.$forceUpdate();
       }
@@ -300,9 +279,10 @@ export default {
 
 
     async eventdetected() {
-      //  this.titlemodal = this.$store.state.titlerolmodal;
-      //  if (this.$store.state.flagrol == 0) {
-      //  this.resetModal();
+     // console.log(this.$parent.userroles)
+    //  this.titlemodal = this.$store.state.titlerolmodal;
+       // if (this.$store.state.flagrol == 0) {
+      ///  this.resetModal();
       // } else {
       // this.updateModaledit();
       // }
@@ -310,32 +290,14 @@ export default {
     },
     async updateModaledit() {
       try {
-        let rolesuser = this.getrol.map((item) => item.name);
+       let rolesuser = this.$parent.userroles.roles.map((item) => item.name);
         this.form.value = rolesuser; /// roles del usuario
-        this.form.permisos = this.$store.getters.getallpermisos.map(
-          (permiso) => permiso.descripcion); //todos los permisos que existen
-        this.form.id = this.getid.id;
-        this.form.name = this.getid.name; ///console.log(this.$store.getters.getallroles);
-        let roles = this.$store.getters.getallroles.map(
-          /////todos los roles que existen
-          (permiso) => permiso.name
-        );
-        this.form.options = roles;
-        ///permisos del susuario
-        let permisosusuario = this.getrol.map((permiso) => permiso.permissions); ///roles con permisos
-       let names = [];
-         permisosusuario.forEach((element) => {
-          element.forEach((item2) => {
-            names.push(item2.descripcion);
-          });
-        }); ///todos los permisos de todos los roles
-
-          let onlypermisos=this.$store.getters.getpermisosuseradd;
-          onlypermisos.forEach(element=>names.push(element.descripcion));
-        this.form.valuep =names;
-
-        this.form.search = "";
-
+        this.form.options = this.$parent.allroles.map((r)=>r.name); //////todos los roles que existen
+        this.form.permisos=this.$parent.allpermissionsd; //todos los permisos que existen
+        this.form.id = this.$parent.userroles.id;
+        this.form.name = this.$parent.userroles.name; 
+        this.form.valuep=this.$parent.userroles.permissions.map(r=>r.descripcion);
+         this.form.search = "";
         this.form.searchp = "";
       } catch (error) {
         console.log(error);
@@ -344,17 +306,109 @@ export default {
       }
     },
     resetModal() {
-      this.form.name = "";
-      this.form.value = [];
+      // this.form.name = "";
+      // this.form.value = [];
 
-      let permisos = this.$store.getters.getpermisos.map(
-        (permiso) => permiso.descripcion
-      );
-      this.form.options = permisos;
+      // let permisos = this.$store.getters.getpermisos.map(
+      //   (permiso) => permiso.descripcion
+      // );
+      // this.form.options = permisos;
     },
     hideModal() {
       this.$refs["modal-roleandpermiso"].hide();
     },
+    iapermisos(permisos,roles){
+     let rolesrestantes=this.restarolescomplete(this.$parent.allroles,roles);
+     this.iapermisowithrol(rolesrestantes,permisos)
+    },
+    iapermisowithrol(roles,permisos){///legan puros los permisos en un array de strings casado a descripcion 
+   for(let a=0;a<roles.length;a++){
+         if(roles[a].permissions.length==0||permisos.length==0||roles[a].permissions.length>permisos.length){
+                }else{
+                  if(this.verificasiexisterol(roles[a],permisos)){
+                    ///encontrado
+                    this.form.value.push(roles[a].name);
+                     this.iaroles();
+                      break;
+                  }                          
+ }
+             }
+    },
+    verificasiexisterol(rol,permisosselected){
+        let countpermisos=rol.permissions.length;
+       let n_permisos_encontrados=0;
+           for(let b=0;b<countpermisos;b++){////contamos los permisos por cada rol 
+           for(let c=0;c<permisosselected.length;c++){
+             if(rol.permissions[b].descripcion==permisosselected[c]){
+                 n_permisos_encontrados++;
+                 }
+           }
+         }
+      if(n_permisos_encontrados===countpermisos){return true;}else{return false}
+    },
+   restarolescomplete(rolespadre,roles){
+          let rolesnuevos=[];                   
+           for(let e=0;e<rolespadre.length;e++){
+                  let encontrado=false;
+              for(let i=0;i<roles.length;i++){
+                  if(rolespadre[e].name==roles[i].name){
+                    encontrado=true;
+                  }                
+              }
+              !encontrado?rolesnuevos.push(rolespadre[e]):"";
+               }
+        return rolesnuevos;
+     },
+    iaroles(){
+       let rolescomplete=this.getrolescomplete(this.form.value);
+       this.genericchange(this.form.valuep,rolescomplete);
+    },
+    genericchange(mispermisos,roles){
+   let permisosderoles=this.obtenerpermisosderoles(roles);  
+   let permisosrestados=this.restadepermisos(this.$parent.allpermissionsd,permisosderoles);
+   this.form.permisos=permisosrestados;
+   let setpermisos=this.permisosencontrados(permisosrestados,mispermisos);
+   this.form.valuep=setpermisos;
+  this.iapermisos(setpermisos,roles);
+    },
+    getrolescomplete(roles){
+          let rolesall=[];
+         this.$parent.allroles.forEach(element=>{
+          roles.forEach(element2=>{
+            if(element.name==element2){
+            rolesall.push(element);
+                        }
+                    });
+        });
+        return rolesall;
+     },
+      obtenerpermisosderoles(roles){
+          let permisos=[];
+       for(let i=0;i<roles.length;i++){
+       for(let a=0;a<roles[i].permissions.length;a++){
+           permisos.push(roles[i].permissions[a].descripcion);
+           }
+      }
+       return permisos;
+    },
+    permisosencontrados(completepermisos,permisos){
+        let encontrados=[];
+      completepermisos.forEach(element=>{
+       var u=permisos.indexOf(element);
+       u!==-1?encontrados.push(element):'';
+     });
+       return encontrados;
+    },
+   restadepermisos(completepermisos,permisos){
+   let opcionespermisos=[];
+   completepermisos.forEach(element=>{
+    var d = permisos.indexOf(element);
+    if (d=== -1) {var f=opcionespermisos.indexOf(element);
+    if(f===-1){opcionespermisos.push(element);}}
+    });
+     return opcionespermisos;
+    },
+  
   },
   validations: {
     form: {
@@ -395,6 +449,8 @@ export default {
 
       this.form.permisos = permisosfiltrados;
     },
+
+   
     verifyselectedpermissions() {
       let permisosselected = this.form.valuep;
       let roles = this.$store.getters.getallroles;
@@ -469,8 +525,10 @@ export default {
           (opt) => opt.toLowerCase().indexOf(criteria) > -1
         );
       }
+     this.iaroles();
+
       // Show all options available
-      this.getpermisionsofroles;
+//      this.getpermisionsofroles;
       // console.log(this.$store.getters.getallroles);
       return options;
     },
@@ -497,7 +555,7 @@ export default {
           (opt) => opt.toLowerCase().indexOf(criteriap) > -1
         );
       }
-  this.verifyselectedpermissions;
+ // this.verifyselectedpermissions;
       // Show all options available
       return optionsp;
     },

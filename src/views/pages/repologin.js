@@ -9,6 +9,7 @@ const api = `${server}/api/login`;
 const apiregister=`${server}/auth/register`;
 const login = async (credentials) => {
     let result = await Axios.post(api,credentials).then((res) => {
+        console.log(res)
         return res;
     }).catch((error) => {
         let respuesta = JSON.parse(JSON.stringify(error))

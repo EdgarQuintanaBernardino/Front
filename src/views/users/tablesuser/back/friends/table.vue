@@ -2,6 +2,26 @@
   <CRow>
     <CCol sm="12">
       <CCard>
+        <CCardHeader v-if="datosall.header">
+              <h3>
+                {{datosall.headername}}
+              <b-badge :variant="datosall.badgevariant" pill>{{ datosall.totalRow }}</b-badge>
+                <b-btn
+                  :style="datosall.btnstyle"
+                  :variant="datosall.btnvariant"
+                  @click.prevent="addin()"
+                  v-if="datosall.btnadd"
+                >
+                  <b-icon
+                    :icon="datosall.iconadd"
+                    :animation="datosall.animation"
+                    :font-scale="datosall.fontscale"
+                    :class="datosall.classicon"
+                  ></b-icon
+                  >{{datosall.namebtn}}
+                </b-btn>
+              </h3>
+               </CCardHeader>
      
         <CCardBody>
           <CDataTable
@@ -26,6 +46,7 @@
                       noItems: 'No hay registros disponibles',
                     }"
           >
+            
               <template #actions="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -42,8 +63,7 @@
                         <b-icon icon="pencil"></b-icon>Editar
                       </b-button>
                       <b-button
-                                          v-if="permi==2"
-
+                   v-if="permi==2"
                         size="md"
                         variant="outline-success"
                         block
@@ -65,7 +85,7 @@
 
                       </b-button>
                       <b-button
-                                          v-if="permi==3"
+                       v-if="permi==3"
 
                         size="md"
                         variant="outline-danger"
@@ -75,20 +95,33 @@
                       >
                         <b-icon icon="lock-fill"></b-icon>Bloquear
                       </b-button>
-                                        </b-col>
+                   </b-col>
 
                   </b-row>
                                 </b-container>
 
                 </template>
-           <template #name="row,index">
+                  <template #roles="row">
+                    
+                 <b-row class="text-center">
+                  <b-col cols="12" class="mb-2" v-for="rol in row.item.roles" :key="rol.id">
+                  
+                  <b-badge variant="info" pill v-if="rol.name=='user'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else-if="rol.name=='admin'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else>{{rol.name}}</b-badge>
+
+
+                  </b-col>
+                </b-row>
+             </template>
+           <template #name="{item}">
                   <b-row>
                     <b-col sm="12" class="mb-2 text-center">
                       <b-img
                         rounded="circle"
-                        :src="`https://fileslyflow.s3-us-west-2.amazonaws.com/${row.item.photo}`"
+                        :src="`https://fileslyflow.s3-us-west-2.amazonaws.com/${item.photo}`"
                         width="50px"
-                        v-if="row.item.photo"
+                        v-if="item.photo"
                         alt="no rednreiza"
                       ></b-img>
                       <b-img
@@ -105,70 +138,20 @@
                         variant="outline-info"
                         block
                         pill
-                        @click="showuser(row.item)"
+                        @click="showuser(item)"
                       >
                         <b-icon icon="eye"></b-icon><br />
 
-                        {{ row.item.name }}
+                        {{ item.name }}
 
                       </b-button>
                     </b-col>
                   </b-row>
                 </template>
-                 <template #row-details="row">
-                  <b-card
-                    v-if="row.item.name"
-                    border-variant="primary"
-                    :header="row.item.name"
-                    header-bg-variant="primary"
-                    header-text-variant="white"
-                    align="center"
-                  >
-                    <b-table
-                      responsive
-                      :items="[
-                        {
-                          Nombre: row.item.name,
-                          Email: row.item.email,
-                          Teléfono: row.item.telefono,
-                          Municipio: row.item.municipio,
-                          NickName: row.item.nickname,
-                        },
-                      ]"
-                      :fields="[
-                        'Nombre',
-                        'Email',
-                        'NickName',
-                        'Teléfono',
-                        'Municipio',
-                      ]"
-                    >
-                      <template v-slot:cell(Empresas)="row">
-                        <ul>
-                          <li
-                            style="list-style: none"
-                            v-for="item in row.item.Empresas.empresas"
-                            :key="item.nombre"
-                          >
-                            <b-button
-                              variant="outline-primary"
-                              class="mb-2"
-                              @click="showempresa(item)"
-                            >
-                              <b-icon icon="building"></b-icon>
-                              {{ item.nombre }}
-                            </b-button>
-                          </li>
-                        </ul>
-                      </template>
-                    </b-table>
-                  </b-card>
-                </template>  
-                  <template #details="{item, index}">
-        <CCollapse :show="details.includes(index)">
-                asdasd
-        </CCollapse>
-      </template>  
+             
+       
+                 
+      
           </CDataTable>
           <CPagination
             :pages="datosall.maxPages"
@@ -199,7 +182,7 @@ import sidebarcustom from '@/views/windowmodal/sidebarcustom';
 export default {
   components:{sidebarcustom},
   name: 'generic',
-  props:['loadingin','iddeletein','datosallin'],
+  props:['loadingin','iddeletein','datosallin','idedit'],
   data () {
     return {
       datosall:{
@@ -220,10 +203,16 @@ export default {
       resuelve:6,
       itemsporpagina:5,  
       details: [],userin:[]
+     
+      
 
     }
   },
   watch: {
+      idedit:function(newval,oldval){
+          this.actualizaregistro(newval);
+
+    },
     datosallin:function(newval,oldval){
           this.datosall=newval;
     },
@@ -243,27 +232,51 @@ export default {
     },
   	sorter: {
        	handler(){
-              this.eventdispatch();
+          this.eventsorter();
+             
       },
       deep: true
     },
     tableFilter(){
+
       this.eventdispatch();
     },
     columnFilter(){
        this.eventdispatch();
     }
   },
+
   methods: {
+    eventsorter(){
+   
+
+        this.eventdispatch();
+      
+
+    },
+      relationcuenta(row){
+            this.$emit('roles',row);
+
+    },
+    actualizaregistro(item){
+          let datosnuevos=[];
+      for(let i=0;i<this.datosall.items.length;i++){
+        this.datosall.items[i].id==item[0].id?datosnuevos.push(item[0]):datosnuevos.push(this.datosall.items[i]);}
+ this.datosall.items=datosnuevos;
+    },
+    addin(){
+this.$emit('add');
+    },
     deleteevent(item){
-         this.$emit('deleteevento',item);
+     this.$emit('deleteevento',item);
     },
       showuser (item) {
             this.userin=item;
         
     },
-    info(){
-          console.log("click en info")
+    info(item){
+
+this.$emit('info',item);
     },
     changeItemsLimit( val ){
        this.itemsLimit = val;
@@ -278,12 +291,15 @@ export default {
    this.$emit('getparams',{
              currentpage:this.activePage,
              itemsLimit: this.itemsLimit,
-              columnFilter:this.columnFilter,
-              tableFilter:this.tableFilter,
-              sorter:this.sorter
+             columnFilter:this.columnFilter,
+             tableFilter:this.tableFilter,
+             sorter:this.sorter
 
-          })
-    }
+          });
+    },
+ 
+
+
   }, 
   mounted: function(){
  // this.getNotes();

@@ -122,7 +122,7 @@ export default {
     },
     moveUp(id){
       let self = this;
-      axios.get(   this.$apiAdress + '/api/menu/element/move-up?token=' + localStorage.getItem("api_token") + '&id=' + id )
+      axios.get(   this.$apiAdress + '/api/menu/element/move-up?token=' +  this.$store.getters.gettoken+ '&id=' + id )
       .then(function (response) {
         self.getElements();
       }).catch(function (error) {
@@ -132,7 +132,7 @@ export default {
     },
     moveDown(id){
       let self = this;
-      axios.get(   this.$apiAdress + '/api/menu/element/move-down?token=' + localStorage.getItem("api_token") + '&id=' + id )
+      axios.get(   this.$apiAdress + '/api/menu/element/move-down?token=' +  this.$store.getters.gettoken+ '&id=' + id )
       .then(function (response) {
         self.getElements();
       }).catch(function (error) {
@@ -143,7 +143,7 @@ export default {
     getElements() {
       let self = this;
       console.log(self.$route.params.menu)
-      axios.get(   this.$apiAdress + '/api/menu/element?token=' + localStorage.getItem("api_token") + '&menu=' + self.$route.params.menu )
+      axios.get(   this.$apiAdress + '/api/menu/element?token=' +  this.$store.getters.gettoken+ '&menu=' + self.$route.params.menu )
       .then(function (response) {
         self.items = self.buildArrayData(response.data.menuToEdit);
       }).catch(function (error) {

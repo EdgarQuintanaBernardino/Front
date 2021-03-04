@@ -4,7 +4,26 @@
  <b-row>
         <b-col cols="12">
           <CCard>
-           
+               <CCardHeader v-if="datosall.header">
+              <h3>
+                {{datosall.headername}}
+              <b-badge :variant="datosall.badgevariant" pill>{{ datosall.items.length }}</b-badge>
+                <b-btn
+                  :style="datosall.btnstyle"
+                  :variant="datosall.btnvariant"
+                  @click.prevent="addin()"
+                  v-if="datosall.btnadd"
+                >
+                  <b-icon
+                    :icon="datosall.iconadd"
+                    :animation="datosall.animation"
+                    :font-scale="datosall.fontscale"
+                    :class="datosall.classicon"
+                  ></b-icon
+                  >{{datosall.namebtn}}
+                </b-btn>
+              </h3>
+               </CCardHeader>
             <CCardBody>
               <b-row class="border-bottom">
                 <b-col sm="6" md="6" class="mt-3 mb-3">
@@ -53,7 +72,7 @@
                 show-empty
                 small
                 stacked="md"
-                :items="items"
+                :items="datosall.items"
                 :fields="datosall.columns"
                 :current-page="currentPage"
                 :per-page="datosall.totalfilasmostradas"
@@ -116,14 +135,14 @@
                     v-if="permi==1"
                         size="md"
                         block
-                        @click.prevent="info(row.item)"
+                        @click.prevent="infoin(row.item)"
                         variant="outline-primary"
                         class="mr-1 mb-1 mt-2"
                       >
                         <b-icon icon="pencil"></b-icon>Editar 
                       </b-button>
                       <b-button
-                                          v-if="permi==2"
+                   v-if="permi==2"
 
                         size="md"
                         variant="outline-success"
@@ -215,9 +234,19 @@
                 <template v-slot:head()="data">
                   <span class="text-info">{{ data.label.toUpperCase() }}</span>
                 </template>
-                <template v-slot:cell(noexiste)>
+                <template v-slot:cell(roles)="row">
+                <b-row>
+                  <b-col cols="12"  v-for="rol in row.item.roles" :key="rol.id">
+                  <b-badge variant="info" pill v-if="rol.name=='user'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else-if="rol.name=='admin'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else>{{rol.name}}</b-badge>
 
-                      holas no existo
+
+                  </b-col>
+                </b-row>
+              
+
+                    
                 </template>
               </b-table>
               <b-row>
@@ -247,7 +276,7 @@ import edituser from "@/views/windowmodal/edituser";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import rqstin from "@/views/windowmodal/requestin";
 export default {
-  props:['datosallin','iddeletein']
+  props:['datosallin','iddeletein','idedit']
 
   ,
   name: "",
@@ -264,7 +293,8 @@ export default {
           placeholder:'generic',
           columns:[],
           resuelve:12,
-          items:[]
+          items:[],
+          otheritems:[]
 
 
         },
@@ -325,10 +355,13 @@ export default {
  
   
   watch:{
+    idedit:function(newval,oldval){
+          this.actualizaregistro(newval);
+
+    },
     datosallin:function(newval,oldvar){
       //this.datosall.items=[];
       
-      console.log("rsas")
          this.datosall=newval;
          this.items=newval.items;
 
@@ -342,8 +375,25 @@ export default {
 
   },
   methods: {
+    actualizaregistro(item){
+          let datosnuevos=[];
+      for(let i=0;i<this.datosall.items.length;i++){this.datosall.items[i].id==item[0].id?
+      datosnuevos.push(item[0]):datosnuevos.push(this.datosall.items[i]);}
+ this.datosall.items=datosnuevos;
+    },
+    infoin(item){
+this.$emit('info',item);
+
+    },
+    relationcuenta(row){
+            this.$emit('roles',row);
+
+    },
+     addin(){
+this.$emit('add');
+    },
   eliminaregistro(item){
-  this.items = this.items.filter(
+  this.datosall.items = this.datosall.items.filter(
             (itemin) => itemin.id != item.id);
   },
   getitems(){

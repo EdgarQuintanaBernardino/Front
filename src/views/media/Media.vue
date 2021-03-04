@@ -274,7 +274,7 @@ export default {
             formData.append('file', blob )
             formData.append('thisFolder', self.thisFolder )
             formData.append('id', self.elementId )
-            formData.append('token', localStorage.getItem("api_token") )
+            formData.append('token',  this.$store.getters.gettoken )
             axios.post(  this.$apiAdress + '/api/media/file/cropp', formData )
             .then(function (response) {
                 self.croppModal = false
@@ -287,7 +287,7 @@ export default {
     },
     openCroppFileModal(id){
         let self = this
-        axios.get(  this.$apiAdress + '/api/media/file?id=' + id + '&thisFolder=' + self.thisFolder + '&token=' + localStorage.getItem("api_token"))
+        axios.get(  this.$apiAdress + '/api/media/file?id=' + id + '&thisFolder=' + self.thisFolder + '&token=' +  this.$store.getters.gettoken)
         .then(function (response) {
             self.elementId = response.data.id
             self.croppUrl = response.data.url
@@ -318,7 +318,7 @@ export default {
         this.downloadFileName = name
         axios({
             method: 'get',
-            url:  this.$apiAdress + '/api/media/file/download?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' + localStorage.getItem("api_token"),
+            url:  this.$apiAdress + '/api/media/file/download?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' +  this.$store.getters.gettoken,
             responseType: 'arraybuffer'
         })
         .then(function(response){
@@ -347,7 +347,7 @@ export default {
     },
     deleteFolder(){
         let self = this
-        axios.post(  this.$apiAdress + '/api/media/folder/delete?thisFolder=' + self.thisFolder + '&id=' + self.elementId + '&token=' + localStorage.getItem("api_token")
+        axios.post(  this.$apiAdress + '/api/media/folder/delete?thisFolder=' + self.thisFolder + '&id=' + self.elementId + '&token=' +  this.$store.getters.gettoken
         ).then(function(response){
             self.getFoldersAndFiles(self.thisFolder)
             self.rightCard = 'fileInfo'
@@ -360,7 +360,7 @@ export default {
     },
     deleteFile(){
         let self = this
-        axios.post(  this.$apiAdress + '/api/media/file/delete?thisFolder=' + self.thisFolder + '&id=' + self.elementId + '&token=' + localStorage.getItem("api_token")
+        axios.post(  this.$apiAdress + '/api/media/file/delete?thisFolder=' + self.thisFolder + '&id=' + self.elementId + '&token=' +  this.$store.getters.gettoken
         ).then(function(response){
             self.getFoldersAndFiles(self.thisFolder)
             self.rightCard = 'fileInfo'
@@ -391,7 +391,7 @@ export default {
         this.elementId = id
         let self = this
         if(type == 'folder'){
-            axios.get(  this.$apiAdress + '/api/media/folder?id=' + id + '&token=' + localStorage.getItem("api_token")
+            axios.get(  this.$apiAdress + '/api/media/folder?id=' + id + '&token=' +  this.$store.getters.gettoken
             ).then(function(response){
                 self.name = response.data.name
                 self.rightCard = 'renameFolder'
@@ -401,7 +401,7 @@ export default {
                 self.$router.push({ path: '/login' })
             });
         }else{
-            axios.get(  this.$apiAdress + '/api/media/file?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' + localStorage.getItem("api_token")
+            axios.get(  this.$apiAdress + '/api/media/file?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' +  this.$store.getters.gettoken
             ).then(function(response){
                 self.name = response.data.name
                 self.rightCard = 'renameFile'
@@ -428,7 +428,7 @@ export default {
             {
                 id: this.elementId,
                 folder: this.selectFolder,
-                token: localStorage.getItem("api_token"),
+                token:  this.$store.getters.gettoken,
             }
             ).then(function(response){
                 self.getFoldersAndFiles(self.thisFolder)
@@ -449,7 +449,7 @@ export default {
                 id: this.elementId,
                 folder: this.selectFolder,
                 thisFolder: this.thisFolder,
-                token: localStorage.getItem("api_token"),
+                token:  this.$store.getters.gettoken,
             }
             ).then(function(response){
                 self.getFoldersAndFiles(self.thisFolder)
@@ -464,7 +464,7 @@ export default {
     },
     copyFile(id){
         let self = this
-        axios.get(  this.$apiAdress + '/api/media/file/copy?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' + localStorage.getItem("api_token")
+        axios.get(  this.$apiAdress + '/api/media/file/copy?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' +  this.$store.getters.gettoken
         ).then(function(response){
             self.getFoldersAndFiles(self.thisFolder)
             self.rightCard = 'fileInfo'
@@ -480,7 +480,7 @@ export default {
         {
             name: this.name,
             id: this.elementId,
-            token: localStorage.getItem("api_token"),
+            token:  this.$store.getters.gettoken,
         }
         ).then(function(response){
             self.getFoldersAndFiles(self.thisFolder)
@@ -497,7 +497,7 @@ export default {
         {
             name: this.name,
             id: this.elementId,
-            token: localStorage.getItem("api_token"),
+            token:  this.$store.getters.gettoken,
             thisFolder: this.thisFolder,
         }
         ).then(function(response){
@@ -511,7 +511,7 @@ export default {
     },
     getFileInfo(id){
         let self = this;
-        axios.get(  this.$apiAdress + '/api/media/file?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' + localStorage.getItem("api_token")
+        axios.get(  this.$apiAdress + '/api/media/file?thisFolder=' + self.thisFolder + '&id=' + id + '&token=' +  this.$store.getters.gettoken
         ).then(function(response){
             self.fileInfo = [];
             self.fileInfo.push({name: 'Name'        , data: response.data['name']});
@@ -531,7 +531,7 @@ export default {
         let self = this;
         let formData = new FormData();
         formData.append('file', files[0]);
-        axios.post(  this.$apiAdress + '/api/media/file/store?thisFolder=' + self.thisFolder + '&token=' + localStorage.getItem("api_token"),
+        axios.post(  this.$apiAdress + '/api/media/file/store?thisFolder=' + self.thisFolder + '&token=' +  this.$store.getters.gettoken,
             formData,
             { headers: {
                 'Content-Type': 'multipart/form-data'
@@ -546,7 +546,7 @@ export default {
     },
     addFolder(){
         let self = this;
-        axios.get( this.$apiAdress + '/api/media/folder/store?thisFolder=' + self.thisFolder + '&token=' + localStorage.getItem("api_token"))
+        axios.get( this.$apiAdress + '/api/media/folder/store?thisFolder=' + self.thisFolder + '&token=' +  this.$store.getters.gettoken)
         .then(function (response) {
             self.getFoldersAndFiles(self.thisFolder)
         }).catch(function (error) {
@@ -575,7 +575,7 @@ export default {
     },
     getFoldersAndFiles(folderId){
         let self = this;
-        axios.get( this.$apiAdress + '/api/media?id=' + folderId + '&token=' + localStorage.getItem("api_token"))
+        axios.get( this.$apiAdress + '/api/media?id=' + folderId + '&token=' +  this.$store.getters.gettoken)
         .then(function (response) {
             self.medias         = response.data.medias
             self.mediaFolders   = response.data.mediaFolders

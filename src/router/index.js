@@ -129,13 +129,13 @@ const CreateMenuElement = () => import('@/views/menuElements/CreateMenuElement')
 const EditMenuElement = () => import('@/views/menuElements/EditMenuElement')
 const ShowMenuElement = () => import('@/views/menuElements/ShowMenuElement')
 const DeleteMenuElement = () => import('@/views/menuElements/DeleteMenuElement')
-
 const Media = () => import('@/views/media/Media')
 ////mis vistas
 const profile = () => import('@/views/users/Profile')
 const settings = () => import('@/views/users/Settings')
 const users_users = () => import('@/views/users/user_user')
 const empresas = () => import('@/views/empresas/empresas')
+const prueba23 = () => import('@/views/users/Usersprueba')
 
 
 Vue.use(Router)
@@ -185,6 +185,11 @@ function configRoutes () {
       name: 'Home',
       component: TheContainer,
       children: [
+        {
+          path: '/prueba23',
+          name: 'prueba',
+          component: prueba23
+        },
         {
           path: '/settings',
           name: 'settings',
