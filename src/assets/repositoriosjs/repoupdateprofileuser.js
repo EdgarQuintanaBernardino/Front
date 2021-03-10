@@ -9,8 +9,9 @@ import repologin from '@/views/pages/repologin.js'
 import respuestas from './respuestas'
 import alertas from './alertas'
 
+
 const server="http://127.0.0.1:8000/api";
-//const server='https://api.lybflow.com';
+//const server='http://35.164.247.176/api';
 
 let api = `${server}/user/update`;
 let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
@@ -325,9 +326,9 @@ const deletecuentashared = async (request) => {
 
 }
 const consultasepomex = async (request) => {
-    let endpoint_sepomex = "http://api-sepomex.hckdrk.mx/query/info_cp/";
+    let endpoint_sepomex = "https://api-sepomex.hckdrk.mx/query/info_cp/";
     let url = endpoint_sepomex + request;
-    let result = await Axios.post(url, request).then((res) => {
+    let result = await Axios.get(url).then((res) => {
         return res.data;
     }).catch((error) => {
         let respuesta = JSON.stringify(error)

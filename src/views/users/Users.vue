@@ -36,7 +36,6 @@
 
 
    ></back>
-
     </b-overlay>
      <edituser @itemsusers="items = $event" 
      :configin="config" 
@@ -254,7 +253,7 @@ metodo?this.getitems():this.getitemsback();
             namebtn:'Agrega Usuarios',
             badgevariant:'danger',
             btnvariant:'info',
-            btnstyle:'float:right'
+            btnstyle:'float:right',
 
                 }
                 this.totalrowsend=res.count;
@@ -332,7 +331,9 @@ metodo?this.getitems():this.getitemsback();
             namebtn:'Agrega Usuarios',
             badgevariant:'primary',
             btnvariant:'info',
-            btnstyle:'float:right'
+            btnstyle:'float:right',
+                        component:'usersshow'
+
 
 
                 }

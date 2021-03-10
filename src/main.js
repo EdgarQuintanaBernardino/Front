@@ -32,7 +32,11 @@ Vue.use (BootstrapVueIcons)
 Vue.use(VueAxios, axios)
 Vue.use(Vuelidate)
 Vue.use(BootstrapVue)
-Vue.prototype.$apiAdress = 'http://127.0.0.1:8000'
+
+const server="http://127.0.0.1:8000";
+//const server='http://35.164.247.176';
+Vue.prototype.$apiAdress = server;
+
 Vue.prototype.$prefijoamazon = 'https://fileslyflow.s3-us-west-2.amazonaws.com/'
 Vue.prototype.$keysecret = 'evolucionweb'
 

@@ -9,7 +9,6 @@
           <p id="cancel-label">Please wait...</p>
         </div>
       </template>
-          <cabecera :totalrow="totalrowsend" @change_friends="cambia" ></cabecera>
          <allfront 
          v-if="getmetodo"
         :datosallin="datosall" 
@@ -17,6 +16,10 @@
         @deleteevento="deletevento"   
         :iddeletein="iddelete"
         @deletedetabla="deletedetabla"
+        @add="addevent"
+        @info="info"
+        :idedit="idedit"
+        @roles="roles"
 ></allfront>
    <back  v-if="!getmetodo"
    
@@ -25,10 +28,22 @@
       @deleteevento="deletevento"   
       :iddeletein="iddeleteback"
       @deletedetabla="deletedetabla"
-   
+      @add="addevent"
+       :idedit="ideditback"
+        @info="info"
+        @roles="roles"
+
+
+
    ></back>
     </b-overlay>
-    
+     <edituser @itemsusers="items = $event" 
+     :configin="config" 
+     @adduserevent="adduser"
+     @edituser="edituser"
+     @userdesbloqueado="userdesbloqueado"
+  ></edituser>
+    <permisosuser @itemsusers="items = $event" @addroleupdate="edituser" ></permisosuser>
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
@@ -36,17 +51,18 @@
 </template>
 
 <script>
-import cabecera from '@/views/users/tablesuser/cabecera/headeryourfriends';
 import back from "@/views/users/tablesuser/back/friends/table"
 import allfront from "@/views/users/tablesuser/frontend/yourfriends";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
+import edituser from "@/views/windowmodal/usermaster";
+import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 export default {
-      name:'user_users',
+      name:'Users',
       components:{
-        back,cabecera,allfront
+        back,allfront,edituser,permisosuser
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -61,6 +77,12 @@ export default {
           itemscolumns:[''],
           datosall:[],
           iddelete:[],
+          idedit:[],
+          ideditback:[],
+          userroles:[],
+          allpermissions:[],
+          allpermissionsd:[],///solo una vez mapeamos descripcion
+          allroles:[],
           
           ////abajo es lo de back
         columns:[],  
@@ -77,8 +99,12 @@ export default {
       datosallback:[],
       iddeleteback:0,
       metodo:true,
-      totalrowsend:0
+      totalrowsend:0,
+      
 
+      ///unicos
+      user:false,
+      config:false,
         }
       },mounted() {
        if(this.metodo==this.$store.getters.getmetodo){
@@ -86,6 +112,14 @@ export default {
        }else{
          this.metodo=this.$store.getters.getmetodo;
        }
+           let repoitems = repo();
+       repoitems.getroles_permisos().then((res) => {
+        this.allpermissions=res.data.allpermisos;
+        this.descripcionpermisos(res.data.allpermisos);
+        this.allroles=res.data.roles;
+      }).catch((error)=>{
+        console.log(error);
+      });
       },
        computed:{
      getmetodo(){
@@ -94,9 +128,35 @@ export default {
     },
        },
      methods: {
+       descripcionpermisos(allpermissions){
+         this.allpermissionsd=allpermissions.map(r=>r.descripcion);
+
+       },
+       adduser(item){
+     let metodo=this.$store.getters.getmetodo;
+     metodo?this.datosall.items.push(item[0]):this.datosallback.items.push(item[0]);
+
+
+        
+       },
+        userdesbloqueado(item){
+          let alert= alertas();
+     let metodo=this.$store.getters.getmetodo;
+     metodo?this.datosall.items.push(item[0]):this.datosallback.items.push(item[0]);
+            alert.userdesbloqueado(); 
+
+
+        
+       },
      
        checa(valor){
           this.metodo=valor;
+       },
+       roles(item){
+              this.userroles=item;////user with roles and permissions 
+
+               this.$bvModal.show("modal-prevent-rolesandpermisos");
+
        },
        resetvalores(){
          let self=this;
@@ -121,12 +181,28 @@ self.iddelete=[],
       self.datosallback=[];
       self.iddeleteback=0;
        },
+       info(item){ 
+         ///evento que llega desde la tabla en editar 
+         this.user=item;
+         this.config={
+            titulo:'Editar ',
+            namebtn:'Editar Usuario',
+            typebtn:'edit',
+            showdelete:false,
+            showreset:true,
+         }
+      this.$bvModal.show("modal-prevent-edituser");
+
+
+       },
+       itemsusers(){
+
+       },
        cambia(){
             this.prueba(this.$store.getters.getmetodo);
        },
        prueba(metodo){///true es front
      // this.resetvalores();
-console.log(metodo)
 metodo?this.getitems():this.getitemsback();
 
        },
@@ -136,8 +212,8 @@ metodo?this.getitems():this.getitemsback();
       let self = this;
       self.show=true;
       this.items = [];
-              let validaciones=respuestas();
-        await repoitems.yourusersback({
+        let validaciones=respuestas();
+        await repoitems.yourusersbackadmin({
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
           columnFilter: self.columnFilter,
@@ -146,23 +222,39 @@ metodo?this.getitems():this.getitemsback();
         }).then((res) => {
          //   let response=validaciones.validafriends(res);
               let response=res.data;
-let datosgenericos={
+                  let datosgenericos={
                     placeholder:"Amigos",
                     columns:[
                         { key: "name", label: "Nombre Usuario", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
+                             { key: "roles", label: "Roles", class: "text-center",sorteable:true},
                         { key: "nickname", label: "NickName", class: "text-center"},
+                   
                         { key: "actions", label: "Acciones", class: "text-center"},
 
                       
                         ],
-            totalfilasmostradas:5,
+            totalfilasmostradas:15,
             items:response.data,
+            otheritems:res.other,
             resuelve:12,////el col
             initrows:response.data.length,
-            totalRow:response.data.length,
-            acciones:[3],
-            maxPages:response.last_page
+            totalRow:res.count,
+            acciones:[1,2],
+            maxPages:response.last_page,
+            ///header
+            header:true,///bolean heeader
+            headername:'Usuarios Registrados',
+            btnadd:true,
+            iconadd:'person-plus-fill',
+            animation:'fade',
+            fontscale:'2',
+            classicon:'mr-2',
+            namebtn:'Agrega Usuarios',
+            badgevariant:'danger',
+            btnvariant:'info',
+            btnstyle:'float:right',
+            component:"empresashow"
 
                 }
                 this.totalrowsend=res.count;
@@ -176,36 +268,77 @@ let datosgenericos={
         this.show = false
       }
     },
-   deletedetabla(){
-     let alert=alertas();
-    alert.bloqueado(); 
+   deletedetabla(item){
+       this.$store.getters.getmetodo? this.datosall.otheritems.push(item):this.datosallback.otheritems.push(item);
+
     },
+  
+    addevent(){
+//this.$store.commit('settitulomodalusuario','Nuevo');
+ //     this.$store.commit("flaguser", 0);
+ this.user=[];
+         this.config={
+            titulo:'Nuevo ',
+            namebtn:'Crear Usuario',
+            typebtn:'new',
+            showdelete:true,
+            showreset:false,
+
+         };
+         this.openmodal();
+
+
+     // console.log("evento add clickado")
+    },
+    openmodal(){
+      this.$bvModal.show("modal-prevent-edituser");
+
+    }
+    ,
   async getitems() {
       this.show = true;//// el render del reloj?
       try {
         let repoitems = repo();
         let validaciones=respuestas();
-        await repoitems.onlyusers().then((res) => {
+        await repoitems.getallusers().then((res) => {
           
         let response=validaciones.validafriends(res);
-                   this.totalrowsend=response.data.length;
+           this.totalrowsend=response.data.length;
 
         let datosgenericos={
-                    placeholder:"Amigos",
+                    placeholder:"Busca Usuarios prueba",
                     columns:[
                         { key: "name", label: "Nombre Usuario", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
                         { key: "nickname", label: "NickName", class: "text-center"},
+                        { key: "roles", label: "Roles", class: "text-center"},
                         { key: "actions", label: "Acciones", class: "text-center"},
+
                             ],
             totalfilasmostradas:5,
             items:response.data,
+            otheritems:response.other,
             resuelve:12,
             initrows:response.data.length,
             totalRow:response.data.length,
-            acciones:[3]
+            acciones:[1,2,3],
+            header:true,///bolean heeader
+            headername:'Usuarios',
+            btnadd:true,
+            iconadd:'person-plus-fill',
+            animation:'fade',
+            fontscale:'2',
+            classicon:'mr-2',
+            namebtn:'Agrega Usuarios',
+            badgevariant:'primary',
+            btnvariant:'info',
+            btnstyle:'float:right'
+            ,            component:"empresashow"
+
+
                 }
                             this.datosall=datosgenericos;
+                         //   console.log(this.datosall)
 
             });
       } catch (err) {
@@ -215,7 +348,6 @@ let datosgenericos={
       }
   },
    deletevento(item){
-     console.log("user_user")
       Swal.fire({
         title: "¿Bloquear?",
         text: "¿Deseas bloquear al usuario '" + item.name + "'?",
@@ -236,9 +368,9 @@ let datosgenericos={
          let alert=alertas();
       try {
         await dao
-          .lockuser(item)
+          .lockuseradmin(item)
           .then((res) => {
-           this.$store.getters.getmetodo?this.iddelete=item:this.iddeleteback=item;
+           this.$store.getters.getmetodo?this.iddelete=res[0]:this.iddeleteback=res[0];
                     })
           .catch((eror) => {
            alert.errorservidor();
@@ -259,7 +391,14 @@ let datosgenericos={
           self.currentpage=$params.currentpage;
           this.getitemsback();
          
-    }
+    },
+     edituser(item){
+  this.$store.getters.getmetodo?this.idedit=item:this.ideditback=item;
+
+    },
+   
+
+
     },
   
 

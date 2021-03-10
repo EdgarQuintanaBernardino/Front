@@ -183,54 +183,10 @@
                 </template>
 
                 <template v-slot:row-details="row">
-                  <b-card
-                    v-if="row.item.name"
-                    border-variant="primary"
-                    :header="row.item.name"
-                    header-bg-variant="primary"
-                    header-text-variant="white"
-                    align="center"
-                  >
-                    <b-table
-                      responsive
-                      :items="[
-                        {
-                          Nombre: row.item.name,
-                          Email: row.item.email,
-                          Teléfono: row.item.telefono,
-                          Municipio: row.item.municipio,
-                          NickName: row.item.nickname,
-                        },
-                      ]"
-                      :fields="[
-                        'Nombre',
-                        'Email',
-                        'NickName',
-                        'Teléfono',
-                        'Municipio',
-                      ]"
-                    >
-                      <template v-slot:cell(Empresas)="row">
-                        <ul>
-                          <li
-                            style="list-style: none"
-                            v-for="item in row.item.Empresas.empresas"
-                            :key="item.nombre"
-                          >
-                            <b-button
-                              variant="outline-primary"
-                              class="mb-2"
-                              @click="showempresa(item)"
-                            >
-                              <b-icon icon="building"></b-icon>
-                              {{ item.nombre }}
-                            </b-button>
-                          </li>
-                        </ul>
-                      </template>
-                    </b-table>
-                  </b-card>
-                </template>
+                <keep-alive>
+    <component v-bind:is="stepComponent" v-bind:row="row"></component>
+    </keep-alive>
+               </template>
                 <template v-slot:head()="data">
                   <span class="text-info">{{ data.label.toUpperCase() }}</span>
                 </template>
@@ -332,6 +288,11 @@ export default {
   },
 
   computed: {
+       stepComponent() {
+         let c=this.datosall.component;
+        return () => import(`@/views/tablesdetails/${c}`);
+     
+            },
     sortOptions() {
       // Create an options list from our fields
       return this.fields

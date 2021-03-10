@@ -226,7 +226,8 @@ let datosgenericos={
             namebtn:'Agrega Usuarios',
             badgevariant:'primary',
             btnvariant:'info',
-            btnstyle:'float:right'
+            btnstyle:'float:right',
+            component:"usersshow"
 
 
                 }
