@@ -67,7 +67,6 @@ export default {
                           email:"",
                           roles:"",
                           nickname:"",
-                          actions:""
                         }
     
      
