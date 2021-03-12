@@ -208,7 +208,7 @@ let datosgenericos={
                         { key: "name", label: "Nombre Usuario", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
                         { key: "nickname", label: "NickName", class: "text-center"},
-                        { key: "actions", label: "Acciones", class: "text-center"},
+                        { key: "actions", label: "Acciones", class: "text-center",component:"example"},
                             ],
             totalfilasmostradas:5,
             items:response.data,

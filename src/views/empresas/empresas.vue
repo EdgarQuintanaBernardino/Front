@@ -21,7 +21,7 @@
         :idedit="idedit"
         @roles="roles"
 ></allfront>
-   <back  v-if="!getmetodo"
+   <back  v-else
    
       :datosallin="datosallback" 
       @getparams="getparams" 
@@ -44,6 +44,10 @@
      @userdesbloqueado="userdesbloqueado"
   ></edituser>
     <permisosuser @itemsusers="items = $event" @addroleupdate="edituser" ></permisosuser>
+
+    <modalempresa :configin="config"></modalempresa>
+
+
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
@@ -52,17 +56,19 @@
 
 <script>
 import back from "@/views/users/tablesuser/back/friends/table"
-import allfront from "@/views/users/tablesuser/frontend/yourfriends";
+import allfront from "@/views/empresas/tablefront";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
 import edituser from "@/views/windowmodal/usermaster";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
+import modalempresa from "@/views/windowmodal/empresamodal";
+
 export default {
       name:'Users',
       components:{
-        back,allfront,edituser,permisosuser
+        back,allfront,edituser,permisosuser,modalempresa
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -103,7 +109,7 @@ export default {
       
 
       ///unicos
-      user:false,
+      empresa:false,
       config:false,
         }
       },mounted() {
@@ -274,12 +280,12 @@ metodo?this.getitems():this.getitemsback();
     },
   
     addevent(){
-//this.$store.commit('settitulomodalusuario','Nuevo');
- //     this.$store.commit("flaguser", 0);
- this.user=[];
+
+
+ this.empresa=[];
          this.config={
             titulo:'Nuevo ',
-            namebtn:'Crear Usuario',
+            namebtn:'Empresa Usuario',
             typebtn:'new',
             showdelete:true,
             showreset:false,
@@ -288,10 +294,12 @@ metodo?this.getitems():this.getitemsback();
          this.openmodal();
 
 
-     // console.log("evento add clickado")
     },
     openmodal(){
-      this.$bvModal.show("modal-prevent-edituser");
+      
+      this.$bvModal.show("modal-prevent-polymorfic");
+  console.log("evento add clickado")
+
 
     }
     ,
@@ -300,46 +308,41 @@ metodo?this.getitems():this.getitemsback();
       try {
         let repoitems = repo();
         let validaciones=respuestas();
-        await repoitems.getallusers().then((res) => {
-          
-        let response=validaciones.validafriends(res);
+        await repoitems.getempresas().then((res) => {
+         let response=validaciones.validafriends(res);
            this.totalrowsend=response.data.length;
 
         let datosgenericos={
-                    placeholder:"Busca Usuarios prueba",
+                    placeholder:"Busca Empresa",
                     columns:[
-                        { key: "name", label: "Nombre Usuario", sortable: true},
+                        { key: "name", label: "Nombre Empresa", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
-                        { key: "nickname", label: "NickName", class: "text-center"},
-                        { key: "roles", label: "Roles", class: "text-center"},
+                        { key: "razon", label: "Razón Social", class: "text-center"},
+                        { key: "telefono", label: "Télefono", class: "text-center"},
                         { key: "actions", label: "Acciones", class: "text-center"},
-
-                            ],
+                             ],
             totalfilasmostradas:5,
             items:response.data,
             otheritems:response.other,
             resuelve:12,
             initrows:response.data.length,
             totalRow:response.data.length,
-            acciones:[1,2,3],
+            acciones:[1,3],
             header:true,///bolean heeader
-            headername:'Usuarios',
+            headername:'Empresa',
             btnadd:true,
             iconadd:'person-plus-fill',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Usuarios',
+            namebtn:'Agrega Empresas',
             badgevariant:'primary',
             btnvariant:'info',
-            btnstyle:'float:right'
-            ,            component:"empresashow"
-
-
+            btnstyle:'float:right',
+            component:"empresashow"
                 }
-                            this.datosall=datosgenericos;
-                         //   console.log(this.datosall)
-
+            this.datosall=datosgenericos;
+      //   console.log(this.datosall)
             });
       } catch (err) {
         console.log(err);

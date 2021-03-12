@@ -93,21 +93,7 @@
          
                 <template v-slot:cell(name)="row">
                               <b-row>
-                    <b-col sm="12" class="mb-2 text-center">
-                      <b-img
-                        rounded="circle"
-                        :src="`https://fileslyflow.s3-us-west-2.amazonaws.com/${row.item.photo}`"
-                        width="50px"
-                        v-if="row.item.photo"
-                        alt="no rednreiza"
-                      ></b-img>
-                      <b-img
-                        rounded="circle"
-                        src="https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png"
-                        width="40px"
-                        v-else
-                      ></b-img>
-                    </b-col>
+                
                     <b-col sm="12" class="mb-2 text-center">
                       <b-button
                         size="sm"
@@ -118,15 +104,19 @@
                       >
                         <b-icon icon="eye"></b-icon><br />
 
-                        {{ row.item.name }}
+                        {{ row.item.nombre }}
                       </b-button>
                     </b-col>
                   </b-row>
                 </template>
               
-                <template v-slot:cell(nickname)="row">{{
-                  row.item.nickname
+                <template v-slot:cell(razon)="row">{{
+                  row.item.razonsocial
                 }}</template>
+                  <template v-slot:cell(telefono)="row">{{
+                  row.item.telefonoContacto
+                }}</template>
+                
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -252,7 +242,7 @@
                         @click="deleteevent(row.item)"
                          class="mr-1 mb-1  mt-2"
                       >
-                        <b-icon icon="lock-fill"></b-icon>Bloquear 
+                        <b-icon icon="trash-fill"></b-icon>Borrar 
                       </b-button>
                                         </b-col>
 
@@ -261,7 +251,45 @@
 
                 </template>
                 <template v-slot:row-details="row">
-             <component v-bind:is="stepComponent" v-bind:row="row"></component>
+                <b-card                   
+                    border-variant="primary"
+                    :header="row.item.nombre"
+                    header-bg-variant="primary"
+                    header-text-variant="white"
+                    align="center"           >
+ <b-table
+                      responsive
+                       :items="[{Nombre:row.item.nombre,Razón_social:row.item.razonsocial,
+                RFC:row.item.rfc ,Télefono:row.item.telefonoContacto,
+                Pais:row.item.pais,Número:row.item.numero_ext,Calle:row.item.calle,
+                Estado:row.item.estado,municipio:row.item.municipio,Regimen_Fiscal:row.item.regimen,
+                mail:row.item.email,Colonia:row.item.colonia}]"
+                      :fields="['Nombre',
+                    'Razón_social','Pais',
+                    'Estado','municipio','Colonia','Calle','Número', 'RFC','Télefono','mail','Regimen_Fiscal']"
+                    >
+                   <template v-slot:cell(name)>
+                  
+                 {{row.name}}
+                   </template> 
+                     <template v-slot:cell(municipio)>
+                  
+                 {{row.municipio}}
+                   </template> 
+                      <template v-slot:cell(email)>
+                  
+                 {{row.email}}
+                   </template>   
+                  <template v-slot:cell(tel)>
+                  
+                 {{row.telefono}}
+                   </template> 
+                      <template v-slot:cell(razon)>
+                  
+                 {{row.razonsocial}}
+                   </template> 
+                    </b-table>
+                    </b-card>
                </template>
                 <template v-slot:head()="data">
                   <span class="text-info">{{ data.label.toUpperCase() }}</span>
@@ -365,6 +393,7 @@ export default {
     
   
        stepComponent() {
+         console.log(this.datosall.component)
          let c=this.datosall.component;
         return () => import(`@/views/tablesdetails/${c}`);
      
@@ -413,15 +442,7 @@ export default {
 
   },
   methods: {
-        stepComponenttemplate:function() {
-
-       return () => import(`@/views/templates/componentes`);
-     
-            },
-    cambiavalor(v){
-      this.file=v;/////json preparado para ingresar la carpeta y el archivo
-
-},
+  
      gomycell(key) {
     return `cell(${key})`; // simple string interpolation
   },

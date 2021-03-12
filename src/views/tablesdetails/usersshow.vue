@@ -23,7 +23,7 @@
                     >
                    <template #cell(Nombre)>
                   
-                 {{rowin.name}}
+                 {{rowin.name}}name desde componente hermano
                    </template> 
                       <template #cell(Email)>
                   

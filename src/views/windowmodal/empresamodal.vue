@@ -432,7 +432,7 @@ import "regenerator-runtime/runtime";
 import { required, minLength, email } from "vuelidate/lib/validators";
 import RingLoader from "vue-spinner/src/RingLoader.vue";
 import MaskedInput from "vue-text-mask";
-import repocreate from "../users/repoupdateprofileuser";
+import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser";
 import Swal from "sweetalert2";
 import { mapActions, mapMutations } from "vuex";
 export default {
@@ -522,6 +522,8 @@ this.animationall=false;
 
     },
     async eventdetected() {
+
+      console.log("arramncha")
        this.animationall=true;
 
       if (this.$store.state.flagempresa == 1) {

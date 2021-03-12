@@ -305,16 +305,16 @@ metodo?this.getitems():this.getitemsback();
            this.totalrowsend=response.data.length;
 
         let datosgenericos={
-                    placeholder:"Busca Usuarios prueba",
+                    placeholder:"Busca Usuarios",
                     columns:[
-                        { key: "name", label: "Nombre Usuario", sortable: true},
-                        { key: "email",label: "Email", sortable: true, class: "text-center"},
-                        { key: "nickname", label: "NickName", class: "text-center"},
-                        { key: "roles", label: "Roles", class: "text-center"},
-                        { key: "actions", label: "Acciones", class: "text-center"},
+                        { key: "name", label: "Nombre Usuario", sortable: true,template:"u_name"},
+                        { key: "email",label: "Email", sortable: true, class: "text-center",template:false},
+                        { key: "nickname", label: "NickName", class: "text-center",template:false},
+                        { key: "roles", label: "Roles", class: "text-center",template:"u_roles"},
+                        { key: "actions", label: "Acciones", class: "text-center",template:false},
 
                             ],
-            totalfilasmostradas:5,
+            totalfilasmostradas:15,
             items:response.data,
             otheritems:response.other,
             resuelve:12,
@@ -322,17 +322,17 @@ metodo?this.getitems():this.getitemsback();
             totalRow:response.data.length,
             acciones:[1,2,3],
             header:true,///bolean heeader
-            headername:'Usuarios',
+            headername:'Usuarios prueba',
             btnadd:true,
             iconadd:'person-plus-fill',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
             namebtn:'Agrega Usuarios',
-            badgevariant:'primary',
+            badgevariant:'danger',
             btnvariant:'info',
             btnstyle:'float:right',
-                        component:'usersshow'
+            component:'usersshow',
 
 
 
