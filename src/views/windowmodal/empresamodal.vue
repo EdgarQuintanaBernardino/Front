@@ -19,7 +19,7 @@
           <CCol>
             <CCard>
               <CCardHeader class="bg-primary">
-                <h2 class="text-center text-white">{{tittlemodal}}</h2>
+                <h2 class="text-center text-white">{{tittlemodal}} Empresa y/o Negocio</h2>
               </CCardHeader>
               <CCardBody>
                 <b-row>
@@ -326,9 +326,9 @@
                 </b-overlay>
 
                 <b-row>
-                  <b-col cols="12" md="6" class="mt-3"                            :disabled="this.$store.state.flagempresa ==2"
- >
-                    <CFormGroup
+                  <b-col cols="12" md="6" class="mt-3"    
+                  :disabled="this.$store.state.flagempresa ==2"
+ >                    <CFormGroup
                       wrapperClasses="input-group pt-2"
                       description="ejemplo. (55) 99-10-19-99"
                     >
@@ -368,7 +368,7 @@
                       variant="outline-success"
                       :hidden="$v.$invalid||btnadios"
                       @click.prevent="empresacreate(form)"
-                      v-if="this.$store.state.flagempresa ==1"
+                      v-if="this.$parent.config.showreset&&!$v.$invalid"
                       pill
                     >
                       <h3>
@@ -380,7 +380,7 @@
                       variant="outline-success"
                       :hidden="$v.$invalid||btnadios"
                       @click.prevent="empresaupdate()"
-                      v-if="this.$store.state.flagempresa ==0"
+                      v-if="!this.$parent.config.showreset&&!$v.$invalid"
                       pill
                     >
                       <h3>
@@ -499,8 +499,8 @@ export default {
       try{
       this.form.id = this.regresaempresaedit.id;
       this.form.name = this.regresaempresaedit.nombre;
-      this.form.email = this.regresaempresaedit.email;
-      this.form.razonsocial = this.regresaempresaedit.razonsocial;
+       this.form.email = this.regresaempresaedit.email;
+       this.form.razonsocial = this.regresaempresaedit.razonsocial;
       this.form.telefono = this.regresaempresaedit.telefonoContacto;
       this.form.rfc = this.regresaempresaedit.rfc;
       this.form.pais = this.regresaempresaedit.pais;
@@ -523,20 +523,15 @@ this.animationall=false;
     },
     async eventdetected() {
 
-      console.log("arramncha")
-       this.animationall=true;
-
-      if (this.$store.state.flagempresa == 1) {
-        this.resetModal();
-      } else {
-
-        if(this.$store.state.flagempresa==9){
-      this.form.padre_id = this.regresaempresaedit.padre_id;
-
-
-        }
+      this.animationall=true;
+this.resetModal();
+      if (!this.$parent.config.showreset) {
         this.updateModaledit();
-      }
+      } 
+
+     
+       
+      
     },
     async buscarcp() {
       if (this.form.cp.length != 5) {
@@ -606,31 +601,9 @@ this.animationall=false;
       const repo = repocreate();
       try {
         await repo.createempresa(form).then((res) => {
-
-            if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-        if (res.code == 200) {
-
-          this.$emit("itemscreate", res.data);
-
-
-       //   this.resetModal();
-     //     this.$store.commit("agregaempresamut", res.data);
-          this.hideModal();
-        //  this.agregaempresa(res.data);
-          Swal.fire({
-            title: "Empresa",
-            text: `Empresa creada con éxito`,
-            icon: "success",
-          });
-        }else{
-          Swal.fire({
-          title: "No se pudo crear la empresa",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-        }
+          this.$emit("adduserevent",res.data);
+         this.hideModal();
+            
         });
       } catch (error) {
         console.log(error);
@@ -705,41 +678,16 @@ this.hideModal();
 
       this.btnadios = true;
       this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
+     if(this.$v.$invalid){
+         return false
+        }
 
       const repo = repocreate();
       try {
         await repo.updateempresa(this.form).then((res) => {
-
-
-             if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-        if (res.code == 200) {
-          this.resetModal();
-        //  this.$store.commit("editempresamut", res.data);
-
-       //   this.editaempresa(res.data);
-          this.$emit("itemsupdate", res.data);
-
+         this.$emit("edituser", res.data);
           this.hideModal();
-
-          Swal.fire({
-            title: "Empresa",
-            text: `Empresa editada con éxito`,
-            icon: "success",
-          });
-        }else{
-     Swal.fire({
-          title: "No se pudo editar la empresa",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-
-        }
-        });
+              });
       } catch (error) {
         console.log(error);
         Swal.fire({
@@ -764,10 +712,10 @@ this.hideModal();
       }
     },
     regresaempresaedit() {
-      return this.$store.state.editempresa;
+      return this.$parent.user;
     },
     tittlemodal() {
-      return this.$store.state.tittlemodalempresa;
+      return this.$parent.config.titulo;
     },
     validacp() {
       if (this.form.cp == null) {

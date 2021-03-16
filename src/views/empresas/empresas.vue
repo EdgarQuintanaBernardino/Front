@@ -37,15 +37,11 @@
 
    ></back>
     </b-overlay>
-     <edituser @itemsusers="items = $event" 
-     :configin="config" 
-     @adduserevent="adduser"
-     @edituser="edituser"
-     @userdesbloqueado="userdesbloqueado"
-  ></edituser>
+     
     <permisosuser @itemsusers="items = $event" @addroleupdate="edituser" ></permisosuser>
 
-    <modalempresa :configin="config"></modalempresa>
+    <modalempresa :configin="config"  @adduserevent="adduser"  @edituser="edituser"
+></modalempresa>
 
 
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
@@ -55,20 +51,19 @@
 </template>
 
 <script>
-import back from "@/views/users/tablesuser/back/friends/table"
+import back from "@/views/empresas/table"
 import allfront from "@/views/empresas/tablefront";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
-import edituser from "@/views/windowmodal/usermaster";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import modalempresa from "@/views/windowmodal/empresamodal";
 
 export default {
       name:'Users',
       components:{
-        back,allfront,edituser,permisosuser,modalempresa
+        back,allfront,permisosuser,modalempresa
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -106,7 +101,7 @@ export default {
       iddeleteback:0,
       metodo:true,
       totalrowsend:0,
-      
+      user:[],
 
       ///unicos
       empresa:false,
@@ -140,7 +135,7 @@ export default {
        },
        adduser(item){
      let metodo=this.$store.getters.getmetodo;
-     metodo?this.datosall.items.push(item[0]):this.datosallback.items.push(item[0]);
+     metodo?this.datosall.items.push(item):this.datosallback.items.push(item);
 
 
         
@@ -192,13 +187,12 @@ self.iddelete=[],
          this.user=item;
          this.config={
             titulo:'Editar ',
-            namebtn:'Editar Usuario',
+            namebtn:'Editar Empresa',
             typebtn:'edit',
             showdelete:false,
-            showreset:true,
+            showreset:false,
          }
-      this.$bvModal.show("modal-prevent-edituser");
-
+              this.openmodal();
 
        },
        itemsusers(){
@@ -219,7 +213,7 @@ metodo?this.getitems():this.getitemsback();
       self.show=true;
       this.items = [];
         let validaciones=respuestas();
-        await repoitems.yourusersbackadmin({
+        await repoitems.getempresasback({
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
           columnFilter: self.columnFilter,
@@ -229,12 +223,12 @@ metodo?this.getitems():this.getitemsback();
          //   let response=validaciones.validafriends(res);
               let response=res.data;
                   let datosgenericos={
-                    placeholder:"Amigos",
+                    placeholder:"mis Empresas",
                     columns:[
-                        { key: "name", label: "Nombre Usuario", sortable: true},
+                        { key: "nombre", label: "Nombre Empresa", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
-                             { key: "roles", label: "Roles", class: "text-center",sorteable:true},
-                        { key: "nickname", label: "NickName", class: "text-center"},
+                             { key: "razonsocial", label: "Razón Social", class: "text-center",sorteable:true},
+                       { key: "regimen", label: "Regimen", class: "text-center",sorteable:true},
                    
                         { key: "actions", label: "Acciones", class: "text-center"},
 
@@ -246,18 +240,18 @@ metodo?this.getitems():this.getitemsback();
             resuelve:12,////el col
             initrows:response.data.length,
             totalRow:res.count,
-            acciones:[1,2],
+            acciones:[1,3],
             maxPages:response.last_page,
             ///header
             header:true,///bolean heeader
-            headername:'Usuarios Registrados',
+            headername:'Empresas Registradas',
             btnadd:true,
-            iconadd:'person-plus-fill',
+            iconadd:'building',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Usuarios',
-            badgevariant:'danger',
+            namebtn:'Agrega Empresas',
+            badgevariant:'primary',
             btnvariant:'info',
             btnstyle:'float:right',
             component:"empresashow"
@@ -275,7 +269,7 @@ metodo?this.getitems():this.getitemsback();
       }
     },
    deletedetabla(item){
-       this.$store.getters.getmetodo? this.datosall.otheritems.push(item):this.datosallback.otheritems.push(item);
+     //  this.$store.getters.getmetodo? this.datosall.otheritems.push(item):this.datosallback.otheritems.push(item);
 
     },
   
@@ -284,11 +278,11 @@ metodo?this.getitems():this.getitemsback();
 
  this.empresa=[];
          this.config={
-            titulo:'Nuevo ',
+            titulo:'Nueva ',
             namebtn:'Empresa Usuario',
             typebtn:'new',
             showdelete:true,
-            showreset:false,
+            showreset:true,
 
          };
          this.openmodal();
@@ -296,11 +290,7 @@ metodo?this.getitems():this.getitemsback();
 
     },
     openmodal(){
-      
-      this.$bvModal.show("modal-prevent-polymorfic");
-  console.log("evento add clickado")
-
-
+         this.$bvModal.show("modal-prevent-polymorfic");
     }
     ,
   async getitems() {
@@ -321,7 +311,7 @@ metodo?this.getitems():this.getitemsback();
                         { key: "telefono", label: "Télefono", class: "text-center"},
                         { key: "actions", label: "Acciones", class: "text-center"},
                              ],
-            totalfilasmostradas:5,
+            totalfilasmostradas:15,
             items:response.data,
             otheritems:response.other,
             resuelve:12,
@@ -331,7 +321,7 @@ metodo?this.getitems():this.getitemsback();
             header:true,///bolean heeader
             headername:'Empresa',
             btnadd:true,
-            iconadd:'person-plus-fill',
+            iconadd:'building',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
@@ -350,15 +340,16 @@ metodo?this.getitems():this.getitemsback();
         this.show = false;
       }
   },
+
    deletevento(item){
       Swal.fire({
-        title: "¿Bloquear?",
-        text: "¿Deseas bloquear al usuario '" + item.name + "'?",
+        title: "¿Eliminar?",
+        text: "¿Deseas eliminar a la empresa con el nombre '" + item.nombre + "'?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Bloquealo!",
+        confirmButtonText: "Si, Borrala!",
       }).then((result) => {
         if (result.value) {
           this.actiondeleteempresa(item);
@@ -368,12 +359,12 @@ metodo?this.getitems():this.getitemsback();
    async actiondeleteempresa(item) {
      this.show=true;
       let dao = repo();
-         let alert=alertas();
+     let alert=alertas();
       try {
         await dao
-          .lockuseradmin(item)
+          .deleteempresa(item)
           .then((res) => {
-           this.$store.getters.getmetodo?this.iddelete=res[0]:this.iddeleteback=res[0];
+           this.$store.getters.getmetodo?this.iddelete=res.data:this.iddeleteback=res.data;
                     })
           .catch((eror) => {
            alert.errorservidor();

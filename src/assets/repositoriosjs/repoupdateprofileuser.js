@@ -10,8 +10,8 @@ import respuestas from './respuestas'
 import alertas from './alertas'
 
 
-const server="http://127.0.0.1:8000/api";
-//const server='http://35.164.247.176/api';
+//const server="http://127.0.0.1:8000/api";
+const server='http://35.164.247.176/api';
 
 let api = `${server}/user/update`;
 let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
@@ -79,6 +79,7 @@ let aceptrequestapi=`${server}/user/aceptrequest`;///solo tus amigos
 
 let lockuserrequestapi=`${server}/user/lockuserrequest`;///bloquea desde la solicitud, eliminando la misma y bloqueando al usuario
 let onlyempresaapi=`${server}/empresa/onlyempresas`;
+let onlyempresaapiback=`${server}/empresa/onlyempresasback`;
 
 let compartepersmisoempresaapi=`${server}/empresa/permissions`;
 let compartepersmisocuentaapi=`${server}/cuenta/permissions`;
@@ -149,10 +150,10 @@ const createempresa = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiempresa, request, configin).then((res) => {
-        return res.data;
+        return response.verifyresponseempresa(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
     });
     return result;
 
@@ -225,10 +226,10 @@ const updateempresa = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiempresaupdate, request, configin).then((res) => {
-        return res.data;
+        return response.empresaedit(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
     });
 
     return result;
@@ -257,10 +258,11 @@ const deleteempresa = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiempresadelete, request, configin).then((res) => {
-        return res.data;
+        return response.empresadelete(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
+ 
     });
     return result;
 
@@ -982,6 +984,22 @@ const getempresas =async (request) => {
   });
   return result;
 }
+const getempresasback =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(onlyempresaapiback, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+  }
 const compartepersmisoempresa =async (request) => {
 
 
@@ -1176,6 +1194,7 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    getempresasback,
     yourusersbackadmin,
     unlockuseradmin,
     lockuseradmin,

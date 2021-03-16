@@ -96,6 +96,34 @@ const verifyresponse=(result)=>{
 
               :error500();
                   }
+                  const verifyresponseempresa=(result)=>{
+    
+                    return    result.code==200?successempresa(result)
+                              :result.data.code==403?denegado2()
+                              :result.data.code==401?credentialinvalid2()
+                              :result.data.code==500?denegado2()
+                
+                              :error500();
+                                  }
+                                  const empresaedit=(result)=>{
+    
+                                    return    result.code==200?successempresaedit(result)
+                                              :result.data.code==403?denegado2()
+                                              :result.data.code==401?credentialinvalid2()
+                                              :result.data.code==500?denegado2()
+                                
+                                              :error500();
+                                                  }
+                                                  const empresadelete=(result)=>{
+    
+                                                    return    result.code==200?successempresadelete(result)
+                                                              :result.data.code==403?denegado2()
+                                                              :result.data.code==401?credentialinvalid2()
+                                                              :result.data.code==500?denegado2()
+                                                
+                                                              :error500();
+                                                                  }
+                                  
                   const successprofilelock=(result)=>{
                     alerts.bloqueado();
                     return result;
@@ -168,8 +196,22 @@ function successrequest(result){
     alerts.solicitudenviadaok();
     return result;
 }
+
+
+function successempresaedit(result){
+    alerts.empresaactualizada();
+    return result;
+   }
        function successprofile(result){
         alerts.perfilactualizado();
+        return result;
+       }
+       function successempresa(result){
+        alerts.empresaagregada();
+        return result;
+       }
+       function successempresadelete(result){
+        alerts.empresadelete();
         return result;
        }
       function denegado2(){
@@ -202,7 +244,9 @@ function successrequest(result){
            
        }
        export default ()=> ({
-           
+           empresadelete,
+        empresaedit,
+        verifyresponseempresa,
         verifyresponserole,
         verifyresponseadmin,
         verifyrequesttables,

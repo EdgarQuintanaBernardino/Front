@@ -151,6 +151,16 @@ const requestcancelada=async()=>{
  response(mensaje);
 
 }
+const empresaagregada=async()=>{
+  let mensaje={
+    tittle:'"Agregada!',
+    text:'Empresa Agregada con éxito',
+    icon:'success'
+};
+ response(mensaje);
+
+}
+
 
 const solicitudrechazada=async()=>{
   let mensaje={
@@ -196,6 +206,17 @@ const solicitudenviada=async()=>{
     tittle:'"Error!',
     text:'Ya enviaste una solicitud a este usuario',
     icon:'error'
+};
+response(mensaje);
+
+}
+
+
+const empresaactualizada=async()=>{
+  let mensaje={
+    tittle:'OK',
+    text:'Empresa Actualizada con éxito',
+    icon:'success'
 };
 response(mensaje);
 
@@ -257,6 +278,15 @@ const listaamigos=async()=>{
 response(mensaje);
 
 }
+const empresadelete=async()=>{
+  let mensaje={
+    tittle:'Perfecto!',
+    text:'Empresa Eliminada con éxito',
+    icon:'success'
+};
+response(mensaje);
+
+}
  const bloquearusuario=async(item)=>{
  
 
@@ -295,6 +325,9 @@ response(mensaje);
       
       }
 export default ()=> ({
+  empresadelete,
+  empresaactualizada,
+  empresaagregada,
   roleactualizado,
   passwordsucccess,
   useradd,

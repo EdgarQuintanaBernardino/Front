@@ -273,8 +273,7 @@
                  {{row.name}}
                    </template> 
                      <template v-slot:cell(municipio)>
-                  
-                 {{row.municipio}}
+                  {{row.item.municipio}}
                    </template> 
                       <template v-slot:cell(email)>
                   
@@ -448,8 +447,8 @@ export default {
   },
     actualizaregistro(item){
           let datosnuevos=[];
-      for(let i=0;i<this.datosall.items.length;i++){this.datosall.items[i].id==item[0].id?
-      datosnuevos.push(item[0]):datosnuevos.push(this.datosall.items[i]);}
+      for(let i=0;i<this.datosall.items.length;i++){this.datosall.items[i].id==item.id?
+      datosnuevos.push(item):datosnuevos.push(this.datosall.items[i]);}
  this.datosall.items=datosnuevos;
     },
     infoin(item){
