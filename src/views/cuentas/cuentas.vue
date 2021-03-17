@@ -20,8 +20,9 @@
         @info="info"
         :idedit="idedit"
         @roles="roles"
+        @showempresa="showempresa"
 ></allfront>
-   <back  v-if="!getmetodo"
+   <back  v-else
    
       :datosallin="datosallback" 
       @getparams="getparams" 
@@ -37,13 +38,12 @@
 
    ></back>
     </b-overlay>
-     <edituser @itemsusers="items = $event" 
-     :configin="config" 
-     @adduserevent="adduser"
-     @edituser="edituser"
-     @userdesbloqueado="userdesbloqueado"
-  ></edituser>
+     
     <permisosuser @itemsusers="items = $event" @addroleupdate="edituser" ></permisosuser>
+
+    <modalcuenta :configin="config"  @adduserevent="adduser"  @edituser="edituser"></modalcuenta>
+
+<modalempresa></modalempresa>
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
@@ -51,18 +51,20 @@
 </template>
 
 <script>
-import back from "@/views/users/tablesuser/back/friends/table"
-import allfront from "@/views/users/tablesuser/frontend/yourfriends";
+import back from "@/views/cuentas/table"
+import allfront from "@/views/cuentas/tablefront";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
-import edituser from "@/views/windowmodal/usermaster";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
+import modalempresa from "@/views/cuentas/empresamodal";
+import modalcuenta from "@/views/windowmodal/cuentamodal";
+
 export default {
       name:'Users',
       components:{
-        back,allfront,edituser,permisosuser
+        back,allfront,permisosuser,modalempresa,modalcuenta
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -100,26 +102,28 @@ export default {
       iddeleteback:0,
       metodo:true,
       totalrowsend:0,
-      
+      user:[],
 
       ///unicos
-      user:false,
+      empresa:false,
       config:false,
+      myallcompanies:[]
         }
       },mounted() {
+        this.getitemsempresas();
        if(this.metodo==this.$store.getters.getmetodo){
          this.prueba(this.metodo)
        }else{
          this.metodo=this.$store.getters.getmetodo;
        }
-           let repoitems = repo();
-       repoitems.getroles_permisos().then((res) => {
-        this.allpermissions=res.data.allpermisos;
-        this.descripcionpermisos(res.data.allpermisos);
-        this.allroles=res.data.roles;
-      }).catch((error)=>{
-        console.log(error);
-      });
+      //      let repoitems = repo();
+      //  repoitems.getroles_permisos().then((res) => {
+      //   this.allpermissions=res.data.allpermisos;
+      //   this.descripcionpermisos(res.data.allpermisos);
+      //   this.allroles=res.data.roles;
+      // }).catch((error)=>{
+      //   console.log(error);
+      // });
       },
        computed:{
      getmetodo(){
@@ -134,7 +138,7 @@ export default {
        },
        adduser(item){
      let metodo=this.$store.getters.getmetodo;
-     metodo?this.datosall.items.push(item[0]):this.datosallback.items.push(item[0]);
+     metodo?this.datosall.items.push(item):this.datosallback.items.push(item);
 
 
         
@@ -186,13 +190,12 @@ self.iddelete=[],
          this.user=item;
          this.config={
             titulo:'Editar ',
-            namebtn:'Editar Usuario',
+            namebtn:'Editar Empresa',
             typebtn:'edit',
             showdelete:false,
-            showreset:true,
+            showreset:false,
          }
-      this.$bvModal.show("modal-prevent-edituser");
-
+              this.openmodal();
 
        },
        itemsusers(){
@@ -213,7 +216,7 @@ metodo?this.getitems():this.getitemsback();
       self.show=true;
       this.items = [];
         let validaciones=respuestas();
-        await repoitems.yourusersbackadmin({
+        await repoitems.getempresasback({
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
           columnFilter: self.columnFilter,
@@ -223,12 +226,12 @@ metodo?this.getitems():this.getitemsback();
          //   let response=validaciones.validafriends(res);
               let response=res.data;
                   let datosgenericos={
-                    placeholder:"Amigos",
+                    placeholder:"mis Empresas",
                     columns:[
-                        { key: "name", label: "Nombre Usuario", sortable: true},
+                        { key: "nombre", label: "Nombre Empresa", sortable: true},
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
-                             { key: "roles", label: "Roles", class: "text-center",sorteable:true},
-                        { key: "nickname", label: "NickName", class: "text-center"},
+                             { key: "razonsocial", label: "Razón Social", class: "text-center",sorteable:true},
+                       { key: "regimen", label: "Regimen", class: "text-center",sorteable:true},
                    
                         { key: "actions", label: "Acciones", class: "text-center"},
 
@@ -240,20 +243,21 @@ metodo?this.getitems():this.getitemsback();
             resuelve:12,////el col
             initrows:response.data.length,
             totalRow:res.count,
-            acciones:[1,2],
+            acciones:[1,3],
             maxPages:response.last_page,
             ///header
             header:true,///bolean heeader
-            headername:'Usuarios Registrados',
+            headername:'Empresas Registradas',
             btnadd:true,
-            iconadd:'person-plus-fill',
+            iconadd:'building',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Usuarios',
-            badgevariant:'danger',
+            namebtn:'Agrega Empresas',
+            badgevariant:'primary',
             btnvariant:'info',
             btnstyle:'float:right',
+            component:"empresashow"
 
                 }
                 this.totalrowsend=res.count;
@@ -268,80 +272,60 @@ metodo?this.getitems():this.getitemsback();
       }
     },
    deletedetabla(item){
-       this.$store.getters.getmetodo? this.datosall.otheritems.push(item):this.datosallback.otheritems.push(item);
+     //  this.$store.getters.getmetodo? this.datosall.otheritems.push(item):this.datosallback.otheritems.push(item);
 
     },
-  
-    addevent(){
-//this.$store.commit('settitulomodalusuario','Nuevo');
- //     this.$store.commit("flaguser", 0);
- this.user=[];
+   
+    showempresa(item){ 
+         ///evento que llega desde la tabla en editar 
+         this.user=item;
          this.config={
-            titulo:'Nuevo ',
-            namebtn:'Crear Usuario',
+            titulo:'Información ',
+            namebtn:'Editar Empresa',
+            typebtn:'edit',
+            showdelete:false,
+            showreset:false,
+         }
+              this.openmodalempresa();
+
+       },
+    addevent(){
+
+
+ this.empresa=[];
+         this.config={
+            titulo:'Nueva ',
+            namebtn:'Cuenta ',
             typebtn:'new',
             showdelete:true,
-            showreset:false,
+            showreset:true,
 
          };
          this.openmodal();
 
 
-     // console.log("evento add clickado")
+    },
+    openmodalempresa(){
+
+      console.log("si llega")
+         this.$bvModal.show("modal-prevent-polymorfic");
+
     },
     openmodal(){
-      this.$bvModal.show("modal-prevent-edituser");
-
+         this.$bvModal.show("modal-prevent-cuentapoli");
     }
     ,
-  async getitems() {
+        async getitemsempresas() {
       this.show = true;//// el render del reloj?
       try {
         let repoitems = repo();
         let validaciones=respuestas();
-        await repoitems.getallusers().then((res) => {
-          
-        let response=validaciones.validafriends(res);
+        await repoitems.getempresas().then((res) => {
+         let response=validaciones.validafriends(res);
            this.totalrowsend=response.data.length;
 
-        let datosgenericos={
-                    placeholder:"Busca Usuarios",
-                    columns:[
-                        { key: "name", label: "Nombre Usuario", sortable: true,template:"u_name"},
-                        { key: "email",label: "Email", sortable: true, class: "text-center",template:false},
-                        { key: "nickname", label: "NickName", class: "text-center",template:false},
-                        { key: "roles", label: "Roles", class: "text-center",template:"u_roles"},
-                       { key: "as", label: "nueva", class: "text-center",template:"u_roles"},
-
-                        { key: "actions", label: "Acciones", class: "text-center",template:false},
-
-                            ],
-            totalfilasmostradas:15,
-            items:response.data,
-            otheritems:response.other,
-            resuelve:12,
-            initrows:response.data.length,
-            totalRow:response.data.length,
-            acciones:[1],
-            header:true,///bolean heeader
-            headername:'Usuarios prueba',
-            btnadd:false,
-            iconadd:'person-plus-fill',
-            animation:'fade',
-            fontscale:'2',
-            classicon:'mr-2',
-            namebtn:'Agrega Usuarios',
-            badgevariant:'primary',
-            btnvariant:'info',
-            btnstyle:'float:right',
-            component:'usersshow',
-
-
-
-                }
-                            this.datosall=datosgenericos;
-                         //   console.log(this.datosall)
-
+             this.myallcompanies=response.data;
+          
             });
       } catch (err) {
         console.log(err);
@@ -349,15 +333,65 @@ metodo?this.getitems():this.getitemsback();
         this.show = false;
       }
   },
+  async getitems() {
+      this.show = true;//// el render del reloj?
+      try {
+        let repoitems = repo();
+        let validaciones=respuestas();
+        await repoitems.getmycuentas().then((res) => {
+         let response=validaciones.validafriends(res);
+         console.log(response.data.cuentas)
+           this.totalrowsend=response.count;
+
+        let datosgenericos={
+                    placeholder:"Busca Cuenta",
+                    columns:[
+                        { key: "nombre_cuenta", label: "Nombre de la Cuenta", sortable: true},
+                        { key: "banco",label: "Banco", sortable: true, class: "text-center"},
+                        { key: "moneda", label: "Moneda", class: "text-center"},
+                        { key: "numero_cuenta", label: "Número de Cuenta", class: "text-center"},
+                                                { key: "empresa", label: "Empresa", class: "text-center"},
+
+                        { key: "actions", label: "Acciones", class: "text-center"},
+                             ],
+            totalfilasmostradas:15,
+            items:response.data.cuentas,
+            resuelve:12,
+            initrows:response.count,
+            totalRow:response.count,
+            acciones:[1,3],
+            header:true,///bolean heeader
+            headername:'Tus Cuentas Bancarias',
+            btnadd:true,
+            iconadd:'pencil',
+            animation:'fade',
+            fontscale:'1',
+            classicon:'mr-2',
+            namebtn:'Agrega Cuenta Bancaria',
+            badgevariant:'primary',
+            btnvariant:'info',
+            btnstyle:'float:right',
+            component:"null"
+                }
+            this.datosall=datosgenericos;
+      //   console.log(this.datosall)
+            });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.show = false;
+      }
+  },
+
    deletevento(item){
       Swal.fire({
-        title: "¿Bloquear?",
-        text: "¿Deseas bloquear al usuario '" + item.name + "'?",
+        title: "¿Eliminar?",
+        text: "¿Deseas eliminar a la empresa con el nombre '" + item.nombre + "'?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Bloquealo!",
+        confirmButtonText: "Si, Borrala!",
       }).then((result) => {
         if (result.value) {
           this.actiondeleteempresa(item);
@@ -367,12 +401,12 @@ metodo?this.getitems():this.getitemsback();
    async actiondeleteempresa(item) {
      this.show=true;
       let dao = repo();
-         let alert=alertas();
+     let alert=alertas();
       try {
         await dao
-          .lockuseradmin(item)
+          .deleteempresa(item)
           .then((res) => {
-           this.$store.getters.getmetodo?this.iddelete=res[0]:this.iddeleteback=res[0];
+           this.$store.getters.getmetodo?this.iddelete=res.data:this.iddeleteback=res.data;
                     })
           .catch((eror) => {
            alert.errorservidor();
@@ -396,6 +430,7 @@ metodo?this.getitems():this.getitemsback();
     },
      edituser(item){
   this.$store.getters.getmetodo?this.idedit=item:this.ideditback=item;
+
     },
    
 

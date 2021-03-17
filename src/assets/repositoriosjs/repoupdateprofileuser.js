@@ -10,8 +10,8 @@ import respuestas from './respuestas'
 import alertas from './alertas'
 
 
-//const server="http://127.0.0.1:8000/api";
-const server='http://35.164.247.176/api';
+const server="http://127.0.0.1:8000/api";
+//const server='http://35.164.247.176/api';
 
 let api = `${server}/user/update`;
 let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
@@ -80,6 +80,9 @@ let aceptrequestapi=`${server}/user/aceptrequest`;///solo tus amigos
 let lockuserrequestapi=`${server}/user/lockuserrequest`;///bloquea desde la solicitud, eliminando la misma y bloqueando al usuario
 let onlyempresaapi=`${server}/empresa/onlyempresas`;
 let onlyempresaapiback=`${server}/empresa/onlyempresasback`;
+
+let onlycuentaapi=`${server}/cuenta/getall`;
+let onlycuentaapiback=`${server}/empresa/onlyempresasback`;
 
 let compartepersmisoempresaapi=`${server}/empresa/permissions`;
 let compartepersmisocuentaapi=`${server}/cuenta/permissions`;
@@ -984,6 +987,22 @@ const getempresas =async (request) => {
   });
   return result;
 }
+const getmycuentas =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(onlycuentaapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+  }
 const getempresasback =async (request) => {
 
 
@@ -1194,6 +1213,7 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    getmycuentas,
     getempresasback,
     yourusersbackadmin,
     unlockuseradmin,

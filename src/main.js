@@ -33,8 +33,8 @@ Vue.use(VueAxios, axios)
 Vue.use(Vuelidate)
 Vue.use(BootstrapVue)
 
-//const server="http://127.0.0.1:8000";
-const server='http://35.164.247.176';
+const server="http://127.0.0.1:8000";
+//const server='http://35.164.247.176';
 Vue.prototype.$apiAdress = server;
 
 Vue.prototype.$prefijoamazon = 'https://fileslyflow.s3-us-west-2.amazonaws.com/'

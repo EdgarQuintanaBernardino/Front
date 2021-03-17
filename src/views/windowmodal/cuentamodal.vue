@@ -19,10 +19,10 @@
           <CCol>
             <CCard>
               <CCardHeader class="bg-info">
-                <h2 class="text-center text-white">{{tittlemodal}}</h2>
+                <h2 class="text-center text-white">{{tittlemodal.titulo}} Cuenta Bancaria</h2>
               </CCardHeader>
               <CCardBody>
-                <b-row>
+                <b-row v-if="this.empresas.length>0">
                   <b-col cols="12" md="6">
                     <label>
                       <span>Nombre de la Cuenta</span>
@@ -161,7 +161,7 @@
                       variant="outline-success"
                       :hidden="$v.$invalid||btnadios"
                       @click.prevent="empresacreate(form)"
-                      v-if="(this.$store.state.flagcuenta==1)&&(this.form.empresa.length>0)&&(this.empresas.length>0)"
+                      v-if="(this.$parent.config.showreset)&&(this.form.empresa.length>0)&&(this.empresas.length>0)"
                       pill>
                       <h3><b-icon icon="person-badge" aria-hidden="true" class="mr-3"></b-icon>Agrega Cuenta</h3>
                     </b-button>
@@ -213,7 +213,8 @@ import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
 import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import Swal from "sweetalert2";
-import { mapActions, mapMutations } from "vuex";
+
+
 export default {
   name: "modalcuenta",
   data() {
@@ -273,20 +274,22 @@ export default {
       }
     },
     async eventdetected() {
-let nombres=[];
+      let nombres=[];
+       this.resetModal();
+
       this.bancos=this.bancos.sort();
-       if(this.$parent.myallcompanies.length>0){
+  if(this.$parent.myallcompanies.length>0){
  let empresass=this.$parent.myallcompanies;
        nombres=empresass.map(item=>item.nombre)
         this.empresas=nombres;
-        }
-      if (this.$store.state.flagcuenta == 1) {
-
- this.resetModal();
-     if(this.$parent.myallcompanies.length>0){
-
-          this.form.empresa=nombres[0];
+       this.form.empresa=nombres[0];
      }
+        
+     
+    if(!this.$parent.config.showreset){
+        this.updateModaledit();
+
+    }
 
 
 
@@ -294,10 +297,7 @@ let nombres=[];
 //this.form.empresa=this.empresas[0];
 
 
-      } else {
-        this.updateModaledit();
-
-      }
+      
     },
     hideModal() {
       this.$refs["modal-cuenta"].hide();
@@ -332,6 +332,10 @@ let nombres=[];
       try {
 
         await repo.adcuenta(form).then((res) => {
+
+
+          console.log(res);
+          return false;
               if (res.message == "Request failed with status code 401") {
             this.$router.push(`/pages/login`);
           }
@@ -488,8 +492,10 @@ this.hideModal();
       return this.$store.state.editcuenta;
     },
     tittlemodal() {
-      return this.$store.state.tittlemodalcuenta;
-    }
+      return this.$parent.config;
+    },
+    
+
 
   },
 };

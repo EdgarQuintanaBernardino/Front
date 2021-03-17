@@ -38,8 +38,6 @@
    ></back>
     </b-overlay>
      
-    <permisosuser @itemsusers="items = $event" @addroleupdate="edituser" ></permisosuser>
-
     <modalempresa :configin="config"  @adduserevent="adduser"  @edituser="edituser"
 ></modalempresa>
 
@@ -57,13 +55,12 @@ import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
-import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import modalempresa from "@/views/windowmodal/empresamodal";
 
 export default {
       name:'Users',
       components:{
-        back,allfront,permisosuser,modalempresa
+        back,allfront,modalempresa
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -113,14 +110,14 @@ export default {
        }else{
          this.metodo=this.$store.getters.getmetodo;
        }
-           let repoitems = repo();
-       repoitems.getroles_permisos().then((res) => {
-        this.allpermissions=res.data.allpermisos;
-        this.descripcionpermisos(res.data.allpermisos);
-        this.allroles=res.data.roles;
-      }).catch((error)=>{
-        console.log(error);
-      });
+      //      let repoitems = repo();
+      //  repoitems.getroles_permisos().then((res) => {
+      //   this.allpermissions=res.data.allpermisos;
+      //   this.descripcionpermisos(res.data.allpermisos);
+      //   this.allroles=res.data.roles;
+      // }).catch((error)=>{
+      //   console.log(error);
+      // });
       },
        computed:{
      getmetodo(){

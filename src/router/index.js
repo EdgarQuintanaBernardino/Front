@@ -136,6 +136,7 @@ const settings = () => import('@/views/users/Settings')
 const users_users = () => import('@/views/users/user_user')
 const empresas = () => import('@/views/empresas/empresas')
 const prueba23 = () => import('@/views/users/Usersprueba')
+const cuentas_bancarias = () => import('@/views/cuentas/cuentas')
 
 
 Vue.use(Router)
@@ -199,6 +200,11 @@ function configRoutes () {
           path: '/contactos',
           name: 'Contactos',
           component: users_users
+        },
+        {
+          path: '/cuentas_bancarias',
+          name: 'Cuentas Bancarias',
+          component: cuentas_bancarias
         },
         {
           path: '/empresas',
