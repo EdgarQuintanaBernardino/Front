@@ -93,13 +93,15 @@ export default {
     }
   },  computed:{
      getfoto(){
-       let foto=this.$store.getters.getphoto;
+    let self=this;
+       let foto=self.$store.getters.getphoto;
+       console.log(foto)
         if(foto==""||foto==null){
-          return 'https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png';
-        }else{
-        return foto;
-        }
 
+         return this.fotourl=self.$prefijoamazon+'imagenes_basicas/profile/sinfoto.png';
+        }else{
+         return foto;
+        }
 
 
     },

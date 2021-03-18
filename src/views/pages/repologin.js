@@ -3,7 +3,7 @@ import "regenerator-runtime/runtime"
 import Axios from "axios";
 
 const server="http://127.0.0.1:8000";
-//const server='http://35.164.247.176';
+//const server='http://18.218.153.207';
 
 const api = `${server}/api/login`;
 const apiregister=`${server}/auth/register`;

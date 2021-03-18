@@ -51,6 +51,14 @@ const verifyadduser=(result)=>{
     :result.data.code==401?credentialinvalid2()
     :error500();
                   }
+                  const successgeneric=(result)=>{
+
+    
+                    return  result.code==200?success(result.data)
+                    :result.data.code==403?denegado2()
+                    :result.data.code==401?credentialinvalid2()
+                    :error500();
+                                  }
 const verifyrequesttables=(result)=>{
     
     return    result.status==200?success(result.data)
@@ -105,6 +113,17 @@ const verifyresponse=(result)=>{
                 
                               :error500();
                                   }
+                                  const verifyresponsecuenta=(result)=>{
+                                                   
+                                    return    result.code==200?successcuenta(result)
+                                              :result.data.code==403?denegado2()
+                                              :result.data.code==401?credentialinvalid2()
+                                              :result.data.code==500?denegado2()
+                                
+                                              :error500();
+                                                  }
+
+                                                  
                                   const empresaedit=(result)=>{
     
                                     return    result.code==200?successempresaedit(result)
@@ -114,15 +133,34 @@ const verifyresponse=(result)=>{
                                 
                                               :error500();
                                                   }
+
+                const cuentaedit=(result)=>{
+    
+                return    result.code==200?successcuentaedit(result)
+            :result.data.code==403?denegado2()
+            :result.data.code==401?credentialinvalid2()
+            :result.data.code==500?denegado2()
+                                                
+           :error500();
+        }
                                                   const empresadelete=(result)=>{
     
-                                                    return    result.code==200?successempresadelete(result)
+                                                    return    result.code==200?successdelete('Empresa Eliminada')
                                                               :result.data.code==403?denegado2()
                                                               :result.data.code==401?credentialinvalid2()
                                                               :result.data.code==500?denegado2()
                                                 
                                                               :error500();
                                                                   }
+                                                                  const cuentadelete=(result)=>{
+    
+                                                                    return    result.code==200?successdelete('Cuenta Eliminada')
+                                                                              :result.data.code==403?denegado2()
+                                                                              :result.data.code==401?credentialinvalid2()
+                                                                              :result.data.code==500?denegado2()
+                                                                
+                                                                              :error500();
+                                                                                  }
                                   
                   const successprofilelock=(result)=>{
                     alerts.bloqueado();
@@ -198,10 +236,19 @@ function successrequest(result){
 }
 
 
+function successdelete(result){
+    alerts.deletemsj(result);
+    return result;
+   }
 function successempresaedit(result){
     alerts.empresaactualizada();
     return result;
    }
+   function successcuentaedit(result){
+    alerts.cuentaactualizada();
+    return result;
+   }
+   
        function successprofile(result){
         alerts.perfilactualizado();
         return result;
@@ -210,8 +257,12 @@ function successempresaedit(result){
         alerts.empresaagregada();
         return result;
        }
+       function successcuenta(result){
+        alerts.cuentaagregada();
+        return result;
+       }
        function successempresadelete(result){
-        alerts.empresadelete();
+        alerts.deletemsj(result);
         return result;
        }
       function denegado2(){
@@ -244,6 +295,9 @@ function successempresaedit(result){
            
        }
        export default ()=> ({
+        cuentadelete,
+        cuentaedit,
+        verifyresponsecuenta,
            empresadelete,
         empresaedit,
         verifyresponseempresa,

@@ -62,8 +62,8 @@
             >
 <b-row>
         <b-col cols="12" md="6">
-                  <b-img  rounded="circle"  :src="`https://fileslyflow.s3-us-west-2.amazonaws.com/${option.photo}`" width="50px" v-if="option.photo"></b-img>
-                  <b-img  rounded="circle"  src="https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png" width="40px" v-else></b-img>
+                  <b-img  rounded="circle"  :src="`https://pagosfile.s3-us-west-2.amazonaws.com/${option.photo}`" width="50px" v-if="option.photo"></b-img>
+                  <b-img  rounded="circle"  src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png" width="40px" v-else></b-img>
 
 
              <span class="ml-2">{{ option.name }}</span>

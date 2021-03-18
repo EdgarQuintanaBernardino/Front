@@ -177,7 +177,7 @@
                       block
                       variant="outline-success"
                       @click.prevent="empresaupdate()"
-                      v-if="this.$store.state.flagcuenta ==0&&!$v.$invalid &&this.empresas.length>0&&this.form.empresa!=''||this.$store.state.flagcuenta ==9&&!$v.$invalid"
+                      v-if="!this.$parent.config.showreset&&!$v.$invalid &&this.empresas.length>0&&this.form.empresa!=''"
                       pill>
                       <h3><b-icon icon="check-circle" aria-hidden="true" class="mr-3"></b-icon>Actualiza Cuenta</h3>
                     </b-button>
@@ -213,7 +213,7 @@ import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
 import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import Swal from "sweetalert2";
-
+import alertas from '@/assets/repositoriosjs/alertas';
 
 export default {
   name: "modalcuenta",
@@ -268,10 +268,10 @@ export default {
       this.form.alias = this.regresacuentaedit.nickname;
       this.form.moneda = this.regresacuentaedit.moneda;
       this.form.empresa=this.regresacuentaedit.empresas[0].nombre;
-      if(this.$store.state.flagcuenta==9){
+      // if(this.$store.state.flagcuenta==9){
 
-        this.form.padre_id=this.regresacuentaedit.padre_id;
-      }
+      //   this.form.padre_id=this.regresacuentaedit.padre_id;
+      // }
     },
     async eventdetected() {
       let nombres=[];
@@ -332,43 +332,17 @@ export default {
       try {
 
         await repo.adcuenta(form).then((res) => {
-
-
-          console.log(res);
-          return false;
-              if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-        if (res.code == 200) {
-
-          this.resetModal();
-        this.$emit("itemscuentaupdate",res.data);
-  //       this.$store.commit('setcuentas',res.data[0].cuentas)
-
-          this.hideModal();
-          Swal.fire({
-            title: "Cuenta",
-            text: `Cuenta Creada con éxito`,
-            icon: "success",
-          });
-        }else{
-                  console.log(error);
-
-  Swal.fire({
-          title: "No se pudo crear la cuenta",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
+        this.resetModal();
+      
+       this.$emit("adduserevent",res.data[0]);
+           this.hideModal();
+      
         });
-
-        }
-        });
+       
       } catch (error) {
+        let res=alertas();
         console.log(error);
-        Swal.fire({
-          title: "No se pudo crear la cuenta",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+       res.errorgenerico();
       } finally {
         this.update = true;
         this.btnadios = false;
@@ -380,98 +354,32 @@ export default {
 
       this.btnadios = true;
       this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-let repo;
-
-if(this.$store.state.flagcuenta==9){
-   repo = repocreate();
-      try {
-
-        await repo.updateforshared(this.form).then((res) => {
-        //      console.log(res)
-        if (res.message) {
-            this.$router.push(`/pages/login`);
-          }
-  if(res.code==4030){////permiso denegado renderizamos la tabla mandamos msj de que perdio el permiso
-     this.$emit("getitems");
-this.hideModal();
-   Swal.fire({
-          title: "No se pudo editar la empresa",
-          text: `No se realizo ningun cambio,Permiso DENEGADO`,
-          icon: "error",
-        });
-
-               }
-        if (res.code == 200) {
-
-          this.resetModal();
-         this.$emit("itemscuentaupdate",res.data);
-       //  this.$store.commit('setcuentas',res.data[0].cuentas)
-          this.hideModal();
-
-          Swal.fire({
-            title: "Cuenta",
-            text: `Cuenta editada con éxito`,
-            icon: "success",
-          });
-        }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo editar la empresa",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.animationall = false;
-        this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
-}else{
-       repo = repocreate();
+      if(this.$v.$invalid){
+         return false
+       }
+       let repo = repocreate();
       try {
         await repo.updatecuenta(this.form).then((res) => {
-        if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-        if (res.code == 200) {
-
+      
           this.resetModal();
-         this.$emit("itemscuentaupdate",res.data);
+         this.$emit("edituser",res.data[0]);
        //  this.$store.commit('setcuentas',res.data[0].cuentas)
           this.hideModal();
 
-          Swal.fire({
-            title: "Cuenta",
-            text: `Cuenta editada con éxito`,
-            icon: "success",
-          });
-        }else{
-              Swal.fire({
-          title: "No se pudo editar la cuenta",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
+         
+        
         });
-        }
-        });
-      } catch (error) {
+      }catch (error) {
         console.log(error);
-        Swal.fire({
-          title: "No se pudo editar la empresa",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
+      let alert= alertas();
+      alert.errorgenerico();
       } finally {
         this.animationall = false;
         this.$forceUpdate();
         this.update = true;
         this.btnadios = false;
       }
-}
+
     },
   },
   computed: {
@@ -489,7 +397,7 @@ this.hideModal();
       }
  },
    regresacuentaedit() {
-      return this.$store.state.editcuenta;
+      return this.$parent.user;
     },
     tittlemodal() {
       return this.$parent.config;

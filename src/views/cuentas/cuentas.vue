@@ -59,7 +59,7 @@ import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import modalempresa from "@/views/cuentas/empresamodal";
-import modalcuenta from "@/views/windowmodal/cuentamodal";
+import modalcuenta from "@/views/cuentas/cuentamodal";
 
 export default {
       name:'Users',
@@ -217,6 +217,7 @@ metodo?this.getitems():this.getitemsback();
       this.items = [];
         let validaciones=respuestas();
         await repoitems.getempresasback({
+          ////iniciamos la parte del back
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
           columnFilter: self.columnFilter,
@@ -307,7 +308,6 @@ metodo?this.getitems():this.getitemsback();
     },
     openmodalempresa(){
 
-      console.log("si llega")
          this.$bvModal.show("modal-prevent-polymorfic");
 
     },
@@ -340,7 +340,6 @@ metodo?this.getitems():this.getitemsback();
         let validaciones=respuestas();
         await repoitems.getmycuentas().then((res) => {
          let response=validaciones.validafriends(res);
-         console.log(response.data.cuentas)
            this.totalrowsend=response.count;
 
         let datosgenericos={
@@ -386,7 +385,7 @@ metodo?this.getitems():this.getitemsback();
    deletevento(item){
       Swal.fire({
         title: "¿Eliminar?",
-        text: "¿Deseas eliminar a la empresa con el nombre '" + item.nombre + "'?",
+        text: "¿Deseas eliminar a la empresa con el nombre '" + item.nombre_cuenta + "'?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
@@ -404,9 +403,9 @@ metodo?this.getitems():this.getitemsback();
      let alert=alertas();
       try {
         await dao
-          .deleteempresa(item)
+          .deletecuenta(item)
           .then((res) => {
-           this.$store.getters.getmetodo?this.iddelete=res.data:this.iddeleteback=res.data;
+           this.$store.getters.getmetodo?this.iddelete=item:this.iddeleteback=item;
                     })
           .catch((eror) => {
            alert.errorservidor();

@@ -160,7 +160,24 @@ const empresaagregada=async()=>{
  response(mensaje);
 
 }
+const cuentaagregada=async()=>{
+  let mensaje={
+    tittle:'"Agregada!',
+    text:'Cuenta Agregada con éxito',
+    icon:'success'
+};
+ response(mensaje);
 
+}
+const cuentaactualizada=async()=>{
+  let mensaje={
+    tittle:'"Actualizada!',
+    text:'Cuenta Actualizada con éxito',
+    icon:'success'
+};
+ response(mensaje);
+
+}
 
 const solicitudrechazada=async()=>{
   let mensaje={
@@ -278,6 +295,16 @@ const listaamigos=async()=>{
 response(mensaje);
 
 }
+
+const deletemsj=async(item)=>{
+  let mensaje={
+    tittle:'Perfecto!',
+    text:item+' con éxito',
+    icon:'success'
+};
+response(mensaje);
+
+}
 const empresadelete=async()=>{
   let mensaje={
     tittle:'Perfecto!',
@@ -325,6 +352,9 @@ response(mensaje);
       
       }
 export default ()=> ({
+  deletemsj,
+  cuentaactualizada,
+  cuentaagregada,
   empresadelete,
   empresaactualizada,
   empresaagregada,

@@ -96,14 +96,14 @@
                     <b-col sm="12" class="mb-2 text-center">
                       <b-img
                         rounded="circle"
-                        :src="`https://fileslyflow.s3-us-west-2.amazonaws.com/${row.item.photo}`"
+                        :src="`https://pagosfile.s3-us-west-2.amazonaws.com/${row.item.photo}`"
                         width="50px"
                         v-if="row.item.photo"
                         alt="no rednreiza"
                       ></b-img>
                       <b-img
                         rounded="circle"
-                        src="https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png"
+                        src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png"
                         width="40px"
                         v-else
                       ></b-img>

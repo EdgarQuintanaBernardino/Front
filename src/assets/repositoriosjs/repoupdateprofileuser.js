@@ -11,7 +11,8 @@ import alertas from './alertas'
 
 
 const server="http://127.0.0.1:8000/api";
-//const server='http://35.164.247.176/api';
+//const server='http://18.218.153.207/api';
+
 
 let api = `${server}/user/update`;
 let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
@@ -82,7 +83,7 @@ let onlyempresaapi=`${server}/empresa/onlyempresas`;
 let onlyempresaapiback=`${server}/empresa/onlyempresasback`;
 
 let onlycuentaapi=`${server}/cuenta/getall`;
-let onlycuentaapiback=`${server}/empresa/onlyempresasback`;
+let onlycuentaapiback=`${server}/cuenta/getallback`;
 
 let compartepersmisoempresaapi=`${server}/empresa/permissions`;
 let compartepersmisocuentaapi=`${server}/cuenta/permissions`;
@@ -197,14 +198,14 @@ const adcuenta = async (request) => {
     let config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    let response = await Axios.post(addcuenta, request, config).then((res) => {
-        return res.data;
+    let responses = await Axios.post(addcuenta, request, config).then((res) => {
+        return response.verifyresponsecuenta(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
     });
 
-    return response;
+    return responses;
 
 }
 const cuentasitem = async (request) => {
@@ -245,10 +246,11 @@ const updatecuenta = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apicuentaupdate, request, configin).then((res) => {
-        return res.data;
+
+        return response.cuentaedit(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
     });
 
     return result;
@@ -307,11 +309,12 @@ const deletecuenta = async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apicuentaadelete, request, configin).then((res) => {
-        return res.data;
+        return response.cuentadelete(res.data)
+
     }).catch((error) => {
-        let respuesta = JSON.stringify(error)
-        return JSON.parse(respuesta)
+        return response.filtraerror(error);
     });
+
     return result;
 
 }
@@ -1019,6 +1022,24 @@ const getempresasback =async (request) => {
     });
     return result;
   }
+  const getcuentasback =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(onlycuentaapiback, request, configin).then((res) => {
+   
+        return response.successgeneric(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return result;
+  }
 const compartepersmisoempresa =async (request) => {
 
 
@@ -1213,6 +1234,7 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    getcuentasback,
     getmycuentas,
     getempresasback,
     yourusersbackadmin,

@@ -83,7 +83,7 @@
        
            this.item=this.userin;
             if(this.item.photo==null){
-            this.src="https://fileslyflow.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png";
+            this.src=this.$prefijoamazon+"imagenes_basicas/profile/sinfoto.png";
         }else{
             this.src=this.$prefijoamazon+this.item.photo;
         }
