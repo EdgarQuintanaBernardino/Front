@@ -1031,7 +1031,6 @@ const getempresasback =async (request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(onlycuentaapiback, request, configin).then((res) => {
-   
         return response.successgeneric(res.data)
 
     }).catch((error) => {

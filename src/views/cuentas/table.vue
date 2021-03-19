@@ -117,7 +117,7 @@
                       >
                         <b-icon icon="eye"></b-icon><br />
 
-                        {{ item.nombre}} 123123
+                        {{ item.nombre_cuenta}} 
 
                       </b-button>
                     </b-col>

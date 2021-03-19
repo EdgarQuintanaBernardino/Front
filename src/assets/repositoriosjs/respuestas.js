@@ -52,9 +52,8 @@ const verifyadduser=(result)=>{
     :error500();
                   }
                   const successgeneric=(result)=>{
-
     
-                    return  result.code==200?success(result.data)
+                    return  result.code==200?success(result)
                     :result.data.code==403?denegado2()
                     :result.data.code==401?credentialinvalid2()
                     :error500();
@@ -295,6 +294,7 @@ function successempresaedit(result){
            
        }
        export default ()=> ({
+           successgeneric,
         cuentadelete,
         cuentaedit,
         verifyresponsecuenta,

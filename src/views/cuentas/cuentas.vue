@@ -158,7 +158,6 @@ export default {
        },
        roles(item){
               this.userroles=item;////user with roles and permissions 
-
                this.$bvModal.show("modal-prevent-rolesandpermisos");
 
        },
@@ -216,31 +215,29 @@ metodo?this.getitems():this.getitemsback();
       self.show=true;
       this.items = [];
         let validaciones=respuestas();
-        await repoitems.getempresasback({
-          ////iniciamos la parte del back
+        await repoitems.getcuentasback({
+          ////iniciamos la parte del back en 
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
           columnFilter: self.columnFilter,
           itemsLimit:   self.itemsLimit,
           currentpage: self.currentpage
         }).then((res) => {
+
+        
          //   let response=validaciones.validafriends(res);
               let response=res.data;
                   let datosgenericos={
-                    placeholder:"mis Empresas",
+                  placeholder:"Busca Cuenta",
                     columns:[
-                        { key: "nombre", label: "Nombre Empresa", sortable: true},
-                        { key: "email",label: "Email", sortable: true, class: "text-center"},
-                             { key: "razonsocial", label: "Razón Social", class: "text-center",sorteable:true},
-                       { key: "regimen", label: "Regimen", class: "text-center",sorteable:true},
-                   
+                        { key: "nombre_cuenta", label: "Nombre de la Cuenta", sortable: true},
+                        { key: "banco",label: "Banco", sortable: true, class: "text-center"},
+                        { key: "moneda", label: "Moneda", class: "text-center"},
+                        { key: "numero_cuenta", label: "Número de Cuenta", class: "text-center"},
                         { key: "actions", label: "Acciones", class: "text-center"},
-
-                      
-                        ],
+                             ],
             totalfilasmostradas:15,
             items:response.data,
-            otheritems:res.other,
             resuelve:12,////el col
             initrows:response.data.length,
             totalRow:res.count,
@@ -248,13 +245,13 @@ metodo?this.getitems():this.getitemsback();
             maxPages:response.last_page,
             ///header
             header:true,///bolean heeader
-            headername:'Empresas Registradas',
+            headername:'Cuentas Registradas',
             btnadd:true,
-            iconadd:'building',
+            iconadd:'pencil',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Empresas',
+            namebtn:'Agrega Cuenta',
             badgevariant:'primary',
             btnvariant:'info',
             btnstyle:'float:right',
