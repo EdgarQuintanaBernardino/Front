@@ -20,9 +20,11 @@
         @info="info"
         :idedit="idedit"
         @roles="roles"
+        @sucursales="sucursales"
 ></allfront>
    <back  v-else
-   
+           @sucursales="sucursales"
+
       :datosallin="datosallback" 
       @getparams="getparams" 
       @deleteevento="deletevento"   
@@ -40,7 +42,8 @@
      
     <modalempresa :configin="config"  @adduserevent="adduser"  @edituser="edituser"
 ></modalempresa>
-
+<sucursales @editarsucursal="editarsucursal"></sucursales>
+<sucursalesmodal></sucursalesmodal>
 
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
@@ -56,11 +59,13 @@ import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
 import modalempresa from "@/views/windowmodal/empresamodal";
+import sucursales from "@/views/empresas/sucursalesmodal";
+import sucursalesmodal from "@/views/empresas/modaleditsucursales";
 
 export default {
       name:'Users',
       components:{
-        back,allfront,modalempresa
+        back,allfront,modalempresa,sucursales,sucursalesmodal
       },
       watch:{
         metodo:function(newval,oldvar){
@@ -103,6 +108,7 @@ export default {
       ///unicos
       empresa:false,
       config:false,
+      showsucursales:false,
         }
       },mounted() {
        if(this.metodo==this.$store.getters.getmetodo){
@@ -137,6 +143,17 @@ export default {
 
         
        },
+       editarsucursal(sucursal){
+          this.sucursaledit=sucursal;
+          this.openmodaleditsucursal();
+      
+
+
+       },
+       openmodaleditsucursal(){
+               this.$bvModal.show("modal-editsucursales");
+
+       },
         userdesbloqueado(item){
           let alert= alertas();
      let metodo=this.$store.getters.getmetodo;
@@ -154,6 +171,13 @@ export default {
               this.userroles=item;////user with roles and permissions 
 
                this.$bvModal.show("modal-prevent-rolesandpermisos");
+
+       },
+       sucursales(row){
+
+            this.showsucursales=row;
+    this.$bvModal.show("modal-sucursales");
+
 
        },
        resetvalores(){
@@ -306,6 +330,7 @@ metodo?this.getitems():this.getitemsback();
                         { key: "email",label: "Email", sortable: true, class: "text-center"},
                         { key: "razon", label: "Razón Social", class: "text-center"},
                         { key: "telefono", label: "Télefono", class: "text-center"},
+                           { key: "sucursales", label: "Sucursales", class: "text-center"},
                         { key: "actions", label: "Acciones", class: "text-center"},
                              ],
             totalfilasmostradas:15,
@@ -361,7 +386,8 @@ metodo?this.getitems():this.getitemsback();
         await dao
           .deleteempresa(item)
           .then((res) => {
-           this.$store.getters.getmetodo?this.iddelete=res.data:this.iddeleteback=res.data;
+            
+           this.$store.getters.getmetodo?this.iddelete=item.id:this.iddeleteback=item.id;
                     })
           .catch((eror) => {
            alert.errorservidor();

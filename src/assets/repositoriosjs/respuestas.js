@@ -54,7 +54,7 @@ const verifyadduser=(result)=>{
                   const successgeneric=(result)=>{
     
                     return  result.code==200?success(result)
-                    :result.data.code==403?denegado2()
+                    :result.code==403?denegado2()
                     :result.data.code==401?credentialinvalid2()
                     :error500();
                                   }

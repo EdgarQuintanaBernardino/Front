@@ -267,7 +267,9 @@ export default {
       this.form.numerocuenta = this.regresacuentaedit.numero_cuenta;
       this.form.alias = this.regresacuentaedit.nickname;
       this.form.moneda = this.regresacuentaedit.moneda;
+      if(this.regresacuentaedit.empresas.length>0){
       this.form.empresa=this.regresacuentaedit.empresas[0].nombre;
+      }
       // if(this.$store.state.flagcuenta==9){
 
       //   this.form.padre_id=this.regresacuentaedit.padre_id;
@@ -288,6 +290,7 @@ export default {
      
     if(!this.$parent.config.showreset){
         this.updateModaledit();
+        
 
     }
 

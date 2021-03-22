@@ -46,7 +46,19 @@
                       noItems: 'No hay registros disponibles',
                     }"
           >
+     <template #sucursales="row">
+          <b-button
+                        size="md"
+                        block
+                        @click.prevent="info(row.item)"
+                        variant="outline-primary"
+                        class="mr-1 mb-1 mt-2"
+                      >
+                        <b-icon icon="pencil"></b-icon>Sucursales
+                      </b-button>
      
+     
+     </template>
             
               <template #actions="row">
               <b-container fluid>
@@ -193,7 +205,7 @@ export default {
     },
     iddeletein:function(newval,oldval){
           this.datosall.items = this.datosall.items.filter(
-            (itemin) => itemin.id != newval.id);
+            (itemin) => itemin.id != newval);
          this.$emit('deletedetabla',newval);
              
 

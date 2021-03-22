@@ -105,6 +105,7 @@ let yourusersbackapi=`${server}/user/interfaceuser`;
 let yourusersbackadminapi=`${server}/user/interfaceuseradmin`;
 
 
+let getsucursalesapi=`${server}/sucursales/getall`;
 
 const response=respuestas();
 const alerts=alertas();
@@ -1039,6 +1040,24 @@ const getempresasback =async (request) => {
 
     return result;
   }
+  const getsucursales =async (request) => {
+
+
+    let tokenin = store.getters.gettoken;
+  
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(getsucursalesapi, request, configin).then((res) => {
+  
+        return response.successgeneric(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return result;
+  }
 const compartepersmisoempresa =async (request) => {
 
 
@@ -1233,6 +1252,7 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    getsucursales,
     getcuentasback,
     getmycuentas,
     getempresasback,

@@ -90,7 +90,23 @@
                 responsive
                 id="table_generic"
               >
+         <template v-slot:cell(sucursales)="row"
+         >
          
+               
+          <b-button
+                        size="md"
+                        block
+                        @click.prevent="sucursales(row.item)"
+                        variant="outline-success"
+                        class="mr-1 mb-1 mt-2"
+                      >
+                        <b-icon icon="shop-window"></b-icon>Sucursales
+                      </b-button>
+     
+     
+   
+         </template>
                 <template v-slot:cell(name)="row">
                               <b-row>
                 
@@ -455,8 +471,11 @@ export default {
 this.$emit('info',item);
 
     },
+    sucursales(row){
+    this.$emit('sucursales',row);
+    },
     relationcuenta(row){
-            this.$emit('roles',row);
+    this.$emit('roles',row);
 
     },
      addin(){
@@ -464,7 +483,7 @@ this.$emit('add');
     },
   eliminaregistro(item){
   this.datosall.items = this.datosall.items.filter(
-            (itemin) => itemin.id != item.id);
+            (itemin) => itemin.id != item);
   },
   getitems(){
       this.$emit('recargatabla');
