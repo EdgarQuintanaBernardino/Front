@@ -186,7 +186,7 @@
                         <b-input-group-prepend is-text>
                           <b-icon icon="house-door"></b-icon>
                         </b-input-group-prepend>
-                        <b-form-input v-model="form.numero_int"></b-form-input>
+                        <b-form-input v-model="form.n_interior"></b-form-input>
                       </b-input-group>
                     </b-col>
                     <b-col cols="12" md="4" class="mt-3">
@@ -197,7 +197,7 @@
                         <b-input-group-prepend is-text>
                           <b-icon icon="house-door"></b-icon>
                         </b-input-group-prepend>
-                        <b-form-input v-model="form.numero_ext"></b-form-input>
+                        <b-form-input v-model="form.n_exterior"></b-form-input>
                       </b-input-group>
                     </b-col>
                     <b-col cols="12" md="8" class="mt-3">
@@ -222,7 +222,7 @@
                         <b-input-group-prepend is-text>
                           <b-icon icon="house-door"></b-icon>
                         </b-input-group-prepend>
-                        <b-form-input v-model="form.referencias"></b-form-input>
+                        <b-form-input v-model="form.observaciones"></b-form-input>
                       </b-input-group>
                     </b-col>
                   </b-row>
@@ -305,13 +305,7 @@
                       @click.prevent="updateuser(form)"
                     >Actualiza Usuario</b-button>
                   </div>
-                  <b-row>
-                    <b-col cols="5"></b-col>
-                    <b-col cols="2" style="float:right">
-                      <RingLoader :hidden="loader" color="#3c4b64"></RingLoader>
-                    </b-col>
-                    <b-col cols="5"></b-col>
-                  </b-row>
+           
 
                 </div>
                 <div class="mt-5">
@@ -320,11 +314,11 @@
                       block
                       variant="outline-success"
                       @click.prevent="empresacreate()"
-                      v-if="this.config.typebtn=='new'&&!$v.$invalid"
+                    v-if="true&&!$v.$invalid"
                       pill
                     >
                       <h3>
-                        <b-icon icon="person-badge" aria-hidden="true" class="mr-3"></b-icon>Agrega Usuario
+                        <b-icon icon="person-badge" aria-hidden="true" class="mr-3"></b-icon>Agrega Sucursal
                       </h3>
                     </b-button>
                     <b-button
@@ -393,7 +387,6 @@ searchu:"",
         id: "",
         encargado: "",
         telefono_encargado:"",
-
         telefono_sucursal: "",
       
         cp: "",
@@ -401,10 +394,11 @@ searchu:"",
         colonia: "",
         municipio: "",
         estado: "",
-        numero_int: "",
+        n_interior: "",
         n_exterior: "",
         referencias: "",
         short_name: "",
+        observaciones:""
       },
       colonias: [],
       municipios: [],
@@ -413,150 +407,27 @@ searchu:"",
       resultado: [],
       show: true,
       update: true,
-      msj: "Actualiza tus datos",
-      onof: false,
-      loader: true,
       errorcp: false,
       errormesg: "",
 
     };
   },
   methods: {
-  restaurauser(item){
-            Swal.fire({
-        title: "¿Restaurar?",
-        text: "¿Deseas volver a incluir en tu lista de contactos al usuario '" + item.name + "' ?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Restauralo!",
-      }).then((result) => {
-        if (result.value) {
-
-         this.restoreuser(item);
-        }
-      });
-      },
-     async restoreuser(item){
-        let alert=alertas();
-         this.animationall = true;
-      let dao = repoupdateuser();
-          try {
-        await dao
-          .unlockuseradmin(item)
-          .then((res) => {
-
-            this.$store.getters.getmetodo?this.restaurauserfront(item):this.restaurauserback(item);
-            this.optionsu=this.optionsu.filter((e)=>e.id!=item.id);
-                this.$emit('userdesbloqueado',res)
-            
-         })
-          .catch((eror) => {
-            alert.errorgenerico();
-            console.log(eror.message);
-          });
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-      this.animationall = false;
-           }
-      },
-      restaurauserfront(item){
-       this.$parent.datosall.otheritems=this.$parent.datosall.otheritems.filter((e)=>e.id!=item.id);
-      },
- restaurauserback(item){
-       this.$parent.datosallback.otheritems=this.$parent.datosallback.otheritems.filter((e)=>e.id!=item.id);
-      },
-
-
-    deleteitem(item){
-      this.optionsu=this.optionsu.filter((r)=>r.id !=item.id);
-
-    },
-    additemforuuser(item){
-      this.deleteitem(item);////elimina el registro en las optiones de las que se te estan dando 
-      this.$parent.datosall.items.push(item);
-      this.$parent.datosall.otheritems=this.$parent.datosall.otheritems.filter((r)=>r.id!=item.id);
-      this.itemencontrado=[];
-    },
-    verificaamigos(checa,array){
-
-
-
-    },
-          
- onOptionClick({ option, addTag }) {
-        addTag(option)
-        this.search = ''
-      },
-     verificaemail(email,array){
-       let busca= array.filter((r)=>r.email==email);
-       if(busca.length>0){
-         this.itemencontrado=busca[0];
-         return true;}
-         else{
-          return false; 
-         }
-     },
-     emailencontrado(){
-         Swal.fire({
-          title: "No se pudo agregar el usuario",
-          text: `Email se encuentra en tus usuarios BORRADOS,¿Deseas Restaurarlo?`,
-          icon: "error",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Restauralo!",
-      }).then((result) => {
-        if (result.value) {
-         this.show = true;
-          this.restoreuser(this.itemencontrado);
-        }
-      });
-     },
-    
-    async empresacreate() {
-      this.animationall = true;
-      this.btnadios = true;
-      this.update = false;
-      let alerts=alertas();
-      let checa=this.form.email;
-      if(this.verificaemail(checa,this.optionsu)){
-            this.emailencontrado();
-             this.form.email="";
-                     this.animationall = false;
-
-            return false;
-        }
-
-
-  if(this.$store.getters.getmetodo){
-  if(this.verificaemail(checa,this.$parent.datosall.items)){
-          alerts.listaamigos();
-         this.form.email="";
-                 this.animationall = false;
-
-            return false;
-        }
-}else{
-    if(this.verificaemail(checa,this.$parent.datosallback.items)){
-          alerts.listaamigos();
-         this.form.email="";
-                 this.animationall = false;
-
-            return false;
-        }
-
-}
-  
-
+ 
       
-  
+    async empresacreate() {
+   this.animationall = true;
+      let alerts=alertas();
+   
+
       try {
         const repo = repoupdateuser();
 
-        await repo.adduser(this.form).then((res) => {
+        await repo.addsucursal(this.form).then((res) => {
+
+          console.log(res);
+          return false;
+          
               if(!res){
               }else{
                 
@@ -681,42 +552,8 @@ let ids=[];
         this.btnadios = false;
       }
     },
-    async resetpassword() {
-      Swal.fire({
-        title: "¿Reset Password?",
-        text:
-          "¿Deseas Resetear el password de '" +
-         this.$parent.user.name +
-          "'?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Resetealo!",
-      }).then((result) => {
-        if (result.value) {
-          this.show = true;
-          this.resetpasswordnow();
-        }
-      });
-    },
-    async resetpasswordnow() {
-      this.animationall = true;
-      let alerts=alertas();
-      try {
-        const repo = repoupdateuser();
-        await repo.resetpassword(this.form).then((res) => {
-            alerts.passwordsucccess();
-    
-        });
-      } catch (error) {
-        console.log(error);
-       alerts.errorgenerico();
-      } finally {
-        this.animationall = false;
-
-      }
-    },
+ 
+  
     async eventdetected() {
           this.sucursaledit=this.$parent.sucursaledit;
       this.animationall=false;
@@ -814,50 +651,8 @@ let ids=[];
         this.cprofile = false;
       }
     },
-     regresainactivos(){
-        this.optionsu=[];
-
-        for(let i=0;i<this.$parent.datosall.otheritems.length;i++){
-
-          if(this.$parent.datosall.otheritems[i].status=="Inactive"){
-          this.optionsu.push(this.$parent.datosall.otheritems[i]);
-          }else{
-          }
-
-        }
-    
-    },
-      regresainactivosback(){
-        this.optionsu=[];
-        for(let i=0;i<this.$parent.datosallback.otheritems.length;i++){
-
-          if(this.$parent.datosallback.otheritems[i].status=="Inactive"){
-          this.optionsu.push(this.$parent.datosallback.otheritems[i]);
-          }else{
-          }
-
-        }
-    
-    },
-    async updateuser(form) {
-
-      if (this.$v.$invalid) {
-        return false;
-      }
-               this.animationall = true;
-
-      const repo = repoupdateuser();
-      try {
-        await repo.updateuseradmin(this.form).then((res) => {
-         this.$emit('edituser',res);
-          this.hideModal();
-         });
-      } catch (error) {
-        console.log(error)
-      } finally {
-            this.animationall = false;
-      }
-    },
+        
+ 
   },
   validations: {
     form: {

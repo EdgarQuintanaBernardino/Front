@@ -27,6 +27,7 @@ let setcuentasempresa = `${server}/cuenta/relacionempresa`;
 
 let resetcontrasena = `${server}/user/refresh`;
 let addcuenta = `${server}/cuenta/create`;
+let addsucursalapi = `${server}/sucursales/create`;
 let getcuentas = `${server}/cuenta/getall`;
 
 
@@ -209,6 +210,27 @@ const adcuenta = async (request) => {
     return responses;
 
 }
+const addsucursal = async (request) => {
+    let token = store.getters.gettoken;
+
+    let config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    let responses = await Axios.post(addsucursalapi, request, config).then((res) => {
+        //
+        //return response.verifyresponsecuenta(res.data)
+
+
+
+        return res;
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return responses;
+
+}
+
 const cuentasitem = async (request) => {
     let token = store.getters.gettoken;
 
@@ -273,6 +295,7 @@ const deleteempresa = async (request) => {
     return result;
 
 }
+
 const destroyproduct = async (request) => {
     let tokenin = store.getters.gettoken;
 
@@ -1252,6 +1275,7 @@ const updateproductoshared =async (request) => {
   }
 
 export default () => ({
+    addsucursal,
     getsucursales,
     getcuentasback,
     getmycuentas,
