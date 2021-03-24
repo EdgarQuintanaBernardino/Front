@@ -214,19 +214,74 @@
                     <b-col cols="12" class="mt-3">
 
                     </b-col>
-                   <b-col cols="12" md="12" class="mt-3">
+                 
+                  </b-row>
+                </b-overlay>
+                <CCardHeader class="mt-3 bg-dark text-white text-center mb-3" >
+                  <h3>Horario Laboral de la Sucursal</h3>
+                </CCardHeader>
+                <b-row>
+                <b-col cols="4">
+                <h2 class="text-center text-primary">
+                Día
+                </h2>
+
+           
+                </b-col>
+                  <b-col cols="4">
+                <h2 class="text-center text-success">
+                Apertura
+                </h2>
+
+           
+                </b-col>  <b-col cols="4">
+                <h2 class="text-center text-danger" >
+                Cierre
+                </h2>
+
+           
+                </b-col>
+                </b-row>
+                <b-row>
+
+                
+                <b-col cols="4">
+                   <h2 class="text-center text-dark" >
+                Lunes
+                </h2>
+                
+                </b-col>
+                <b-col cols="4" md="4" class="text-center">
+                <b-time v-model="form.horario.lunes.entrada" show-seconds locale="en">
+               <div class="d-flex" dir="ltr">
+                <b-button
+                 size="sm"
+                 variant="outline-danger"
+                 v-if="form.horario.lunes.entrada"
+                 @click='form.horario.lunes.entrada=""'>Limpiar </b-button></div></b-time>
+
+                </b-col>
+                 <b-col cols="4" md="4" class="text-center">
+                <b-time v-model="form.horario.lunes.salida" show-seconds locale="en">
+               <div class="d-flex" dir="ltr">
+                <b-button
+                 size="sm"
+                 variant="outline-danger"
+                 v-if="form.horario.lunes.salida"
+                 @click='form.horario.lunes.salida=""'>Limpiar </b-button></div></b-time>
+                </b-col>
+                 <b-col cols="12" md="12" class="mt-3">
                       <label>
-                        <h5>Observaciones</h5>
+                        <h5>Comentarios</h5>
                       </label>
                       <b-input-group size="md">
                         <b-input-group-prepend is-text>
                           <b-icon icon="house-door"></b-icon>
                         </b-input-group-prepend>
-                        <b-form-input v-model="form.observaciones"></b-form-input>
+                        <b-form-input v-model="form.comentario"></b-form-input>
                       </b-input-group>
                     </b-col>
-                  </b-row>
-                </b-overlay>
+                </b-row>
 <CCardHeader class="mt-3 bg-dark text-white text-center mb-3" >
                   <h3>Encargado de Sucursal</h3>
                 </CCardHeader>
@@ -384,6 +439,36 @@ searchu:"",
       showanimation: false,
       cprofile: false,
       form: {
+        horario:{
+          lunes:{
+            entrada:"",
+            salida:""
+          },
+           martes:{
+            entrada:"",
+            salida:""
+          },
+           miercoles:{
+            entrada:"",
+            salida:""
+          },
+           jueves:{
+            entrada:"",
+            salida:""
+          },
+           viernes:{
+            entrada:"",
+            salida:""
+          },
+           sabado:{
+            entrada:"",
+            salida:""
+          },
+           domingo:{
+            entrada:"",
+            salida:""
+          }, 
+        },
         id: "",
         encargado: "",
         telefono_encargado:"",
@@ -398,7 +483,8 @@ searchu:"",
         n_exterior: "",
         referencias: "",
         short_name: "",
-        observaciones:""
+        comentario:"",
+        id_empresa:""
       },
       colonias: [],
       municipios: [],
@@ -418,37 +504,17 @@ searchu:"",
     async empresacreate() {
    this.animationall = true;
       let alerts=alertas();
-   
-
-      try {
+        try {
         const repo = repoupdateuser();
-
         await repo.addsucursal(this.form).then((res) => {
-
-          console.log(res);
-          return false;
-          
-              if(!res){
-              }else{
-                
-           this.$emit('adduserevent',res);
-            alerts.useradd();
-              setTimeout(() => {
               this.hideModal();
-            }, 500);
-              }
-        });
+                   });
       } catch (error) {
         console.log(error);
-        
-        alerts.errorgenerico();
+           alerts.errorgenerico();
       } finally {
         this.animationall = false;
-        //this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-        this.email="";
-      }
+          }
     },
     async empresaupdate() {
      let checa=this.form.email;
@@ -555,9 +621,10 @@ let ids=[];
  
   
     async eventdetected() {
-          this.sucursaledit=this.$parent.sucursaledit;
-      this.animationall=false;
-      console.log(this.sucursaledit);
+    this.sucursaledit=this.$parent.sucursaledit;
+
+    this.animationall=false;
+    this.form.id_empresa=this.$parent.showsucursales.id;
 
      },
     updateModaledit() {
@@ -587,29 +654,29 @@ let ids=[];
       }
     },
     resetModal() {
-              this.optionsu=[];
+            //  this.optionsu=[];
 
-         this.form.id = "",
-        (this.form.encargado = ""),
-        (this.form.fechanacimiento = ""),
-        (this.form.telefono = ""),
-        (this.form.rfc = ""),
-        (this.form.photo = ""),
-        (this.form.cp = ""),
-        (this.form.calle = ""),
-        (this.form.colonia = ""),
-        (this.form.municipio = ""),
-        (this.form.estado = ""),
-        (this.form.numero_int = ""),
-        (this.form.numero_ext = ""),
-        (this.form.referencias = ""),
-        (this.form.nickname = ""),
-        this.animationall = false;
-        this.form.empresas=[];
-        this.userin=[];
-        this.config=[];
-     // console.log(this.$parent.datosall.otheritems);
-     this.$store.getters.getmetodo?this.regresainactivos():this.regresainactivosback();
+        //  this.form.id = "",
+        // (this.form.encargado = ""),
+        // (this.form.fechanacimiento = ""),
+        // (this.form.telefono = ""),
+        // (this.form.rfc = ""),
+        // (this.form.photo = ""),
+        // (this.form.cp = ""),
+        // (this.form.calle = ""),
+        // (this.form.colonia = ""),
+        // (this.form.municipio = ""),
+        // (this.form.estado = ""),
+        // (this.form.numero_int = ""),
+        // (this.form.numero_ext = ""),
+        // (this.form.referencias = ""),
+        // (this.form.nickname = ""),
+        // this.animationall = false;
+        // this.form.empresas=[];
+        // this.userin=[];
+      //  this.config=[];
+     //console.log(this.$parent.datosall.otheritems);
+    // this.$store.getters.getmetodo?this.regresainactivos():this.regresainactivosback();
     },
     hideModal() {
       this.$refs["modal-useredit"].hide();

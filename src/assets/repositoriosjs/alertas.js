@@ -83,6 +83,15 @@ const denegado= async ()=>{
     response(mensaje);
 
     }
+    const successmjsgeneric=async()=>{
+      let mensaje={
+        tittle:'Imagen',
+        text:'Seleccionaste una imagen mayor a 1mb o un archivo que NO es imagen, Intente nuevamente',
+        icon:'error'
+    };
+     response(mensaje);
+
+    };
     const successpass=async()=>{
       let mensaje={
         tittle:'Contraseña',
@@ -352,6 +361,7 @@ response(mensaje);
       
       }
 export default ()=> ({
+  response,
   deletemsj,
   cuentaactualizada,
   cuentaagregada,

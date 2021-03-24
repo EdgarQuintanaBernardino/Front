@@ -6,6 +6,14 @@ import router from '@/router/index'
 
 const alerts =alertas();
 
+const responsenocontent=(result,msj)=>{
+
+    
+    return  result.code==200?nocontentonly(msj)
+    :result.data.code==403?denegado2()
+    :result.data.code==401?credentialinvalid2()
+    :error500();
+                  }
 const filtraerror=(error)=>{
     let respuesta = JSON.parse(JSON.stringify(error))
     let datos={code:401};
@@ -219,6 +227,9 @@ const validarol=(result)=>{
         alerts.solicitudrecibida();
         return false;
        }
+       function nocontentonly(msj){
+           alerts.response(msj);
+       }
        function userbloqueadoporti(){
                     alerts.yourlock();
                     return false;
@@ -294,6 +305,7 @@ function successempresaedit(result){
            
        }
        export default ()=> ({
+        responsenocontent,
            successgeneric,
         cuentadelete,
         cuentaedit,

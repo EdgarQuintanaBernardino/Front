@@ -217,12 +217,13 @@ const addsucursal = async (request) => {
         headers: { Authorization: `Bearer ${token}` }
     };
     let responses = await Axios.post(addsucursalapi, request, config).then((res) => {
-        //
-        //return response.verifyresponsecuenta(res.data)
-
-
-
-        return res;
+            let mensaje={
+            tittle:'Sucursales',
+            text:'Sucursal Agregada Con éxito',
+            icon:'success'
+        };
+        return response.responsenocontent(res.data,mensaje);
+    
     }).catch((error) => {
         return response.filtraerror(error);
     });
