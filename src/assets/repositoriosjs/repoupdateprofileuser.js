@@ -688,7 +688,7 @@ const getpagossend = async (request) => {
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
-    let result = await Axios.post(pagossend, request, configin).then((res) => {
+    let result = await Axios.post(pagossend, request, configin).then((res) => { /// espero
         return res.data;
     }).catch((error) => {
         let respuesta = JSON.stringify(error)
