@@ -18,6 +18,15 @@ import VueAxios from 'vue-axios';
 import 'vue2-dropzone/dist/vue2Dropzone.min.css';
 import VueCryptojs from 'vue-cryptojs';
 
+
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faFilePdf,faFileCode } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
+library.add(faFilePdf,faFileCode )
+
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
 import VueSweetalert2 from 'vue-sweetalert2';
 
 // If you don't need the styles, do not connect
@@ -106,7 +115,8 @@ new Vue({
   icons,
   template: '<App/>',
   components: {
-    App
+    App,
+    
   }
 })
 

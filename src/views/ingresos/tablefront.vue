@@ -3,10 +3,12 @@
   
  <b-row>
         <b-col cols="12">
+      
           <CCard>
                <CCardHeader v-if="datosall.header">
               <h3>
                 {{datosall.headername}}
+
               <b-badge :variant="datosall.badgevariant" pill>{{ datosall.items.length }}</b-badge>
                 <b-btn
                   :style="datosall.btnstyle"
@@ -102,21 +104,84 @@
                         block
                         pill
                       >
-                        <b-icon icon="eye"></b-icon><br />
+                        <b-icon icon="eye"></b-icon>
 
-                        {{ row.item.nombre_cuenta }}
+                        {{ row.item['usersin'][0]['name'] }}
                       </b-button>
                     </b-col>
                   </b-row>
                 </template>
               
-                <template v-slot:cell(razon)="row">{{
-                  row.item.razonsocial
-                }}</template>
-                  <template v-slot:cell(telefono)="row">{{
-                  row.item.telefonoContacto
-                }}</template>
+                <template v-slot:cell(facturas)="row">
+                <b-row>
+                <b-col cols="12">
+                <b-row>
+                  <b-col cols="6">
+                   <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload" class="mr-1" v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download" class="mr-1" v-else></b-icon>
+
+                <font-awesome-icon class="mr-1"  style="font-size:1.2em" icon="file-pdf"/>
+
                 
+                PDF
+
+                </b-button>
+                  
+                  </b-col>
+                  <b-col cols="3">
+                  
+                  </b-col>
+                    <b-col cols="2" class="text-center">
+                  
+                   <b-button  variant="danger">
+                <b-icon icon="trash"></b-icon> 
+
+                </b-button>
+                  </b-col>
+                 <b-col cols="6">
+                  <b-row>
+
+                  </b-row>
+              
+                  </b-col>
+                
+                </b-row>
+                   
+                
+                </b-col>
+                 <b-col cols="12" class="mt-1">
+                <b-row>
+                  <b-col cols="8">
+                   <b-button block variant="outline-dark">
+                <font-awesome-icon class="mr-1"  style="font-size:1.2em" icon="file-code"/>XML
+
+                </b-button>
+                  
+                  </b-col>
+                    <b-col cols="4">
+                  
+                   <b-button block variant="danger">
+                <b-icon icon="trash"></b-icon> Delete
+
+                </b-button>
+                  </b-col>
+                
+                </b-row>
+                   
+                
+                </b-col>
+
+                <b-col cols="12">
+                {{row}}
+                </b-col>
+                </b-row>
+            
+
+                </template>
+                
+                <template v-slot:cell(status)="row">
+                </template>
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -174,21 +239,25 @@
                 </template>
                  <template v-slot:row-details="row">
                   <b-card
-                    v-if="row.item.nombre_cuenta"
+                    v-if="row.item['usersin'][0]"
                     border-variant="primary"
-                    :header="row.item.nombre_cuenta"
+                    :header="row.item['usersin'][0].name"
                     header-bg-variant="primary"
                     header-text-variant="white"
                     align="center"
                   >
                     <b-table
                       responsive
-                      :items="[{Nombre:row.item.nombre_cuenta,Número_de_Cuenta:row.item.numero_cuenta,
-                Clabe:row.item.clabe ,Banco:row.item.banco,Empresas:row.item,
-                NickName:row.item.nickname,Moneda:row.item.moneda }]"
+                      :items="[{Nombre:row.item['usersin'][0].name,Email:row.item['usersin'][0].email,
+                Teléfono:row.item['usersin'][0].telefono ,
+                Dirección:row.item['usersin'][0].calle+' '+
+                row.item['usersin'][0].colonia+' '+
+                row.item['usersin'][0].municipio+' '+
+                row.item['usersin'][0].estado+' ',
+                NickName:row.item['usersin'][0].nickname }]"
                       :fields="['Nombre',
-                    'Número_de_Cuenta','Clabe',
-                    'Banco','NickName','Moneda','Empresas']"
+                    'Email','Teléfono',
+                    'Dirección','NickName']"
                     >
                       <template v-slot:cell(Empresas)="row">
                         <ul>
@@ -306,7 +375,6 @@ import "regenerator-runtime/runtime";
 import edituser from "@/views/windowmodal/edituser";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import rqstin from "@/views/windowmodal/requestin";
-
 export default {
   props:['datosallin','iddeletein','idedit']
 

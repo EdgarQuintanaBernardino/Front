@@ -346,7 +346,7 @@ metodo?this.getitems():this.getitemsback();
                         { key: "banco",label: "Banco", sortable: true, class: "text-center"},
                         { key: "moneda", label: "Moneda", class: "text-center"},
                         { key: "numero_cuenta", label: "Número de Cuenta", class: "text-center"},
-                                                { key: "empresa", label: "Empresa", class: "text-center"},
+                         { key: "empresa", label: "Empresa", class: "text-center"},
 
                         { key: "actions", label: "Acciones", class: "text-center"},
                              ],

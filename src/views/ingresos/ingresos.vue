@@ -1,5 +1,5 @@
 <template>
-  <b-container fluid>
+ <b-container fluid>
     <!-- User Interface controls -->
 
     <b-overlay :show="show" rounded="sm">
@@ -9,6 +9,7 @@
           <p id="cancel-label">Please wait...</p>
         </div>
       </template>
+      
          <allfront 
          v-if="getmetodo"
         :datosallin="datosall" 
@@ -49,7 +50,7 @@
 
 <script>
 import back from "@/views/cuentas/table"
-import allfront from "@/views/cuentas/tablefront";
+import allfront from "@/views/ingresos/tablefront";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
@@ -308,28 +309,29 @@ metodo?this.getitems():this.getitemsback();
         let validaciones=respuestas();
         await repoitems.getpagossend().then((res) => {
 
-     console.log(res);
-     return false;
      //    let response=validaciones.validafriends(res);
-       let response=res;   
+       let response=res.data;   
+       console.log(response)
           this.totalrowsend=response.count;
 
         let datosgenericos={
-                    placeholder:"Busca Ingreso",
+                    placeholder:"Busca Pago Solicitado",
                     columns:[
-                       { key: "nombre", label: "Solicitado a", sortable: true},
+                       { key: "nombre_cuenta", label: "Solicitado a", sortable: true},
 
                         { key: "concepto", label: "Concepto", sortable: true},
-                        { key: "archivos",label: "Archivo Digital", sortable: true, class: "text-center"},
-                        { key: "monto_solicitado", label: "Monto Solicitado", class: "text-center"},
-                        { key: "tiempo_maximo", label: "Fecha Solicitada", class: "text-center"},
-                        { key: "expira", label: "Expiración", class: "text-center"},
+                        { key: "facturas",label: "Facturas", sortable: true, class: "text-center"},
+                        { key: "ordencompra", label: "Orden de Compra", class: "text-center"},
+                        { key: "cotizacion", label: "Cotizacion", class: "text-center"},
+                        { key: "galeria", label: "Imagenes", class: "text-center"},
                         { key: "status", label: "Status", class: "text-center"},
+                        { key: "fecha", label: "Solicitado", class: "text-center"},
+                        { key: "visto", label: "Visto", class: "text-center"},
 
                         { key: "actions", label: "Acciones", class: "text-center"},
                              ],
             totalfilasmostradas:15,
-            items:response.data.cuentas,
+            items:response,
             resuelve:12,
             initrows:response.count,
             totalRow:response.count,
