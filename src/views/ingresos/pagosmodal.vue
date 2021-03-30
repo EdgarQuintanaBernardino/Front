@@ -19,13 +19,13 @@
           <CCol>
             <CCard>
               <CCardHeader class="bg-info">
-                <h2 class="text-center text-white"> <b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>{{tittlemodal}}</h2>
+                <h2 class="text-center text-white"> <b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>{{this.$parent.config.titulo}} Pago</h2>
               </CCardHeader>
               <CCardBody>
                 <b-row>
                   <b-col cols="12">
                     <label>
-                      <h4 class="text-info">¿A quien se le solicita el pago?</h4>
+                      <h4 class="text-primary">¿A quien se le solicita el pago?</h4>
                     </label>
                      <b-form-tags v-model="form.value" no-outer-focus class="mb-2">
                         <template v-slot="{ tags, disabled, addTag}">
@@ -42,10 +42,10 @@
                             </li>
                           </ul>
 
-                          <b-dropdown size="sm" variant="outline-primary" block menu-class="w-100">
+                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100">
                             <template v-slot:button-content>
                               <b-icon icon="person" scale="2" class="mr-3 mb-1"></b-icon>
-                              <span style="font-size:2em" class="mt-2">Usuarios</span>
+                              <span style="font-size:2em" class="mt-2">Tus amigos</span>
                             </template>
 
                             <b-dropdown-form @submit.stop.prevent="() => {}">
@@ -77,12 +77,107 @@
                                 :key="option.id"
                                 @click="onOptionClick({ option, addTag })"
                               >
-                                <span class="text-dark">{{ option.value }}</span>
+                              <b-row>
+                              <b-col cols="6">
+                              
+                           <span class="text-dark">{{ option.name }}</span>&nbsp;
+
+                              </b-col>
+                              <b-col cols="6">
+                            <span class="text-info " style="float-right">{{ option.email }}</span>&nbsp;
+
+                              </b-col>
+                              </b-row>
+
                               </b-dropdown-item>
                             </div>
                             <b-dropdown-text
                               v-if="availableOptions.length === 0"
                             >Asignaste todos los usuarios</b-dropdown-text>
+                          </b-dropdown>
+                        </template>
+                      </b-form-tags>
+                    <span
+                      class="text-danger d-block"
+                      style="float:right"
+                      v-if="form.value.length==0"
+                    >campo requerido**</span>
+                  
+                  </b-col> <b-col cols="12">
+                    <label>
+                      <h4 class="text-primary">¿A que cuenta bancaria?</h4>
+                    </label>
+                     <b-form-tags v-model="form.cuentas" no-outer-focus class="mb-2">
+                        <template v-slot="{ tags, disabled, addTag}">
+                          <ul v-if="tags.length > 0" class="list-inline d-inline-block mb-2">
+                            <li v-for="tag in tags" :key="tag" class="list-inline-item">
+                              <b-form-tag
+                                @remove="removeTagcustomc(tag)"
+                                :title="tag"
+                                :disabled="disabled"
+                                variant="success"
+                                
+                              >{{ tag.nombre_cuenta}}
+                              </b-form-tag>
+                            </li>
+                          </ul>
+
+                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100">
+                            <template v-slot:button-content>
+                              <b-icon icon="cash" scale="2" class="mr-3 mb-1"></b-icon>
+                              <span style="font-size:2em" class="mt-2">Tus Cuentas Bancarias</span>
+                            </template>
+
+                            <b-dropdown-form @submit.stop.prevent="() => {}">
+                              <b-form-group
+                                label-for="tag-search-input"
+                                label="Cuentas registradas"
+                                label-cols-md="auto"
+                                class="mb-0"
+                                label-size="lg"
+                                :description="searchDescc"
+                                :disabled="disabled"
+                              >
+                                <b-form-input
+                                  v-model="searchc"
+                                  id="tag-search-inputc"
+                                  type="search"
+                                  size="md"
+                                  autocomplete="off"
+                                ></b-form-input>
+                              </b-form-group>
+                            </b-dropdown-form>
+                            <b-dropdown-divider></b-dropdown-divider>
+
+                            <div
+                              style="height: 300px;width:auto;border: 1px solid #ddd;background:;overflow-y: scroll;"
+                            >
+                              <b-dropdown-item
+                                v-for="option in availableOptionsc"
+                                :key="option.id"
+                                @click="onOptionClickc({ option, addTag })"
+                              >
+                              <b-row>
+                              <b-col md="auto">
+                              
+                           <span class="text-dark">{{ option.nombre_cuenta }}</span>&nbsp;
+
+                              </b-col>
+                              <b-col md="auto" >
+                            <span class="text-info " >{{ option.banco }}</span>&nbsp;
+
+                              </b-col>
+                               <b-col md="auto">
+                            <span class="text-dark ">{{ option.nickname }}</span>&nbsp;
+
+                              </b-col>
+                              </b-row>
+
+                              </b-dropdown-item>
+                            </div>
+                            <b-dropdown-text
+                              v-if="availableOptionsc.length === 0"
+                            >Asignaste todas las cuentas bancarias</b-dropdown-text>
                           </b-dropdown>
                         </template>
                       </b-form-tags>
@@ -107,6 +202,7 @@
                       ></b-form-input>
                     </b-input-group>
                   </b-col>
+                
                   <b-col cols="12" class="mt-3">
                     <label>
                       <h4 class="text-info">Comentario Y/o Descripción</h4>
@@ -190,7 +286,6 @@
                       block
                       variant="outline-success"
                       @click.prevent="empresacreate(form)"
-                      v-if="((this.$store.getters.getpago.flag==1)&&(!$v.$invalid))"
                       pill>                      
                       <h3><b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>Solicitar Pago</h3>
                     </b-button>
@@ -198,7 +293,6 @@
                       block
                       variant="outline-success"
                       @click.prevent="empresaupdate()"
-                      v-if="this.$store.state.flagpago ==0&&!$v.$invalid"
                       pill>
                       <h3><b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>Actualiza Pago</h3>
                     </b-button>
@@ -220,7 +314,6 @@
         </b-overlay>
       </b-form>
     </b-modal>
-        <modalgaleriacreate @itemsupdate="items = $event"></modalgaleriacreate>
 
   </div>
 </template>
@@ -232,7 +325,6 @@ import { required, minLength } from "vuelidate/lib/validators";
 import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser";
 import Swal from "sweetalert2";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
-import modalgaleriacreate from "@/views/windowmodal/galeriaproductos";
 
 import { mapActions, mapMutations } from "vuex";
 export default {
@@ -244,6 +336,8 @@ export default {
       showanimation: false,
       animationall: false,
       search:"",
+      searchc:"",
+      optionsc:[],
        options:[],
        hoy:"",
        minimo:"2020-10-19",
@@ -255,7 +349,8 @@ export default {
         monto:"",
         moneda:'Pesos',
          value:[],
-         emails:[]
+         emails:[],
+         cuentas:[]
       },
       monedas:['Pesos','Dolares','Euros'],
         update: true,
@@ -264,7 +359,7 @@ export default {
   },
   components: {
     Swal,
-    modalgaleriacreate
+    
   },
   validations: {
     form: {
@@ -298,6 +393,9 @@ this.hoy=fecha;
         this.alloption=this.alloption.filter(f=>f.value != tag);
         this.form.emails=this.alloption.map(f=>f.email);
       },
+         removeTagcustomc(tag){
+        this.form.cuentas=this.form.cuentas.filter(f=> f!=tag);
+      },
      async getitems() {
        this.show = true;
 
@@ -325,11 +423,17 @@ this.hoy=fecha;
     },
     onOptionClick({ option, addTag }) {
     /// addTag(option);
-     this.form.value.push(option.value);
+     this.form.value.push(option.name);
      this.form.emails.push(option.email);
      this.alloption.push(option);
 
       this.search = "";
+    },
+     onOptionClickc({ option, addTag }) {
+    /// addTag(option);
+     this.form.cuentas.push(option.nombre_cuenta);
+
+      this.searchc = "";
     },
     updateModaledit() {
       let pagoedit=this.$store.getters.getpagoedit;
@@ -355,13 +459,15 @@ this.hoy=fecha;
        this.form.concepto=pagoedit.concepto;
     },
     async eventdetected() {
-      if (this.$store.state.flagpago == 1) {
-        this.resetModal();
+      this.options=this.$parent.myallusers;
+            this.optionsc=this.$parent.myallcuentas;
+      // if (this.$store.state.flagpago == 1) {
+      //   this.resetModal();
        
-      } else {
-        this.updateModaledit();
+      // } else {
+      //   this.updateModaledit();
 
-      }
+      // }
     },  
     hideModal() {
       this.$refs["modal-pagos"].hide();
@@ -514,12 +620,12 @@ this.hoy=fecha;
       const criteria = this.criteria;
       // Filter out already selected options
       const options = this.options.filter(
-        (opt) => this.form.value.indexOf(opt.value) === -1
+        (opt) => this.form.value.indexOf(opt.name) === -1
       );
       if (criteria) {
         // Show only options that match criteria
         return options.filter(
-          (opt) => opt.value.toLowerCase().indexOf(criteria) > -1
+          (opt) => opt.name.toLowerCase().indexOf(criteria) > -1||opt.email.toLowerCase().indexOf(criteria) > -1 
         );
       }
       // Show all options available
@@ -527,6 +633,32 @@ this.hoy=fecha;
     },
     searchDesc() {
       if (this.criteria && this.availableOptions.length === 0) {
+        return "Ningun resultado concuerda";
+      }
+      return "";
+    },
+    criteriac() {
+      // Compute the search criteria
+      return this.searchc.trim().toLowerCase();
+    },
+    availableOptionsc() {
+      const criteriac = this.criteriac;
+      // Filter out already selected options
+      const optionsc = this.optionsc.filter(
+        (opt) => this.form.cuentas.indexOf(opt.nombre_cuenta) === -1
+      );
+      if (criteriac) {
+        // Show only options that match criteria
+        return optionsc.filter(
+          (opt) => opt.nombre_cuenta.toLowerCase().indexOf(criteriac) > -1||opt.banco.toLowerCase().indexOf(criteriac) > -1
+        );
+      }
+      // Show all options available
+      return optionsc;
+
+    },
+    searchDescc() {
+      if (this.criteriac && this.availableOptionsc.length === 0) {
         return "Ningun resultado concuerda";
       }
       return "";

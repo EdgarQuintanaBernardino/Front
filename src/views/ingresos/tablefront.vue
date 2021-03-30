@@ -93,6 +93,170 @@
                 id="table_generic"
               >
          
+             <template v-slot:cell(status)="row">
+
+                  <b-button variant="outline-success" v-if="row.item.status[0].status.status=='Pagado'">
+                  Aprobado</b-button>
+                  <b-button  variant="outline-warning" v-if="row.item.status[0].status.status=='Pendiente'">
+                  No revisado</b-button >
+                  <b-button  variant="outline-danger" v-if="row.item.status[0].status.status=='Denegado'">
+                Pago Rechazado</b-button ></b-button>
+                </template>
+             <template v-slot:cell(galeria)="row">
+             
+                  <b-button
+                    variant="outline-primary"
+                    @click.prevent="fotosenv(row.item.photo, row.item)"
+                    ><b-icon
+                      aria-hidden="true"
+                      icon="paperclip"
+                      class="mr-1"
+                    ></b-icon
+                    >Agregar</b-button
+                  >
+                     <b-button
+                    variant="outline-dark"
+                    class="mt-1"
+                    block
+                    @click.prevent="cargargaleria(row.item.photo)"
+                ><b-icon
+                      aria-hidden="true"
+                      icon="eye"
+                      class="mr-1"
+                    ></b-icon
+                    >ver</b-button
+                  >
+                </template>
+                 <template v-slot:cell(visto)="row">
+                     <b-badge variant="info" v-if="row.item.visto=='no'">
+                  Aún no</b-badge>
+                  <b-button variant="success" v-if="row.item.visto=='si'">
+                  Visto</b-button>
+                </template>
+                 
+              <template v-slot:cell(ordencompra)="row">
+                <b-container>
+                <b-row>
+                <b-col cols="9" md="auto"  align-self="start">
+
+                <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload" class="mr-1" v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download" class="mr-1" v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-pdf"/>
+                PDF
+
+                </b-button>
+                  
+                  </b-col>
+                <b-col  col md="12" lg="2">
+                  
+                   <b-button  variant="danger" v-if="true">
+                <b-icon icon="trash"></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+               
+                
+                </b-row>
+                 <b-row>
+                <b-col cols="12">
+                <b-row class="mt-1">
+                <b-col cols="9" md="auto" >
+                   <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload"  v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download"  v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-code"/>
+
+                
+                XML
+
+                </b-button>
+                  
+                  </b-col>
+                <b-col  col md="12" lg="2">
+                  
+                   <b-button  variant="danger" v-if="true">
+                <b-icon icon="trash"></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+                </b-row>
+
+
+
+                </b-col>
+                
+                </b-row>
+                
+                
+                
+                </b-container>
+                </template> 
+              <template v-slot:cell(cotizacion)="row">
+                <b-container fluid="sm">
+                <b-row>
+                <b-col cols="9" md="auto" >
+
+                <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload" class="mr-1" v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download" class="mr-1" v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-pdf"/>
+                PDF
+
+                </b-button>
+                  
+                  </b-col>
+                <b-col  col md="12" lg="2">
+                  
+                   <b-button  variant="danger" v-if="true">
+                <b-icon icon="trash"></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+               
+                
+                </b-row>
+                 <b-row>
+                <b-col cols="12">
+                <b-row class="mt-1">
+                <b-col cols="9" md="auto" >
+                   <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload"  v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download"  v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-code"/>
+               
+                XML
+                </b-button>
+                  
+                  </b-col>
+                <b-col  col md="12" xl="2" style="padding:0;text-align:center;" >
+                  
+                   <b-button  variant="danger" v-if="true" >
+                <b-icon icon="trash"></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+                </b-row>
+
+
+
+                </b-col>
+                
+                </b-row>
+                
+                
+                
+                </b-container>
+                </template>
+                
                 <template v-slot:cell(nombre_cuenta)="row">
                               <b-row>
                 
@@ -112,76 +276,8 @@
                   </b-row>
                 </template>
               
-                <template v-slot:cell(facturas)="row">
-                <b-row>
-                <b-col cols="12">
-                <b-row>
-                  <b-col cols="6">
-                   <b-button block variant="outline-dark">
-                 <b-icon icon="cloud-upload" class="mr-1" v-if="true"></b-icon> 
-                 <b-icon icon="cloud-download" class="mr-1" v-else></b-icon>
-
-                <font-awesome-icon class="mr-1"  style="font-size:1.2em" icon="file-pdf"/>
-
-                
-                PDF
-
-                </b-button>
-                  
-                  </b-col>
-                  <b-col cols="3">
-                  
-                  </b-col>
-                    <b-col cols="2" class="text-center">
-                  
-                   <b-button  variant="danger">
-                <b-icon icon="trash"></b-icon> 
-
-                </b-button>
-                  </b-col>
-                 <b-col cols="6">
-                  <b-row>
-
-                  </b-row>
-              
-                  </b-col>
-                
-                </b-row>
-                   
-                
-                </b-col>
-                 <b-col cols="12" class="mt-1">
-                <b-row>
-                  <b-col cols="8">
-                   <b-button block variant="outline-dark">
-                <font-awesome-icon class="mr-1"  style="font-size:1.2em" icon="file-code"/>XML
-
-                </b-button>
-                  
-                  </b-col>
-                    <b-col cols="4">
-                  
-                   <b-button block variant="danger">
-                <b-icon icon="trash"></b-icon> Delete
-
-                </b-button>
-                  </b-col>
-                
-                </b-row>
-                   
-                
-                </b-col>
-
-                <b-col cols="12">
-                {{row}}
-                </b-col>
-                </b-row>
             
-
-                </template>
-                
-                <template v-slot:cell(status)="row">
-                </template>
+               
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -282,12 +378,79 @@
                 </template>
 
 
-
-                <template v-slot:head()="data">
-                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
+   <template v-slot:cell(fecha)="row">
+                     <b-badge variant="info">
+                  {{row.item.humans}}</b-badge><br>
+                    {{row.item.createsmall}}
                 </template>
-              
-           
+               
+              <template v-slot:cell(facturas)="row">
+                <b-container>
+                   <b-row >
+                <b-col cols="12" >
+                <b-row class="mt-1">
+                <b-col cols="9" md="auto" >
+                   <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload"  v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download"  v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-pdf"/>
+
+                
+                PDF
+
+                </b-button>
+                  
+                  </b-col>
+                <b-col   cols="2" style="padding:0" >
+                 <b-button  variant="danger" size="md" v-if="true"   >
+                <b-icon icon="trash" style="padding:0;font-size:1.6em" ></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+                </b-row>
+
+
+
+                </b-col>
+                
+                </b-row>
+                 <b-row >
+                <b-col cols="12" >
+                <b-row class="mt-1">
+                <b-col cols="9" md="auto" >
+                   <b-button block variant="outline-dark">
+                 <b-icon icon="cloud-upload"  v-if="true"></b-icon> 
+                 <b-icon icon="cloud-download"  v-else></b-icon>
+
+                <font-awesome-icon  style="font-size:1.2em" icon="file-code"/>
+
+                
+                XML
+
+                </b-button>
+                  
+                  </b-col>
+                <b-col  col md="auto" lg="2" style="padding:0" >
+                 <b-button  variant="danger" size="md" v-if="true"   >
+                <b-icon icon="trash" style="padding:0;font-size:1.6em" ></b-icon> 
+
+                </b-button>
+                </b-col>
+                
+                </b-row>
+
+
+
+                </b-col>
+                
+                </b-row>
+                
+                
+                
+                </b-container>
+                </template>
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -345,7 +508,9 @@
                 </template>
                
                 <template v-slot:head()="data">
-                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
+                  <span class="text-info"
+                 >{{ data.label.toUpperCase() }}</span>
+                
                 </template>
                          
               </b-table>
@@ -483,6 +648,7 @@ export default {
       
          this.datosall=newval;
          this.items=newval.items;
+         console.log(this.items)
 
     },
     iddeletein:function(newval,oldval){

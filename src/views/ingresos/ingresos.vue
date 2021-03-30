@@ -38,14 +38,17 @@
 
 
    ></back>
+
     </b-overlay>
  
 
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
-    <pagosmodal></pagosmodal>
+           <pagosmodal></pagosmodal>
+
   </b-container>
+  
 </template>
 
 <script>
@@ -103,9 +106,14 @@ export default {
       ///unicos
       empresa:false,
       config:false,
-      myallcompanies:[]
+      myallcompanies:[],
+      myallcuentas:[],
+      myallusers:[],
         }
       },mounted() {
+        this.getususuarios();
+        this.getcuentas();
+
        if(this.metodo==this.$store.getters.getmetodo){
        this.prueba(this.metodo)
        }else{
@@ -183,6 +191,7 @@ self.iddelete=[],
             showreset:false,
          }
               this.openmodal();
+              console.log(item)
 
        },
        itemsusers(){
@@ -191,6 +200,39 @@ self.iddelete=[],
        cambia(){
             this.prueba(this.$store.getters.getmetodo);
        },
+       async getususuarios() {
+      this.show = true;//// el render del reloj?
+      try {
+        let repoitems = repo();
+        let validaciones=respuestas();
+        await repoitems.onlyusers().then((res) => {
+          
+        let response=validaciones.validafriends(res);
+                   this.myallusers=response.data;
+                              });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.show = false;
+      }
+  },
+        async getcuentas() {
+      this.show = true;//// el render del reloj?
+      try {
+        let repoitems = repo();
+        let validaciones=respuestas();
+        await repoitems.getmycuentas().then((res) => {
+         let response=validaciones.validafriends(res);
+         this.myallcuentas=response.data.cuentas;
+
+    
+            });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.show = false;
+      }
+  },
        prueba(metodo){///true es front
      // this.resetvalores();
 metodo?this.getitems():this.getitemsback();
@@ -281,8 +323,8 @@ metodo?this.getitems():this.getitemsback();
 
  this.empresa=[];
          this.config={
-            titulo:'Nueva ',
-            namebtn:'Cuenta ',
+            titulo:'Nuevo ',
+            namebtn:'Ingreso ',
             typebtn:'new',
             showdelete:true,
             showreset:true,
@@ -298,7 +340,7 @@ metodo?this.getitems():this.getitemsback();
 
     },
     openmodal(){
-         this.$bvModal.show("modal-prevent-cuentapoli");
+         this.$bvModal.show("modal-pagos-add");
     }
     ,
       
