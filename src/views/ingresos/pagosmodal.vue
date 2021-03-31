@@ -103,7 +103,8 @@
                       v-if="form.value.length==0"
                     >campo requerido**</span>
                   
-                  </b-col> <b-col cols="12">
+                  </b-col>
+                   <b-col cols="12">
                     <label>
                       <h4 class="text-primary">¿A que cuenta bancaria?</h4>
                     </label>
@@ -115,7 +116,7 @@
                                 @remove="removeTagcustomc(tag)"
                                 :title="tag"
                                 :disabled="disabled"
-                                variant="success"
+                                variant="danger"
                                 
                               >{{ tag.nombre_cuenta}}
                               </b-form-tag>
@@ -184,10 +185,11 @@
                     <span
                       class="text-danger d-block"
                       style="float:right"
-                      v-if="form.value.length==0"
+                      v-if="form.cuentas.length==0"
                     >campo requerido**</span>
                   
                   </b-col>
+                  
                   <b-col cols="12">
                     <label>
                       <h4 class="text-info">Concepto</h4>
@@ -197,12 +199,51 @@
                         <b-icon icon="plus-square"></b-icon>
                       </b-input-group-prepend>
                       <b-form-input
-                        v-model="form.tittle"
+                        v-model="form.concepto"
                         placeholder="Concepto del Pago"
+                         :state="form.concepto.length >= 7"
                       ></b-form-input>
                     </b-input-group>
                   </b-col>
+                    <b-col cols="12" class="mt-4">
+                    <label>
+                      <h4 class="text-info">links de pago</h4>
+                    </label>
+                   
+                  </b-col>
+                  <b-col cols="12">
+                  <b-row>
+                  <b-col cols="10">
                 
+                      <div role="group">
+    <b-form-input
+      id="input-live"
+      v-model="link"
+      aria-describedby="input-live-help input-live-feedback"
+      placeholder="Ingresa link de pago"
+      trim
+    ></b-form-input>
+
+  </div>
+                  </b-col>
+                  <b-col cols="2">
+
+                    <b-button variant="outline-primary" @click.prevent="addlink()"  block>Add Link</b-button>
+
+                  </b-col>
+                  <b-col cols="12">
+               <b-list-group class="mt-2">
+  <b-list-group-item class="d-flex justify-content-between align-items-center" v-for="item in form.links" :key="item">
+
+          <b-link  :href="item" target="_blank">{{item}}</b-link>
+    <b-button variant="outline-danger" @click.prevent="eliminalink(item)" >Delete</b-button>
+  </b-list-group-item>
+
+</b-list-group>
+                  </b-col>
+                  </b-row>
+                  </b-col>
+                  
                   <b-col cols="12" class="mt-3">
                     <label>
                       <h4 class="text-info">Comentario Y/o Descripción</h4>
@@ -213,40 +254,47 @@
                       </b-input-group-prepend>
                       <b-form-textarea
       id="textarea-state"
-      v-model="form.concepto"
-      :state="form.concepto.length >= 7"
-      placeholder="Un mínimo de 7 caracteres por motivo de comentario"
+      v-model="form.comentario"
+     
+      placeholder="comentario"
       rows="3"
     ></b-form-textarea>
                     </b-input-group>
                   </b-col>
                
                   
-                  <b-col cols="12" md="6" class="text-center mt-3">
+                  <b-col cols="12" lg="3" class="text-center mt-3">
                     <label>
                       <h4 class="text-info">Monto Solicitado</h4>
                     </label>
                     <b-input-group size="md">
                       <b-input-group-prepend is-text>
-                        <b-icon icon="person-lines-fill"></b-icon>
+                        <b-icon icon="cash"></b-icon>
                       </b-input-group-prepend>
                       <b-form-input
                       type="number"
                         oninput="javascript:value=this.value.replace('e','')"
 
-                        v-model="form.monto"
+                        v-model="form.bruto"
+                           @wheel="$event.target.blur()"
+                        :min="0"
+                        v-on:keyup.prevent="calcula"
+                        :class="{
+                          'is-valid': this.form.bruto>0,
+                          'is-invalid': this.form.bruto == 0,
+                        }"
                         placeholder="Cantidad solicitada"
                       ></b-form-input>
                     </b-input-group>                 
 
                   </b-col>
-                      <b-col cols="12" md="6" class="text-center mt-3">
+                      <b-col cols="12" lg="3" class="text-center mt-3">
                     <label>
                       <h4 class="text-info">Moneda</h4>
                     </label>
                     <b-input-group size="md">
                       <b-input-group-prepend is-text>
-                        <b-icon icon="person-lines-fill"></b-icon>
+                        <b-icon icon="cash"></b-icon>
                       </b-input-group-prepend>
                     <b-form-input list="monedas"  placeholder="Tipo de Moneda"  v-model="form.moneda"></b-form-input>
 
@@ -257,6 +305,41 @@
 
                       
                       </datalist>
+                    </b-input-group>                 
+
+                  </b-col>
+                      <b-col cols="12" lg="2" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-info">Impuesto %</h4>
+                    </label>
+                  <b-form-select
+      v-model="form.iva"
+      :options="optionsiva"
+      class="mb-3"
+      value-field="item"
+      text-field="iva"
+      
+        @change="calcula"
+      disabled-field="notEnabled"
+    > </b-form-select>            
+
+                  </b-col>
+                  <b-col cols="12" lg="4" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-info">Monto Solicitado Neto</h4>
+                    </label>
+                    <b-input-group size="md">
+                      <b-input-group-prepend is-text>
+                        <b-icon icon="cash"></b-icon>
+                      </b-input-group-prepend>
+                      <b-form-input
+                       type="number"
+                        oninput="javascript:value=this.value.replace('e','')"
+                        disabled
+                        v-model="form.monto"
+                        placeholder="Total"
+                       
+                      ></b-form-input>
                     </b-input-group>                 
 
                   </b-col>
@@ -331,8 +414,12 @@ export default {
   name: "modalcuenta",
   data() {
     return {
+        optionsiva:[0,8,16],
+        
+      link:"",
       alloption:[],
       empresas:[],
+
       showanimation: false,
       animationall: false,
       search:"",
@@ -343,14 +430,18 @@ export default {
        minimo:"2020-10-19",
       form: {
         id: "",
+        comentario:"",
         tittle: "",
         concepto:"",
         fecha:"",
         monto:"",
+        bruto:"",
         moneda:'Pesos',
          value:[],
          emails:[],
-         cuentas:[]
+         cuentas:[],
+         links:[],
+         iva:"0",
       },
       monedas:['Pesos','Dolares','Euros'],
         update: true,
@@ -364,12 +455,39 @@ export default {
   validations: {
     form: {
       concepto: { required, minLength: minLength(7) },
-      tittle:{required},
-       value:{required}
+       value:{required},
+      cuentas:{required}
+
     },
    
   },
+   
+      
   methods: {
+    calcula(){
+    let bruto=parseFloat(this.form.bruto);
+     let iva=parseFloat(this.form.iva);
+      if(bruto<=0||this.form.iva<0){
+        
+        return false;
+
+      }else{
+        if(iva==0){
+          this.form.monto=bruto;
+        }else{
+        let ivacomp=bruto/100*iva;
+         
+        this.form.monto=bruto+ivacomp
+        }
+      }
+    },
+    eliminalink(item){
+
+          this.form.links = this.form.links.filter(
+            (itemin) => itemin != item);
+  },
+   
+    
     fecha(){
          let date = new Date()
 
@@ -387,6 +505,36 @@ this.form.fecha=fecha;
 this.minimo=fecha;
 this.hoy=fecha;
 
+    },
+     encontrado(item){
+          let noencontrado=true;
+      for(let i=0;i<this.form.links.length;i++){
+       
+       if(this.form.links[i]==item){
+              noencontrado=false;
+              break;         
+       }
+      }
+          return noencontrado;
+    },
+    addlink(){
+      if(this.link==""){
+          return false;
+      }
+
+         if(this.encontrado(this.link)){
+            this.form.links.push(this.link);
+         }else{
+             Swal.fire({
+           position: 'center',
+  icon: 'error',
+  title: 'Link ya agregado',
+  showConfirmButton: false,
+  timer: 1000
+          });
+         }
+       
+          this.link="";
     },
     removeTagcustom(tag){
         this.form.value=this.form.value.filter(f=> f!=tag);
@@ -609,9 +757,12 @@ this.hoy=fecha;
   },
   mounted(){
    // this.getitems();
-    //this.fecha();
+    this.fecha();
   },
   computed: {
+    total(){
+        
+    },
     criteria() {
       // Compute the search criteria
       return this.search.trim().toLowerCase();
