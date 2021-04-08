@@ -10,12 +10,12 @@ import respuestas from './respuestas'
 import alertas from './alertas'
 
 
-const server="http://127.0.0.1:8000/api";
+const server = "http://127.0.0.1:8000/api";
 //const server='http://18.218.153.207/api';
 
 
 let api = `${server}/user/update`;
-let apidesdeadmin= `${server}/user/updatedesdeadmin`;////check
+let apidesdeadmin = `${server}/user/updatedesdeadmin`; ////check
 let apiempresa = `${server}/empresa/create`;
 let apiempresaupdate = `${server}/empresa/update`;
 let apicuentaupdate = `${server}/cuenta/update`;
@@ -27,6 +27,8 @@ let setcuentasempresa = `${server}/cuenta/relacionempresa`;
 
 let resetcontrasena = `${server}/user/refresh`;
 let addcuenta = `${server}/cuenta/create`;
+let addproyectapi = `${server}/proyecto/create`;
+
 let addsucursalapi = `${server}/sucursales/create`;
 let getcuentas = `${server}/cuenta/getall`;
 
@@ -45,75 +47,75 @@ let getrolesypermisos = `${server}/role/all`;
 let droprol = `${server}/role/destroy`;
 let createrol = `${server}/role/create`;
 let uprol = `${server}/role/update`;
-let updaterolesuser =`${server}/user/addrole`;
-let getproductosapi =`${server}/producto/getall`;
-let compartepersmisoproductoapi=`${server}/producto/permissions`;
-let createproduct =`${server}/producto/create`;
-let deletefotogalery=`${server}/producto/deletephoto`;
-let deletefotogaleryshared=`${server}/producto/deletephotoshared`;
+let updaterolesuser = `${server}/user/addrole`;
+let getproductosapi = `${server}/producto/getall`;
+let compartepersmisoproductoapi = `${server}/producto/permissions`;
+let createproduct = `${server}/producto/create`;
+let deletefotogalery = `${server}/producto/deletephoto`;
+let deletefotogaleryshared = `${server}/producto/deletephotoshared`;
 
-let updateproduct=`${server}/producto/update`;
-let updateproductosharedapi=`${server}/producto/updateshared`;
+let updateproduct = `${server}/producto/update`;
+let updateproductosharedapi = `${server}/producto/updateshared`;
 
-let destroyproductsharedapi=`${server}/producto/destroyshared`;
+let destroyproductsharedapi = `${server}/producto/destroyshared`;
 
-let deleteproducto=`${server}/producto/destroy`;
-let empresasall=`${server}/empresa/all`;
-let pagossend=`${server}/user/send`;
-let solicitudsinsendapi=`${server}/user/allsmall`;
-let pagossolicitudapi=`${server}/user/solicitarpago`;
-let deletefotopagos=`${server}/pagos/deletephotopago`;
-let actualizapago=`${server}/user/updatepago`;
-let deletepago=`${server}/user/deletepago`;
-let restoreuser=`${server}/user/restore`;
-let userscambia=`${server}/user/onlyupdate`;
-let allusers=`${server}/user/allusers`;///verify
-let allonluusers=`${server}/user/allusersonlypost`;///solo tus amigos
+let deleteproducto = `${server}/producto/destroy`;
+let empresasall = `${server}/empresa/all`;
+let pagossend = `${server}/user/send`;
+let solicitudsinsendapi = `${server}/user/allsmall`;
+let pagossolicitudapi = `${server}/user/solicitarpago`;
+let deletefotopagos = `${server}/pagos/deletephotopago`;
+let actualizapago = `${server}/user/updatepago`;
+let deletepago = `${server}/user/deletepago`;
+let restoreuser = `${server}/user/restore`;
+let userscambia = `${server}/user/onlyupdate`;
+let allusers = `${server}/user/allusers`; ///verify
+let allonluusers = `${server}/user/allusersonlypost`; ///solo tus amigos
 
-let sendorrequest=`${server}/user/createorrequest`;///solo tus amigos
-let lockuserapi=`${server}/user/lockuser`;///solo tus amigos
+let sendorrequest = `${server}/user/createorrequest`; ///solo tus amigos
+let lockuserapi = `${server}/user/lockuser`; ///solo tus amigos
 
-let unlockuserapi=`${server}/user/unlockuser`;///solo tus amigos
-let cancelrequestapi=`${server}/user/cancelrequest`;///solo tus amigos
-let cancelrequestinapi=`${server}/user/cancelrequestin`;///solo tus amigos
+let unlockuserapi = `${server}/user/unlockuser`; ///solo tus amigos
+let cancelrequestapi = `${server}/user/cancelrequest`; ///solo tus amigos
+let cancelrequestinapi = `${server}/user/cancelrequestin`; ///solo tus amigos
 
-let aceptrequestapi=`${server}/user/aceptrequest`;///solo tus amigos
+let aceptrequestapi = `${server}/user/aceptrequest`; ///solo tus amigos
 
-let lockuserrequestapi=`${server}/user/lockuserrequest`;///bloquea desde la solicitud, eliminando la misma y bloqueando al usuario
-let onlyempresaapi=`${server}/empresa/onlyempresas`;
-let onlyempresaapiback=`${server}/empresa/onlyempresasback`;
+let lockuserrequestapi = `${server}/user/lockuserrequest`; ///bloquea desde la solicitud, eliminando la misma y bloqueando al usuario
+let onlyempresaapi = `${server}/empresa/onlyempresas`;
+let onlyempresaapiback = `${server}/empresa/onlyempresasback`;
 
-let onlycuentaapi=`${server}/cuenta/getall`;
-let onlycuentaapiback=`${server}/cuenta/getallback`;
+let onlycuentaapi = `${server}/cuenta/getall`;
+let onlycuentaapiback = `${server}/cuenta/getallback`;
 
-let compartepersmisoempresaapi=`${server}/empresa/permissions`;
-let compartepersmisocuentaapi=`${server}/cuenta/permissions`;
-let getsharedproductspai=`${server}/producto/sharedproducts`;
+let compartepersmisoempresaapi = `${server}/empresa/permissions`;
+let compartepersmisocuentaapi = `${server}/cuenta/permissions`;
+let getsharedproductspai = `${server}/producto/sharedproducts`;
 
-let getsharedcompaniesapi=`${server}/empresa/sharedcompanies`;
+let getsharedcompaniesapi = `${server}/empresa/sharedcompanies`;
 
-let editsharedcompaniesapi=`${server}/empresa/editsharedcompanies`;
-let deletesharedcompaniesapi=`${server}/empresa/deletesharedcompanies`;
-
-
-let createpermisoscuentaapi=`${server}/empresa/deletesharedcompanies`;
-
-let sharedcuentasapi=`${server}/cuenta/sharedcuentas`;
-let deletecuentasharedapi=`${server}/cuenta/deletecuentashared`;
-let yourrequestapi=`${server}/user/yourrequest`;
-let invitaramigoapi=`${server}/user/allusers`;
-let yourusersbackapi=`${server}/user/interfaceuser`;
-let yourusersbackadminapi=`${server}/user/interfaceuseradmin`;
+let editsharedcompaniesapi = `${server}/empresa/editsharedcompanies`;
+let deletesharedcompaniesapi = `${server}/empresa/deletesharedcompanies`;
 
 
-let getsucursalesapi=`${server}/sucursales/getall`;
+let createpermisoscuentaapi = `${server}/empresa/deletesharedcompanies`;
 
-const response=respuestas();
-const alerts=alertas();
+let sharedcuentasapi = `${server}/cuenta/sharedcuentas`;
+let deletecuentasharedapi = `${server}/cuenta/deletecuentashared`;
+let yourrequestapi = `${server}/user/yourrequest`;
+let invitaramigoapi = `${server}/user/allusers`;
+let yourusersbackapi = `${server}/user/interfaceuser`;
+let yourusersbackadminapi = `${server}/user/interfaceuseradmin`;
+
+
+let getsucursalesapi = `${server}/sucursales/getall`;
+
+const response = respuestas();
+const alerts = alertas();
 
 
 
-const yourrequest = async (request) => {
+const yourrequest = async(request) => {
 
     let tokenin = store.getters.gettoken;
 
@@ -123,14 +125,14 @@ const yourrequest = async (request) => {
     let result = await Axios.post(yourrequestapi, request, configin).then((res) => {
         return res.data;
     }).catch((error) => {
-      //
-      return response.filtraerror(error);
+        //
+        return response.filtraerror(error);
     });
     return result;
 
 
 }
-const update = async (request) => {
+const update = async(request) => {
 
     let tokenin = store.getters.gettoken;
 
@@ -140,15 +142,15 @@ const update = async (request) => {
     let result = await Axios.post(api, request, configin).then((res) => {
         return res.data;
     }).catch((error) => {
-      //
-      return response.filtraerror(error);
+        //
+        return response.filtraerror(error);
     });
     return result;
 
 
 }
 
-const createempresa = async (request) => {
+const createempresa = async(request) => {
 
     let tokenin = store.getters.gettoken;
 
@@ -164,14 +166,14 @@ const createempresa = async (request) => {
     return result;
 
 }
-const updatecontrasenauser = async (request) => {
+const updatecontrasenauser = async(request) => {
     try {
 
         let check = repologin();
         let result = await check.login(request);
 
         if (result.data.hasOwnProperty('token')) {
-         return setcontraback(request,result.data.token);
+            return setcontraback(request, result.data.token);
         } else {
             return "contraseña invalida";
         }
@@ -179,11 +181,11 @@ const updatecontrasenauser = async (request) => {
 
 
     } catch (error) {
-   //   console.log(error)
+        //   console.log(error)
         return "contraseña invalida";
     }
 }
-async function setcontraback(request,tokenin) {
+async function setcontraback(request, tokenin) {
     let config = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -191,10 +193,10 @@ async function setcontraback(request,tokenin) {
         return alerts.successpass();
     }).catch((error) => {
         return response.verifyresponse(response.filtraerror(error));
-          });
+    });
     return responses;
 }
-const adcuenta = async (request) => {
+const adcuenta = async(request) => {
     let token = store.getters.gettoken;
 
     let config = {
@@ -210,20 +212,41 @@ const adcuenta = async (request) => {
     return responses;
 
 }
-const addsucursal = async (request) => {
+const addproyect = async(request) => {
+    let token = store.getters.gettoken;
+
+    let config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    let responses = await Axios.post(addproyectapi, request, config).then((res) => {
+        let mensaje = {
+            tittle: 'Proyectos',
+            text: 'Proyecto Agregado Con éxito',
+            icon: 'success'
+        };
+        return response.verificayresponde(res.data, mensaje)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return responses;
+
+}
+const addsucursal = async(request) => {
     let token = store.getters.gettoken;
 
     let config = {
         headers: { Authorization: `Bearer ${token}` }
     };
     let responses = await Axios.post(addsucursalapi, request, config).then((res) => {
-            let mensaje={
-            tittle:'Sucursales',
-            text:'Sucursal Agregada Con éxito',
-            icon:'success'
+        let mensaje = {
+            tittle: 'Sucursales',
+            text: 'Sucursal Agregada Con éxito',
+            icon: 'success'
         };
-        return response.responsenocontent(res.data,mensaje);
-    
+        return response.responsenocontent(res.data, mensaje);
+
     }).catch((error) => {
         return response.filtraerror(error);
     });
@@ -232,7 +255,7 @@ const addsucursal = async (request) => {
 
 }
 
-const cuentasitem = async (request) => {
+const cuentasitem = async(request) => {
     let token = store.getters.gettoken;
 
     let config = {
@@ -243,11 +266,10 @@ const cuentasitem = async (request) => {
     }).catch((error) => {
         let respuesta = JSON.stringify(error)
         return JSON.parse(respuesta)
-    });
-    ;
+    });;
     return response;
 }
-const updateempresa = async (request) => {
+const updateempresa = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -263,7 +285,7 @@ const updateempresa = async (request) => {
     return result;
 
 }
-const updatecuenta = async (request) => {
+const updatecuenta = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -280,7 +302,7 @@ const updatecuenta = async (request) => {
     return result;
 
 }
-const deleteempresa = async (request) => {
+const deleteempresa = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -291,13 +313,13 @@ const deleteempresa = async (request) => {
 
     }).catch((error) => {
         return response.filtraerror(error);
- 
+
     });
     return result;
 
 }
 
-const destroyproduct = async (request) => {
+const destroyproduct = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -312,7 +334,7 @@ const destroyproduct = async (request) => {
     return result;
 
 }
-const destroyproductshared = async (request) => {
+const destroyproductshared = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -327,7 +349,7 @@ const destroyproductshared = async (request) => {
     return result;
 
 }
-const deletecuenta = async (request) => {
+const deletecuenta = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -343,22 +365,22 @@ const deletecuenta = async (request) => {
     return result;
 
 }
-const deletecuentashared = async (request) => {
-  let tokenin = store.getters.gettoken;
+const deletecuentashared = async(request) => {
+    let tokenin = store.getters.gettoken;
 
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(deletecuentasharedapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta)
-  });
-  return result;
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(deletecuentasharedapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta)
+    });
+    return result;
 
 }
-const consultasepomex = async (request) => {
+const consultasepomex = async(request) => {
     let endpoint_sepomex = "https://api-sepomex.hckdrk.mx/query/info_cp/";
     let url = endpoint_sepomex + request;
     let result = await Axios.get(url).then((res) => {
@@ -379,6 +401,7 @@ function resultestados(request) {
     }
     return estados;
 }
+
 function resultmunicipios(request) {
     let estados = [];
     for (let i = 0; i < request.length; i++) {
@@ -388,6 +411,7 @@ function resultmunicipios(request) {
     }
     return estados;
 }
+
 function resultcolonias(request) {
     let estados = [];
     for (let i = 0; i < request.length; i++) {
@@ -397,7 +421,7 @@ function resultcolonias(request) {
     }
     return estados;
 }
-const relacioncuentaempresa = async (request, cuentain) => {
+const relacioncuentaempresa = async(request, cuentain) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -414,7 +438,7 @@ const relacioncuentaempresa = async (request, cuentain) => {
     return result;
 }
 
-const getroles_permisos = async (request) => {
+const getroles_permisos = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -431,7 +455,7 @@ const getroles_permisos = async (request) => {
     });
     return result;
 }
-const getusers = async (request) => {
+const getusers = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -445,7 +469,7 @@ const getusers = async (request) => {
     });
     return result;
 }
-const updateuseradmin = async (request) => {
+const updateuseradmin = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -460,7 +484,7 @@ const updateuseradmin = async (request) => {
     });
     return result;
 }
-const lockuseradmin = async (request) => {
+const lockuseradmin = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -475,7 +499,7 @@ const lockuseradmin = async (request) => {
     });
     return result;
 }
-const unlockuseradmin = async (request) => {
+const unlockuseradmin = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -491,7 +515,7 @@ const unlockuseradmin = async (request) => {
     return result;
 }
 
-const resetpassword = async (request) => {
+const resetpassword = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -504,7 +528,7 @@ const resetpassword = async (request) => {
     });
     return result;
 }
-const adduser = async (request) => {
+const adduser = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -517,7 +541,7 @@ const adduser = async (request) => {
     });
     return result;
 }
-const deleteuser = async (request) => {
+const deleteuser = async(request) => {
     let tokenin = store.getters.gettoken;
 
     let configin = {
@@ -531,7 +555,7 @@ const deleteuser = async (request) => {
     });
     return result;
 }
-const deleterol = async (request) => {
+const deleterol = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -547,7 +571,7 @@ const deleterol = async (request) => {
     });
     return result;
 }
-const createrole = async (request) => {
+const createrole = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -565,7 +589,7 @@ const createrole = async (request) => {
     });
     return result;
 }
-const updaterole = async (request) => {
+const updaterole = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -581,7 +605,7 @@ const updaterole = async (request) => {
     });
     return result;
 }
-const addupdaterolesuser = async (request) => {
+const addupdaterolesuser = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -598,7 +622,7 @@ const addupdaterolesuser = async (request) => {
     });
     return result;
 }
-const createproducto = async (request) => {
+const createproducto = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -615,7 +639,7 @@ const createproducto = async (request) => {
     return result;
 }
 
-const deletefotogaleria = async (request) => {
+const deletefotogaleria = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -632,7 +656,7 @@ const deletefotogaleria = async (request) => {
     return result;
 }
 
-const deletefotogaleriashared = async (request) => {
+const deletefotogaleriashared = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -648,7 +672,7 @@ const deletefotogaleriashared = async (request) => {
     });
     return result;
 }
-const updateproducto = async (request) => {
+const updateproducto = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -664,7 +688,7 @@ const updateproducto = async (request) => {
     });
     return result;
 }
-const allempresas = async (request) => {
+const allempresas = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -680,7 +704,7 @@ const allempresas = async (request) => {
     });
     return result;
 }
-const getpagossend = async (request) => {
+const getpagossend = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -697,7 +721,7 @@ const getpagossend = async (request) => {
     return result;
 }
 
-const solicitudsinsend =async (request) => {
+const solicitudsinsend = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -713,7 +737,7 @@ const solicitudsinsend =async (request) => {
     });
     return result;
 }
-const solicitarpago =async (request) => {
+const solicitarpago = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -729,7 +753,7 @@ const solicitarpago =async (request) => {
     });
     return result;
 }
-const deletephotopagossend =async (request) => {
+const deletephotopagossend = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -745,7 +769,7 @@ const deletephotopagossend =async (request) => {
     });
     return result;
 }
-const editpago =async (request) => {
+const editpago = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -761,7 +785,7 @@ const editpago =async (request) => {
     });
     return result;
 }
-const destroypago =async (request) => {
+const destroypago = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -777,7 +801,7 @@ const destroypago =async (request) => {
     });
     return result;
 }
-const cambiabandera =async (request) => {
+const cambiabandera = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -794,7 +818,7 @@ const cambiabandera =async (request) => {
     });
     return result;
 }
-const getonlyupdate =async (request) => {
+const getonlyupdate = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
@@ -810,216 +834,216 @@ const getonlyupdate =async (request) => {
     });
     return result;
 }
-const getallusers =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(allusers, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const onlyusers =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(allonluusers, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-    return response.filtraerror(error);
-  });
-  return result;
-}
-const sendorsolicita =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(sendorrequest, request, configin).then((res) => {
-    return response.verifyrequest(res.data)
-  }).catch((error) => {
-    return response.filtraerror(error);
-  });
-  return result;
-}
-const yourusersback =async (request) => {
+const getallusers = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(allusers, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const onlyusers = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(allonluusers, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const sendorsolicita = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(sendorrequest, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const yourusersback = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(yourusersbackapi, request, configin).then((res) => {
-      return response.verifyrequesttables(res)
-    // return res;
+        return response.verifyrequesttables(res)
+            // return res;
     }).catch((error) => {
-      return response.filtraerror(error);
+        return response.filtraerror(error);
     });
     return result;
-  }
-  const yourusersbackadmin =async (request) => {
+}
+const yourusersbackadmin = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(yourusersbackadminapi, request, configin).then((res) => {
-      return response.verifyrequesttables(res)
-    // return res;
+        return response.verifyrequesttables(res)
+            // return res;
     }).catch((error) => {
-      return response.filtraerror(error);
+        return response.filtraerror(error);
     });
     return result;
-  }
-
-const lockuser =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(lockuserapi, request, configin).then((res) => {
-      return response.validafriendslock(res)
-      }).catch((error) => {
-    return response.filtraerror(error);
-       });
-  return result;
 }
 
-
-const unlockuser =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(unlockuserapi, request, configin).then((res) => {
-    return response.validafriends(res)
-}).catch((error) => {
-  return response.filtraerror(error);
-  });
-  return result;
-}
-
-const cancelrequest =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(cancelrequestapi, request, configin).then((res) => {
-    return response.validafriends(res)
-}).catch((error) => {
-  return response.filtraerror(error);
-});
-return result;
-}
-const cancelrequestin =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(cancelrequestinapi, request, configin).then((res) => {
-    return response.validafriends(res)
-  }).catch((error) => {
-    return response.filtraerror(error);
-   
-  });
-  return result;
-}
-const aceptrequest =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(aceptrequestapi, request, configin).then((res) => {
-    return response.validafriends(res)
-}).catch((error) => {
-      return response.filtraerror(error);
-    });
-  return result;
-}
-const lockuserrequest =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(lockuserrequestapi, request, configin).then((res) => {
-    return response.validafriends(res.data)
-}).catch((error) => {
-      return response.filtraerror(error);
-    });
-  return result;
-}
-const invitaramigo =async (request) => {
+const lockuser = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(lockuserapi, request, configin).then((res) => {
+        return response.validafriendslock(res)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+
+
+const unlockuser = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(unlockuserapi, request, configin).then((res) => {
+        return response.validafriends(res)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+
+const cancelrequest = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(cancelrequestapi, request, configin).then((res) => {
+        return response.validafriends(res)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const cancelrequestin = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(cancelrequestinapi, request, configin).then((res) => {
+        return response.validafriends(res)
+    }).catch((error) => {
+        return response.filtraerror(error);
+
+    });
+    return result;
+}
+const aceptrequest = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(aceptrequestapi, request, configin).then((res) => {
+        return response.validafriends(res)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const lockuserrequest = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(lockuserrequestapi, request, configin).then((res) => {
+        return response.validafriends(res.data)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const invitaramigo = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(invitaramigoapi, request, configin).then((res) => {
-      return response.validafriends(res.data)
-  }).catch((error) => {
+        return response.validafriends(res.data)
+    }).catch((error) => {
         return response.filtraerror(error);
-      });
+    });
     return result;
-  }
-
-const getempresas =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(onlyempresaapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
 }
-const getmycuentas =async (request) => {
+
+const getempresas = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(onlyempresaapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const getmycuentas = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -1030,12 +1054,12 @@ const getmycuentas =async (request) => {
         return JSON.parse(respuesta);
     });
     return result;
-  }
-const getempresasback =async (request) => {
+}
+const getempresasback = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -1046,12 +1070,12 @@ const getempresasback =async (request) => {
         return JSON.parse(respuesta);
     });
     return result;
-  }
-  const getcuentasback =async (request) => {
+}
+const getcuentasback = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -1063,17 +1087,17 @@ const getempresasback =async (request) => {
     });
 
     return result;
-  }
-  const getsucursales =async (request) => {
+}
+const getsucursales = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(getsucursalesapi, request, configin).then((res) => {
-  
+
         return response.successgeneric(res.data)
 
     }).catch((error) => {
@@ -1081,188 +1105,188 @@ const getempresasback =async (request) => {
     });
 
     return result;
-  }
-const compartepersmisoempresa =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(compartepersmisoempresaapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
 }
-const createpermisoscuenta =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(createpermisoscuentaapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const compartepersmisocuenta =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(compartepersmisocuentaapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const getsharedcompanies =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(getsharedcompaniesapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const editsharedcompanies =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(editsharedcompaniesapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const deletesharedcompanies =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(deletesharedcompaniesapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const sharedcuentas =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(sharedcuentasapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const updateforshared =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(updateforsharedapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const getproductos =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(getproductosapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const compartepersmisoproducto =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(compartepersmisoproductoapi, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const getsharedproducts =async (request) => {
-
-
-  let tokenin = store.getters.gettoken;
-
-  let configin = {
-      headers: { Authorization: `Bearer ${tokenin}` }
-  };
-  let result = await Axios.post(getsharedproductspai, request, configin).then((res) => {
-      return res.data;
-  }).catch((error) => {
-      let respuesta = JSON.stringify(error)
-      return JSON.parse(respuesta);
-  });
-  return result;
-}
-const updateproductoshared =async (request) => {
+const compartepersmisoempresa = async(request) => {
 
 
     let tokenin = store.getters.gettoken;
-  
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(compartepersmisoempresaapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const createpermisoscuenta = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(createpermisoscuentaapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const compartepersmisocuenta = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(compartepersmisocuentaapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const getsharedcompanies = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(getsharedcompaniesapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const editsharedcompanies = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(editsharedcompaniesapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const deletesharedcompanies = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(deletesharedcompaniesapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const sharedcuentas = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(sharedcuentasapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const updateforshared = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(updateforsharedapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const getproductos = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(getproductosapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const compartepersmisoproducto = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(compartepersmisoproductoapi, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const getsharedproducts = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(getsharedproductspai, request, configin).then((res) => {
+        return res.data;
+    }).catch((error) => {
+        let respuesta = JSON.stringify(error)
+        return JSON.parse(respuesta);
+    });
+    return result;
+}
+const updateproductoshared = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -1273,9 +1297,10 @@ const updateproductoshared =async (request) => {
         return JSON.parse(respuesta);
     });
     return result;
-  }
+}
 
 export default () => ({
+    addproyect,
     addsucursal,
     getsucursales,
     getcuentasback,
@@ -1290,17 +1315,17 @@ export default () => ({
     deletefotogaleriashared,
     destroyproductshared,
     updateproductoshared,
-  getsharedproducts,
-  compartepersmisoproducto,
-  getproductos,
-  deletecuentashared,
-  updateforshared,
-  sharedcuentas,
-  createpermisoscuenta,
-  compartepersmisocuenta,
-  deletesharedcompanies,
-  editsharedcompanies,
-  getsharedcompanies,
+    getsharedproducts,
+    compartepersmisoproducto,
+    getproductos,
+    deletecuentashared,
+    updateforshared,
+    sharedcuentas,
+    createpermisoscuenta,
+    compartepersmisocuenta,
+    deletesharedcompanies,
+    editsharedcompanies,
+    getsharedcompanies,
     update,
     createempresa,
     deleteempresa,
@@ -1333,8 +1358,21 @@ export default () => ({
     getpagossend,
     solicitudsinsend,
     solicitarpago,
-    deletephotopagossend,editpago,destroypago,cambiabandera,
-    getonlyupdate,getallusers,onlyusers,sendorsolicita,lockuser,unlockuser,cancelrequest,aceptrequest,cancelrequestin,lockuserrequest,
-    getempresas,compartepersmisoempresa,
+    deletephotopagossend,
+    editpago,
+    destroypago,
+    cambiabandera,
+    getonlyupdate,
+    getallusers,
+    onlyusers,
+    sendorsolicita,
+    lockuser,
+    unlockuser,
+    cancelrequest,
+    aceptrequest,
+    cancelrequestin,
+    lockuserrequest,
+    getempresas,
+    compartepersmisoempresa,
 
 });

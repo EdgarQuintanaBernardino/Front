@@ -2,7 +2,7 @@
   <div>
     <b-modal
       id="modal-prevent-polymorfic"
-      ref="modal-create"
+      ref="modal-proyectos"
       @show="eventdetected"
       @hidden="resetModal"
       size="xl"
@@ -24,32 +24,43 @@
               <CCardBody>
                
              
-        <form-wizard @on-complete="onComplete"
+        <form-wizard 
                       color="#e67e22"
                      error-color="#a94442"
-                     title="Nuevo Proyecto"
+                     title=""
                      subtitle=""
+                     @on-validate="handleValidation"
+                    finishButtonText="Finalizar"
+
+
                      >
+                   <template slot="footer" slot-scope="props">
+       <div class="wizard-footer-left">
+           <wizard-button  v-if="props.activeTabIndex > 0 && !props.isLastStep" @click.native="props.prevTab()" :style="props.fillButtonStyle" ><span class="ti-control-backward"></span>Regresar</wizard-button> 
+        </div>
+        <div class="wizard-footer-right">
+          <wizard-button v-if="!props.isLastStep"@click.native="props.nextTab()" class="wizard-footer-right go-next" :style="props.fillButtonStyle" ><span class="ti-control-forward"></span>Siguiente</wizard-button>
+          
+          <wizard-button v-else @click.native="onComplete()" class="wizard-footer-right finish-button" :style="props.fillButtonStyle"> <span class="ti-wand"></span> {{props.isLastStep ? 'Finalizar' : 'Siguiente'}}</wizard-button>
+        </div>
+        
+</template>
             <tab-content title="Nuevo Proyecto" 
                          icon="ti-wand" :before-change="validateFirstTab">
-    
+          <vue-form-generator :model="model" 
+                                   :schema="firstTabSchema"
+                                   :options="formOptions"
+                                   ref="firstTabForm"
+                                   >
+                                     
+               </vue-form-generator>
         
             </tab-content>
-            <tab-content title="Additional Info"
-                         icon="ti-settings" :before-change="validateSecondTab">
-             <vue-form-generator :model="model" 
-                                   :schema="secondTabSchema"
-                                   :options="formOptions"
-                                   ref="secondTabForm"
-                                   >                                
-               </vue-form-generator>
-               
-            </tab-content>
-            <tab-content title="Last step"
+          
+         
+            <tab-content title="Todo listo"
                          icon="ti-check">
-              <h4>Your json is ready!</h4>
               <div class="panel-body">
-                <pre v-if="model" v-html="prettyJSON(model)"></pre>
               </div>
             </tab-content>
         </form-wizard>
@@ -78,33 +89,30 @@ import "regenerator-runtime/runtime";
 
 import { required, minLength, email } from "vuelidate/lib/validators";
 import RingLoader from "vue-spinner/src/RingLoader.vue";
-import MaskedInput from "vue-text-mask";
 import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser";
 import Swal from "sweetalert2";
-import VueFormWizard from 'vue-form-wizard'
-import VueFormGenerator from 'vue-form-generator'
+import alertas from '@/assets/repositoriosjs/alertas';
 
+import {FormWizard, TabContent} from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+import VueFormGenerator from 'vue-form-generator'
+import 'vue-form-generator/dist/vfg.css'
 export default {
   name: "modaladd",
  
  data(){
    return {
-         firstName: '',
-      lastName: '',
-      email: '',
+  
      animationall:false,
    model:{
-    firstName:'',
-    lastName:'',
-    email:'',
-    streetName:'',
-    streetNumber:'',
-    city:'',
-    country:''
+    name:'',
+    descripcion:'',
+    
+   
    },
    formOptions: {
-    validationErrorClass: "has-error",
-    validationSuccessClass: "is-valid",
+    validationErrorClass: "error",
+    validationSuccessClass: "success",
     validateAfterChanged: true
    },
    firstTabSchema:{
@@ -112,7 +120,7 @@ export default {
         type: "input",
 				inputType: "text",
         label: "Nombre Proyecto",
-        model: "firstName",
+        model: "name",
         placeholder:"Nombre del Proyecto",
        
          min:2,
@@ -121,15 +129,21 @@ export default {
         fieldIsRequired: "Ingresa un nombre para tu proyecto",
         textTooSmall: "tu proyecto debe contener al menos 2 caracteres"
     }),
-        styleClasses:'col-6'
+        styleClasses:['col-lg-6', 'col-xs=12'],
+                        values: ["Javascript", "VueJS", "CSS3", "HTML5"]
+
      },
      {
         type: "input",
 				inputType: "text",
         label: "Descripción del Proyecto",
-        model: "lastName",
+        model: "descripcion",
         required:true,
-        validator:VueFormGenerator.validators.string,
+        min:5,
+        validator:VueFormGenerator.validators.string.locale({
+        fieldIsRequired: "Ingresa una descripción para tu proyecto",
+        textTooSmall: "tu proyecto debe contener al menos una pequeña descripción 5 caracteres"
+    }),
         styleClasses:'col-6'
      }
     
@@ -179,29 +193,56 @@ export default {
  }
   },
  methods: {
-
+   
+   handleValidation: function(isValid, tabIndex){
+        console.log('Tab: '+tabIndex+ ' valid: '+isValid)
+    },
    hideModal:function(){
+
+      this.$refs["modal-proyectos"].hide();
+      
 
    },
 
    resetModal:function(){
-
+        this.model={
+    name:'',
+    descripcion:'',
+    
+      }
    },
    eventdetected:function(){
-
+     this.animationall=false;
    },
    
-  onComplete: function(){
-      alert('Yay. Done!');
+  onComplete: async function(){
+     
+    
+ 
+     if(this.validateFirstTab()){
+
+      let alerts=alertas();
+        try {
+            this.animationall = true;
+        const repo = repocreate();
+        await repo.addproyect(this.model).then((res) => {
+          console.log(res);
+              this.hideModal();
+                   });
+      } catch (error) {
+        console.log(error);
+           alerts.errorgenerico();
+      } finally {
+        this.animationall = false;
+          }
+    
+     }else{return false;}
+
    },
    validateFirstTab: function(){
-     console.log("siguiente")
-     return true;
-    /// return this.$refs.firstTabForm.validate();
+     return this.$refs.firstTabForm.validate();
    },
-   validateSecondTab: function(){
-     return this.$refs.secondTabForm.validate();
-   },
+  
    
    prettyJSON: function(json) {
             if (json) {
@@ -228,22 +269,17 @@ export default {
 
   components: {
     RingLoader,
-    MaskedInput,
-    Swal,
+    
+    Swal,FormWizard,TabContent
     
   },
  validations: {
-    firstName: {
+    name: {
       required
     },
-    lastName: {
+    descripcion: {
       required
-    },
-    email: {
-      required,
-      email
-    },
-    form: ['firstName', 'lastName', 'email']
+    }
   },
 
 
@@ -260,4 +296,13 @@ pre {
 	pre .boolean { color: magenta; }
 	pre .null { color: red; }
 	pre .key { color: green; }  
+  
+  .finish-button{
+  background-color:#43A047 !important;
+  border-color: #43A047 !important;
+}
+ .go-next{
+  background-color:#1871ac !important;
+  border-color: #1871ac  !important;
+}
 </style>
