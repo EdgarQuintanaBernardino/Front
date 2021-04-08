@@ -3,12 +3,10 @@
   
  <b-row>
         <b-col cols="12">
-      
           <CCard>
                <CCardHeader v-if="datosall.header">
               <h3>
                 {{datosall.headername}}
-
               <b-badge :variant="datosall.badgevariant" pill>{{ datosall.items.length }}</b-badge>
                 <b-btn
                   :style="datosall.btnstyle"
@@ -92,33 +90,24 @@
                 responsive
                 id="table_generic"
               >
-          <template v-slot:cell(archivos)="row">
-
-                  <b-button variant="outline-primary" >
-              <b-icon icon="clipboard"></b-icon> Archivos</b-button>
-       
-                </template>
+         <template v-slot:cell(sucursales)="row"
+         >
          
-             <template v-slot:cell(status)="row">
-
-                  <b-button variant="outline-success" v-if="row.item.status[0].status.status=='Pagado'">
-                  Aprobado</b-button>
-                  <b-button  variant="outline-warning" v-if="row.item.status[0].status.status=='Pendiente'">
-                  No revisado</b-button >
-                  <b-button  variant="outline-danger" v-if="row.item.status[0].status.status=='Denegado'">
-                Pago Rechazado</b-button ></b-button>
-                </template>
-         
-                 <template v-slot:cell(visto)="row">
-                     <b-badge variant="info" v-if="row.item.visto=='no'">
-                  Aún no</b-badge>
-                  <b-button variant="success" v-if="row.item.visto=='si'">
-                  Visto</b-button>
-                </template>
-                 
-           
-                
-                <template v-slot:cell(nombre_cuenta)="row">
+               
+          <b-button
+                        size="md"
+                        block
+                        @click.prevent="sucursales(row.item)"
+                        variant="outline-success"
+                        class="mr-1 mb-1 mt-2"
+                      >
+                        <b-icon icon="shop-window"></b-icon>Sucursales
+                      </b-button>
+     
+     
+   
+         </template>
+                <template v-slot:cell(name)="row">
                               <b-row>
                 
                     <b-col sm="12" class="mb-2 text-center">
@@ -129,16 +118,21 @@
                         block
                         pill
                       >
-                        <b-icon icon="eye"></b-icon>
+                        <b-icon icon="eye"></b-icon><br />
 
-                        {{ row.item['usersin'][0]['name'] }}
+                        {{ row.item.nombre }}
                       </b-button>
                     </b-col>
                   </b-row>
                 </template>
               
-            
-               
+                <template v-slot:cell(razon)="row">{{
+                  row.item.razonsocial
+                }}</template>
+                  <template v-slot:cell(telefono)="row">{{
+                  row.item.telefonoContacto
+                }}</template>
+                
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -194,67 +188,131 @@
                                 </b-container>
 
                 </template>
-                 <template v-slot:row-details="row">
-                  <b-card
-                    v-if="row.item['usersin'][0]"
+                <template v-slot:row-details="row">
+                <keep-alive>
+    <component v-bind:is="stepComponent" v-bind:row="row"></component>
+    </keep-alive>
+               </template>
+                <template v-slot:head()="data">
+                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
+                </template>
+                <template v-slot:cell(roles)="row">
+                <b-row>
+                  <b-col cols="12"  v-for="rol in row.item.roles" :key="rol.id">
+                  <b-badge variant="info" pill v-if="rol.name=='user'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else-if="rol.name=='admin'">{{rol.name}}</b-badge>
+                  <b-badge variant="success" pill v-else>{{rol.name}}</b-badge>
+
+
+                  </b-col>
+                </b-row>
+              
+
+                    
+                </template>
+           
+                      <template v-slot:cell(actions)="row">
+              <b-container fluid>
+                  <b-row class="justify-content-md-center">
+
+                    <b-col cols="12"  :xl="datosall.resuelve" v-for="permi in getacciones" :key="permi">
+                      <b-button
+                    v-if="permi==1"
+                        size="md"
+                        block
+                        @click.prevent="infoin(row.item)"
+                        variant="outline-primary"
+                        class="mr-1 mb-1 mt-2"
+                      >
+                        <b-icon icon="pencil"></b-icon>Editar 
+                      </b-button>
+                      <b-button
+                   v-if="permi==2"
+
+                        size="md"
+                        variant="outline-success"
+                        block
+                         class="mr-1 mb-1  mt-2"
+                        @click="relationcuenta(row.item)"
+                      >
+
+                              <b-iconstack font-scale="1" animation="cylon">
+                                    <b-icon
+                            stacked
+                            icon="unlock"
+                            animation="throb"
+                            variant="success"
+                            scale="0.75"
+                          ></b-icon> </b-iconstack>
+                         <span class="font-lg"> Roles</span>
+
+
+
+                      </b-button>
+                      <b-button
+                                          v-if="permi==3"
+
+                        size="md"
+                        variant="outline-danger"
+                        block
+                        @click="deleteevent(row.item)"
+                         class="mr-1 mb-1  mt-2"
+                      >
+                        <b-icon icon="trash-fill"></b-icon>Borrar 12
+                      </b-button>
+                                        </b-col>
+
+                  </b-row>
+                                </b-container>
+
+                </template>
+                <template v-slot:row-details="row">
+                <b-card                   
                     border-variant="primary"
-                    :header="row.item['usersin'][0].name"
+                    :header="row.item.nombre"
                     header-bg-variant="primary"
                     header-text-variant="white"
-                    align="center"
-                  >
-                    <b-table
+                    align="center"           >
+ <b-table
                       responsive
-                      :items="[{Nombre:row.item['usersin'][0].name,Email:row.item['usersin'][0].email,
-                Teléfono:row.item['usersin'][0].telefono ,
-                Dirección:row.item['usersin'][0].calle+' '+
-                row.item['usersin'][0].colonia+' '+
-                row.item['usersin'][0].municipio+' '+
-                row.item['usersin'][0].estado+' ',
-                NickName:row.item['usersin'][0].nickname }]"
+                       :items="[{Nombre:row.item.nombre,Razón_social:row.item.razonsocial,
+                RFC:row.item.rfc ,Télefono:row.item.telefonoContacto,
+                Pais:row.item.pais,Número:row.item.numero_ext,Calle:row.item.calle,
+                Estado:row.item.estado,municipio:row.item.municipio,Regimen_Fiscal:row.item.regimen,
+                mail:row.item.email,Colonia:row.item.colonia}]"
                       :fields="['Nombre',
-                    'Email','Teléfono',
-                    'Dirección','NickName']"
+                    'Razón_social','Pais',
+                    'Estado','municipio','Colonia','Calle','Número', 'RFC','Télefono','mail','Regimen_Fiscal']"
                     >
-                      <template v-slot:cell(Empresas)="row">
-                        <ul>
-                          <li
-                            style="list-style:none"
-                            v-for="item in row.item.Empresas.empresas"
-                            :key="item.nombre"
-                          >
-                            <b-button
-                              variant="outline-primary"
-                              class="mb-2"
-                              @click="showempresa(item)"
-                            >
-                              <b-icon icon="building"></b-icon>
-                              {{item.nombre }}
-                            </b-button>
-                          </li>
-                        </ul>
-                      </template>
+                   <template v-slot:cell(name)>
+                  
+                 {{row.name}}
+                   </template> 
+                     <template v-slot:cell(municipio)>
+                  {{row.item.municipio}}
+                   </template> 
+                      <template v-slot:cell(email)>
+                  
+                 {{row.email}}
+                   </template>   
+                  <template v-slot:cell(tel)>
+                  
+                 {{row.telefono}}
+                   </template> 
+                      <template v-slot:cell(razon)>
+                  
+                 {{row.razonsocial}}
+                   </template> 
                     </b-table>
-                  </b-card>
-                </template>
-
-
-   <template v-slot:cell(fecha)="row">
-                     <b-badge variant="info">
-                  {{row.item.humans}}</b-badge><br>
-                    {{row.item.createsmall}}
-                </template>
-               
-          
-               
+                    </b-card>
+               </template>
                 <template v-slot:head()="data">
-                  <span class="text-info"
-                 >{{ data.label.toUpperCase() }}</span>
-                
+                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
                 </template>
                          
               </b-table>
               <b-row>
+         
                 <b-col sm="7" md="12" class="my-1">
                   <b-pagination
                     v-model="currentPage"
@@ -273,6 +331,7 @@
      
 
 </div>
+
 </template>
 
 <script>
@@ -280,6 +339,7 @@ import "regenerator-runtime/runtime";
 import edituser from "@/views/windowmodal/edituser";
 import permisosuser from "@/views/windowmodal/rolespermisosadduser";
 import rqstin from "@/views/windowmodal/requestin";
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 export default {
   props:['datosallin','iddeletein','idedit']
 
@@ -289,6 +349,7 @@ export default {
     edituser,
     permisosuser,
     rqstin,
+   
 
   },
   data() {
@@ -388,7 +449,6 @@ export default {
       
          this.datosall=newval;
          this.items=newval.items;
-         console.log(this.items)
 
     },
     iddeletein:function(newval,oldval){
@@ -414,19 +474,19 @@ export default {
 this.$emit('info',item);
 
     },
-    relationcuenta(row){
-            this.$emit('roles',row);
-
+    sucursales(row){
+    this.$emit('sucursales',row);
     },
-      showempresa(item){
-this.$emit('showempresa',item);
+    relationcuenta(row){
+    this.$emit('roles',row);
+
     },
      addin(){
 this.$emit('add');
     },
   eliminaregistro(item){
   this.datosall.items = this.datosall.items.filter(
-            (itemin) => itemin.id != item.id);
+            (itemin) => itemin.id != item);
   },
   getitems(){
       this.$emit('recargatabla');

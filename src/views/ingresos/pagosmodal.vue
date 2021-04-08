@@ -23,9 +23,177 @@
               </CCardHeader>
               <CCardBody>
                 <b-row>
+                         
+                  <b-col cols="12">
+                                       <h1 class="text-primary mb-3 text-center">Concepto</h1>
+
+                
+                    <b-input-group size="md">
+                    
+                      <b-input-group-prepend is-text>
+                        <b-icon icon="plus-square"></b-icon>
+                      </b-input-group-prepend>
+                      <b-form-input
+                        v-model="form.concepto"
+                        placeholder="Concepto del Pago"
+                         :state="form.concepto.length >= 7"
+                      ></b-form-input>
+                    </b-input-group>
+                          <span
+                      class="text-success d-block"
+                      style="float:right"
+                      v-if="$v.form.concepto.$model.length>=7"
+                    >Perfecto!</span>
+
+                    <span
+                      class="text-danger d-block"
+                      style="float:right"
+                      v-if="$v.form.concepto.$model.length==0"
+                    >Campo requerido**</span>
+                    <span
+                      class="text-danger d-block"
+                      style="float:right"
+                      v-if="$v.form.concepto.$model.length<7&&$v.form.concepto.$model.length>0"
+                    >Minímo 7 caracteres</span>
+                  </b-col>
+                  <b-col cols="12" lg="3" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-primary">Monto Solicitado</h4>
+                    </label>
+                    <b-input-group size="md">
+                      <b-input-group-prepend is-text>
+                        <b-icon icon="cash"></b-icon>
+                      </b-input-group-prepend>
+                      <b-form-input
+                      type="number"
+                        oninput="javascript:value=this.value.replace('e','')"
+
+                        v-model="form.bruto"
+                           @wheel="$event.target.blur()"
+                        :min="0"
+                        v-on:keyup.prevent="calcula"
+                        :class="{
+                          'is-valid': this.form.bruto>0,
+                          'is-invalid': this.form.bruto == 0,
+                        }"
+                        placeholder="Cantidad solicitada"
+                      ></b-form-input>
+                    </b-input-group>                 
+
+                  </b-col>
+                      <b-col cols="12" lg="3" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-primary">Moneda</h4>
+                    </label>
+                    <b-input-group size="md">
+                      <b-input-group-prepend is-text>
+                        <b-icon icon="cash"></b-icon>
+                      </b-input-group-prepend>
+                    <b-form-input list="monedas"  placeholder="Tipo de Moneda"  v-model="form.moneda"></b-form-input>
+
+                      <datalist
+                      id="monedas"
+                      >
+                  <option v-for="item in monedas" :key="item">{{item}}</option>
+
+                      
+                      </datalist>
+                    </b-input-group>                 
+
+                  </b-col>
+                      <b-col cols="12" lg="2" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-primary">IVA %</h4>
+                    </label>
+                  <b-form-select
+      v-model="form.iva"
+      :options="optionsiva"
+      class="mb-3"
+      value-field="item"
+      text-field="iva"
+      
+        @change="calcula"
+      disabled-field="notEnabled"
+    > </b-form-select>            
+
+                  </b-col>
+                  <b-col cols="12" lg="4" class="text-center mt-3">
+                    <label>
+                      <h4 class="text-primary">Monto Solicitado Neto</h4>
+                    </label>
+                    <b-input-group size="md">
+                      <b-input-group-prepend is-text>
+                        <b-icon icon="cash"></b-icon>
+                      </b-input-group-prepend>
+                      <b-form-input
+                       type="number"
+                        oninput="javascript:value=this.value.replace('e','')"
+                        disabled
+                        v-model="form.monto"
+                        placeholder="Total"
+                       
+                      ></b-form-input>
+                    </b-input-group>                 
+
+                  </b-col>
+                    <b-col cols="12">
+
+                    <b-form-group class="text-center">
+
+                      <h2 class="text-primary mb-3">Modalidad</h2>
+
+                      <b-row>
+                        <b-col cols="12" class="border:solid red 2px" >
+                      <b-form-radio-group
+                        id="btn-radios-2"
+                        v-model="form.tipo"
+                        buttons
+                        pill
+                        button-variant="outline-info"
+                        size="lg"
+                        name="radio-btn-outline"
+                      >
+                            <b-row>
+
+                        <b-col cols="12" xl="3">
+
+                        <b-form-radio
+                          class="mt-3"
+                          value="unico"
+                          v-b-popover.hover.bottomright="{ variant: 'info',  content: 'Solicita 1 pago a 1 usuario.' }"
+                          title="Único"
+                        >Único</b-form-radio>
+                        </b-col>
+                               <b-col cols="12" xl="4">
+
+                        <b-form-radio
+                          class="mt-3 mr-1"
+                          value="multiplicar"
+                          v-b-popover.hover.bottomright="{ variant: 'info',  content: 'Solicitar 1 pago a mas de 1 usuario' }"
+                          title="Replica"
+                        >Replica</b-form-radio>
+                        </b-col>
+                         <b-col cols="12" xl="3">
+
+                          <b-form-radio
+                          class="mt-3"
+                          value="Divido"
+                          v-b-popover.hover.bottomright="{ variant: 'info',  content: 'Dividir 1 pago en diferentes usuarios' }"
+                          title="Dividir"
+                        >Dividir</b-form-radio>
+
+                        </b-col>
+                         </b-row>
+                      </b-form-radio-group>
+                      </b-col>
+                             </b-row>
+                    </b-form-group>
+
+               </b-col>
                   <b-col cols="12">
                     <label>
                       <h4 class="text-primary">¿A quien se le solicita el pago?</h4>
+
                     </label>
                      <b-form-tags v-model="form.value" no-outer-focus class="mb-2">
                         <template v-slot="{ tags, disabled, addTag}">
@@ -42,16 +210,16 @@
                             </li>
                           </ul>
 
-                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100">
+                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100" :disabled="userblock">
                             <template v-slot:button-content>
                               <b-icon icon="person" scale="2" class="mr-3 mb-1"></b-icon>
-                              <span style="font-size:2em" class="mt-2">Tus amigos</span>
+                              <span style="font-size:2em" class="mt-2">Tus Amigos</span>
                             </template>
 
                             <b-dropdown-form @submit.stop.prevent="() => {}">
                               <b-form-group
                                 label-for="tag-search-input"
-                                label="Usuarios Registrados"
+                                label="Usuarios Registrados y/o Email destino"
                                 label-cols-md="auto"
                                 class="mb-0"
                                 label-size="lg"
@@ -64,7 +232,12 @@
                                   type="search"
                                   size="md"
                                   autocomplete="off"
-                                ></b-form-input>
+                                >
+                               
+                                </b-form-input>
+                                 <b-button block variant="info">
+                                Agregar Email
+                                </b-button>
                               </b-form-group>
                             </b-dropdown-form>
                             <b-dropdown-divider></b-dropdown-divider>
@@ -104,6 +277,53 @@
                     >campo requerido**</span>
                   
                   </b-col>
+
+
+
+
+                 <b-col cols="12" >
+
+                    <b-form-group>
+
+                      <h3 class="text-primary mb-3 text-center" >Selecciona la empresa para obtener sus cuentas bancarias</h3>
+
+                      <b-row > 
+                      
+                        <b-form-radio-group
+                        id="btn-radios-3"
+                        v-model="selected"
+                        buttons
+                        pill
+                        button-variant="outline-info"
+                        size="lg"
+                        name="radio-btn-outline"
+                        class="w-100"
+                      >
+                    <b-col cols="12">
+                   
+                   <b-row>
+
+                        <b-col cols="12" lg="4" class="text-center"  v-for="option in optionsempresas" :key="option">
+
+                        <b-form-radio
+                          class="mt-3 mr-3"
+                          :value="option"
+                        >{{option}}</b-form-radio>
+                        </b-col>
+                            
+                         </b-row>
+                     
+                     </b-col>
+                      </b-form-radio-group>
+                             </b-row>
+                    </b-form-group>
+                 </b-col>
+
+
+
+
+
+
                    <b-col cols="12">
                     <label>
                       <h4 class="text-primary">¿A que cuenta bancaria?</h4>
@@ -123,10 +343,10 @@
                             </li>
                           </ul>
 
-                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100">
+                          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100" :disabled="cuentasblock">
                             <template v-slot:button-content>
                               <b-icon icon="cash" scale="2" class="mr-3 mb-1"></b-icon>
-                              <span style="font-size:2em" class="mt-2">Tus Cuentas Bancarias</span>
+                              <span style="font-size:2em" class="mt-2"> Tus Cuentas Bancarias</span>
                             </template>
 
                             <b-dropdown-form @submit.stop.prevent="() => {}">
@@ -160,18 +380,16 @@
                               >
                               <b-row>
                               <b-col md="auto">
-                              
-                           <span class="text-dark">{{ option.nombre_cuenta }}</span>&nbsp;
+                              <strong>Cuenta</strong>&nbsp;
+                           <span class="text-dark"> <b-badge variant="primary">{{ option.nombre_cuenta }}</b-badge></span>&nbsp;
 
                               </b-col>
-                              <b-col md="auto" >
-                            <span class="text-info " >{{ option.banco }}</span>&nbsp;
+                              <b-col md="auto" ><strong>Banco</strong>&nbsp;
+                            <span class="text-info " > <b-badge variant="info">{{ option.banco }} </b-badge></span>&nbsp;
 
                               </b-col>
-                               <b-col md="auto">
-                            <span class="text-dark ">{{ option.nickname }}</span>&nbsp;
-
-                              </b-col>
+                           
+                               
                               </b-row>
 
                               </b-dropdown-item>
@@ -189,22 +407,7 @@
                     >campo requerido**</span>
                   
                   </b-col>
-                  
-                  <b-col cols="12">
-                    <label>
-                      <h4 class="text-info">Concepto</h4>
-                    </label>
-                    <b-input-group size="md">
-                      <b-input-group-prepend is-text>
-                        <b-icon icon="plus-square"></b-icon>
-                      </b-input-group-prepend>
-                      <b-form-input
-                        v-model="form.concepto"
-                        placeholder="Concepto del Pago"
-                         :state="form.concepto.length >= 7"
-                      ></b-form-input>
-                    </b-input-group>
-                  </b-col>
+            
                     <b-col cols="12" class="mt-4">
                     <label>
                       <h4 class="text-info">links de pago</h4>
@@ -219,14 +422,16 @@
     <b-form-input
       id="input-live"
       v-model="link"
+      v-on:keyup.enter="addlink"
       aria-describedby="input-live-help input-live-feedback"
       placeholder="Ingresa link de pago"
       trim
+      key
     ></b-form-input>
 
   </div>
                   </b-col>
-                  <b-col cols="2">
+                  <b-col cols="12"  lg="2" class="mt-1">
 
                     <b-button variant="outline-primary" @click.prevent="addlink()"  block>Add Link</b-button>
 
@@ -262,87 +467,7 @@
                     </b-input-group>
                   </b-col>
                
-                  
-                  <b-col cols="12" lg="3" class="text-center mt-3">
-                    <label>
-                      <h4 class="text-info">Monto Solicitado</h4>
-                    </label>
-                    <b-input-group size="md">
-                      <b-input-group-prepend is-text>
-                        <b-icon icon="cash"></b-icon>
-                      </b-input-group-prepend>
-                      <b-form-input
-                      type="number"
-                        oninput="javascript:value=this.value.replace('e','')"
-
-                        v-model="form.bruto"
-                           @wheel="$event.target.blur()"
-                        :min="0"
-                        v-on:keyup.prevent="calcula"
-                        :class="{
-                          'is-valid': this.form.bruto>0,
-                          'is-invalid': this.form.bruto == 0,
-                        }"
-                        placeholder="Cantidad solicitada"
-                      ></b-form-input>
-                    </b-input-group>                 
-
-                  </b-col>
-                      <b-col cols="12" lg="3" class="text-center mt-3">
-                    <label>
-                      <h4 class="text-info">Moneda</h4>
-                    </label>
-                    <b-input-group size="md">
-                      <b-input-group-prepend is-text>
-                        <b-icon icon="cash"></b-icon>
-                      </b-input-group-prepend>
-                    <b-form-input list="monedas"  placeholder="Tipo de Moneda"  v-model="form.moneda"></b-form-input>
-
-                      <datalist
-                      id="monedas"
-                      >
-                  <option v-for="item in monedas" :key="item">{{item}}</option>
-
-                      
-                      </datalist>
-                    </b-input-group>                 
-
-                  </b-col>
-                      <b-col cols="12" lg="2" class="text-center mt-3">
-                    <label>
-                      <h4 class="text-info">Impuesto %</h4>
-                    </label>
-                  <b-form-select
-      v-model="form.iva"
-      :options="optionsiva"
-      class="mb-3"
-      value-field="item"
-      text-field="iva"
-      
-        @change="calcula"
-      disabled-field="notEnabled"
-    > </b-form-select>            
-
-                  </b-col>
-                  <b-col cols="12" lg="4" class="text-center mt-3">
-                    <label>
-                      <h4 class="text-info">Monto Solicitado Neto</h4>
-                    </label>
-                    <b-input-group size="md">
-                      <b-input-group-prepend is-text>
-                        <b-icon icon="cash"></b-icon>
-                      </b-input-group-prepend>
-                      <b-form-input
-                       type="number"
-                        oninput="javascript:value=this.value.replace('e','')"
-                        disabled
-                        v-model="form.monto"
-                        placeholder="Total"
-                       
-                      ></b-form-input>
-                    </b-input-group>                 
-
-                  </b-col>
+               
                         <b-col cols="12"  class="text-center mt-3">
                     <label>
                       <h2 class="text-info">Fecha Límite de Pago</h2>
@@ -368,6 +493,7 @@
                     <b-button
                       block
                       variant="outline-success"
+                      v-if="this.$parent.config.typebtn=='new'&&!this.$v.$invalid "
                       @click.prevent="empresacreate(form)"
                       pill>                      
                       <h3><b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>Solicitar Pago</h3>
@@ -376,7 +502,9 @@
                       block
                       variant="outline-success"
                       @click.prevent="empresaupdate()"
+                      v-if="false"
                       pill>
+                      
                       <h3><b-icon icon="cash" aria-hidden="true" class="mr-3"></b-icon>Actualiza Pago</h3>
                     </b-button>
                   </div>
@@ -414,6 +542,10 @@ export default {
   name: "modalcuenta",
   data() {
     return {
+        flavours: ['Orange', 'Grape', 'Apple', 'Lime', 'Very Berry'],
+        selected: [],
+        allSelected: false,
+        indeterminate: false,
         optionsiva:[0,8,16],
         
       link:"",
@@ -426,9 +558,14 @@ export default {
       searchc:"",
       optionsc:[],
        options:[],
+       optionsempresas:[],
+
        hoy:"",
        minimo:"2020-10-19",
+       selectempresa:[],
+     
       form: {
+          tipo:"unico",
         id: "",
         comentario:"",
         tittle: "",
@@ -442,6 +579,7 @@ export default {
          cuentas:[],
          links:[],
          iva:"0",
+         cuentasall:[]
       },
       monedas:['Pesos','Dolares','Euros'],
         update: true,
@@ -456,14 +594,46 @@ export default {
     form: {
       concepto: { required, minLength: minLength(7) },
        value:{required},
-      cuentas:{required}
-
+      cuentas:{required},
+         bruto:{required},
+   
     },
    
   },
-   
+   watch:{
+         selected(newValue, oldValue) {
+        // Handle changes in individual flavour checkboxes
+        this.cuentasshow(newValue)
+        if (newValue.length === 0) {
+          this.indeterminate = false
+          this.allSelected = false
+        } else if (newValue.length === this.optionsempresas.length) {
+          this.indeterminate = false
+          this.allSelected = true
+        } else {
+          this.indeterminate = true
+          this.allSelected = false
+        }
+      }
+
+    
+
+   },
       
   methods: {
+    cuentasshow(val){
+      this.form.cuentas=[];
+      if(val.length<=0){
+        return false
+      }
+      
+      let options=this.$parent.empresasall.filter(r=>r.nombre==val);
+     this.optionsc=options[0]['cuentas'];
+       
+    },
+      toggleAll(checked) {
+        this.selected = checked ? this.optionsempresas.slice() : []
+      },
     calcula(){
     let bruto=parseFloat(this.form.bruto);
      let iva=parseFloat(this.form.iva);
@@ -543,6 +713,9 @@ this.hoy=fecha;
       },
          removeTagcustomc(tag){
         this.form.cuentas=this.form.cuentas.filter(f=> f!=tag);
+       this.form.value=this.form.value.filter(f=> f!=tag);
+        this.form.cuentasall=this.form.cuentasall.filter(f=>f.nombre_cuenta != tag);
+        
       },
      async getitems() {
        this.show = true;
@@ -580,7 +753,7 @@ this.hoy=fecha;
      onOptionClickc({ option, addTag }) {
     /// addTag(option);
      this.form.cuentas.push(option.nombre_cuenta);
-
+      this.form.cuentasall.push(option)
       this.searchc = "";
     },
     updateModaledit() {
@@ -608,7 +781,9 @@ this.hoy=fecha;
     },
     async eventdetected() {
       this.options=this.$parent.myallusers;
-            this.optionsc=this.$parent.myallcuentas;
+    this.selected=[];
+            //this.optionsc=this.$parent.myallcuentas;
+            this.optionsempresas=this.$parent.empresasall.map(e=>e.nombre)
       // if (this.$store.state.flagpago == 1) {
       //   this.resetModal();
        
@@ -633,19 +808,22 @@ this.hoy=fecha;
       
     },
     async empresacreate(form) {
-          this.form['objects']=this.alloption;
-         this.animationall = true;
-      this.btnadios = true;
-      this.update = false;
-      if (this.$v.$invalid) {
-        return false;
-      }
+      this.form.users=this.alloption;
+      //    this.animationall = true;
+      // this.btnadios = true;
+      // this.update = false;
+      // if (this.$v.$invalid) {
+      //   return false;
+      // }
+
 
       const repo = repocreate();
       try {
 
         await repo.solicitarpago(this.form).then((res) => {
             
+            console.log(res);
+            return false;
           
               if (res.message == "Request failed with status code 401") {
             this.$router.push(`/pages/login`);
@@ -760,6 +938,25 @@ this.hoy=fecha;
     this.fecha();
   },
   computed: {
+    userblock(){
+        if(this.form.tipo=="unico"){
+          if(this.form.value.length>=1){
+if(this.form.value.length>1){
+  this.form.value.splice(0,1);
+}        return true;  
+                         
+          }
+        }
+return false;
+    },
+       cuentasblock(){
+          let response=false;
+        if(this.optionsempresas.length<=0){
+            return true;
+          }else{
+        this.selected.length>0?false:response=true;
+        return response;}
+    },
     total(){
         
     },
@@ -784,7 +981,7 @@ this.hoy=fecha;
     },
     searchDesc() {
       if (this.criteria && this.availableOptions.length === 0) {
-        return "Ningun resultado concuerda";
+        return "Ningún amigo concuerda, agrega el email correctamente";
       }
       return "";
     },

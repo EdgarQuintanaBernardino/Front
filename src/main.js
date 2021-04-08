@@ -24,14 +24,24 @@ import { faFilePdf,faFileCode } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 library.add(faFilePdf,faFileCode )
+import ThemifyIcon from "vue-themify-icons";
+Vue.use(ThemifyIcon);
 
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 import VueSweetalert2 from 'vue-sweetalert2';
 
 // If you don't need the styles, do not connect
 import 'sweetalert2/dist/sweetalert2.min.css';
 
+import VueFormWizard from 'vue-form-wizard'
+import VueFormGenerator from 'vue-form-generator'
+import 'vue-form-generator/dist/vfg.css'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
+
+Vue.use(VueFormWizard)
+
+Vue.use(VueFormGenerator)
 Vue.use(VueSweetalert2);
 
 Vue.use(VueCryptojs)
