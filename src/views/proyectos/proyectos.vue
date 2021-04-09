@@ -208,7 +208,7 @@ self.iddelete=[],
          this.user=item;
          this.config={
             titulo:'Editar ',
-            namebtn:'Editar Empresa',
+            namebtn:'Editar ',
             typebtn:'edit',
             showdelete:false,
             showreset:false,
@@ -299,7 +299,7 @@ metodo?this.getitems():this.getitemsback();
 
  this.empresa=[];
          this.config={
-            titulo:'Nueva ',
+            titulo:'Nuevo ',
             namebtn:'Empresa Usuario',
             typebtn:'new',
             showdelete:true,
@@ -319,8 +319,8 @@ metodo?this.getitems():this.getitemsback();
       try {
         let repoitems = repo();
         let validaciones=respuestas();
-        await repoitems.getempresas().then((res) => {
-         let response=validaciones.validafriends(res);
+        await repoitems.getproyectos().then((res) => {
+         let response=res;
            this.totalrowsend=response.data.length;
 
         let datosgenericos={
@@ -341,10 +341,10 @@ metodo?this.getitems():this.getitemsback();
             header:true,///bolean heeader
             headername:'Proyectos',
             btnadd:true,
-            iconadd:'sliders',
+            iconadd:'ti-wand',
             animation:'fade',
             fontscale:'2',
-            classicon:'mr-2',
+            classicon:'ti-wand',
             namebtn:'Agrega Proyectos',
             badgevariant:'primary',
             btnvariant:'info',
@@ -363,12 +363,12 @@ metodo?this.getitems():this.getitemsback();
    deletevento(item){
       Swal.fire({
         title: "¿Eliminar?",
-        text: "¿Deseas eliminar a la empresa con el nombre '" + item.nombre + "'?",
+        text: "¿Deseas eliminar el proyecto con el nombre '" + item.nombre + "'?",
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "Si, Borrala!",
+        confirmButtonText: "Si, Borralo!",
       }).then((result) => {
         if (result.value) {
           this.actiondeleteempresa(item);
@@ -381,7 +381,7 @@ metodo?this.getitems():this.getitemsback();
      let alert=alertas();
       try {
         await dao
-          .deleteempresa(item)
+          .deleteproyecto(item)
           .then((res) => {
             
            this.$store.getters.getmetodo?this.iddelete=item.id:this.iddeleteback=item.id;

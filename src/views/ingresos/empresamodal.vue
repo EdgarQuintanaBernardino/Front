@@ -486,7 +486,6 @@ this.animationall=false;
     },
     async eventdetected() {
 
-console.log("si");
       this.animationall=true;
 this.resetModal();
       if (!this.$parent.config.showreset) {

@@ -26,7 +26,7 @@
                </CCardHeader>
             <CCardBody>
               <b-row class="border-bottom">
-                <b-col sm="6" md="6" class="mt-3 mb-3">
+                <b-col sm="4" md="4" class="mt-3 mb-3">
                   <b-input-group size="sm">
                     <b-form-input
                       v-model="filter"
@@ -48,24 +48,31 @@
                   </b-input-group>
                 </b-col>
 
-                <b-col sm="6" md="6" class="mt-3 mb-3">
-                  <b-form-group
+                <b-col sm="6" md="8" class="mt-3 mb-3">
+                <b-row>
+                <b-col cols="6">
+                   <b-form-group
                     label="Filas mostradas:"
-                    label-cols-sm="6"
-                    label-cols-md="4"
-                    label-cols-lg="3"
+                    label-cols-sm="12"
                     label-align-sm="right"
                     label-size="sm"
                     label-for="perPageSelect"
                     class="mb-0"
-                  >
-                    <b-form-select
+                  >                    
+                  </b-form-group>
+                   </b-col>
+                <b-col cols="6">
+                  <b-form-select
                       v-model="datosall.totalfilasmostradas"
                       id="perPageSelect"
                       size="sm"
                       :options="pageOptions"
                     ></b-form-select>
-                  </b-form-group>
+                </b-col>
+              
+                </b-row>
+               
+                  
                 </b-col>
               </b-row>
               <b-table
@@ -90,126 +97,23 @@
                 responsive
                 id="table_generic"
               >
-         <template v-slot:cell(sucursales)="row"
-         >
-         
-               
-          <b-button
-                        size="md"
-                        block
-                        @click.prevent="sucursales(row.item)"
-                        variant="outline-success"
-                        class="mr-1 mb-1 mt-2"
-                      >
-                        <b-icon icon="shop-window"></b-icon>Sucursales
-                      </b-button>
-     
-     
-   
-         </template>
-                <template v-slot:cell(name)="row">
-                              <b-row>
-                
-                    <b-col sm="12" class="mb-2 text-center">
-                      <b-button
-                        size="sm"
-                        @click="row.toggleDetails"
-                        variant="outline-info"
-                        block
-                        pill
-                      >
-                        <b-icon icon="eye"></b-icon><br />
+    
+                <template v-slot:cell(name)="row" >
+                <b-row class="text-center ">
+                <b-col cols="12">
+                  
+                  <b-badge variant="primary" class="w-75"><h4 class="ti-wand"></h4>  <span>{{row.item.nombre}}</span></b-badge> 
 
-                        {{ row.item.nombre }}
-                      </b-button>
-                    </b-col>
-                  </b-row>
-                </template>
-              
-                <template v-slot:cell(razon)="row">{{
-                  row.item.razonsocial
-                }}</template>
-                  <template v-slot:cell(telefono)="row">{{
-                  row.item.telefonoContacto
-                }}</template>
-                
-                      <template v-slot:cell(actions)="row">
-              <b-container fluid>
-                  <b-row class="justify-content-md-center">
-
-                    <b-col cols="12"  :xl="datosall.resuelve" v-for="permi in getacciones" :key="permi">
-                      <b-button
-                    v-if="permi==1"
-                        size="md"
-                        block
-                        @click.prevent="infoin(row.item)"
-                        variant="outline-primary"
-                        class="mr-1 mb-1 mt-2"
-                      >
-                        <b-icon icon="pencil"></b-icon>Editar 
-                      </b-button>
-                      <b-button
-                   v-if="permi==2"
-
-                        size="md"
-                        variant="outline-success"
-                        block
-                         class="mr-1 mb-1  mt-2"
-                        @click="relationcuenta(row.item)"
-                      >
-
-                              <b-iconstack font-scale="1" animation="cylon">
-                                    <b-icon
-                            stacked
-                            icon="unlock"
-                            animation="throb"
-                            variant="success"
-                            scale="0.75"
-                          ></b-icon> </b-iconstack>
-                         <span class="font-lg"> Roles</span>
-
-
-
-                      </b-button>
-                      <b-button
-                                          v-if="permi==3"
-
-                        size="md"
-                        variant="outline-danger"
-                        block
-                        @click="deleteevent(row.item)"
-                         class="mr-1 mb-1  mt-2"
-                      >
-                        <b-icon icon="lock-fill"></b-icon>Bloquear 
-                      </b-button>
-                                        </b-col>
-
-                  </b-row>
-                                </b-container>
-
-                </template>
-                <template v-slot:row-details="row">
-                <keep-alive>
-    <component v-bind:is="stepComponent" v-bind:row="row"></component>
-    </keep-alive>
-               </template>
-                <template v-slot:head()="data">
-                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
-                </template>
-                <template v-slot:cell(roles)="row">
-                <b-row>
-                  <b-col cols="12"  v-for="rol in row.item.roles" :key="rol.id">
-                  <b-badge variant="info" pill v-if="rol.name=='user'">{{rol.name}}</b-badge>
-                  <b-badge variant="success" pill v-else-if="rol.name=='admin'">{{rol.name}}</b-badge>
-                  <b-badge variant="success" pill v-else>{{rol.name}}</b-badge>
-
-
-                  </b-col>
+                </b-col>
                 </b-row>
-              
-
-                    
+             
                 </template>
+         
+                
+              
+                <template v-slot:head()="data">
+               <span class="text-info">{{ data.label.toUpperCase() }}</span>   </template>
+            
            
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
@@ -258,7 +162,7 @@
                         @click="deleteevent(row.item)"
                          class="mr-1 mb-1  mt-2"
                       >
-                        <b-icon icon="trash-fill"></b-icon>Borrar 12
+                        <b-icon icon="trash-fill"></b-icon>Borrar
                       </b-button>
                                         </b-col>
 
@@ -266,49 +170,7 @@
                                 </b-container>
 
                 </template>
-                <template v-slot:row-details="row">
-                <b-card                   
-                    border-variant="primary"
-                    :header="row.item.nombre"
-                    header-bg-variant="primary"
-                    header-text-variant="white"
-                    align="center"           >
- <b-table
-                      responsive
-                       :items="[{Nombre:row.item.nombre,Razón_social:row.item.razonsocial,
-                RFC:row.item.rfc ,Télefono:row.item.telefonoContacto,
-                Pais:row.item.pais,Número:row.item.numero_ext,Calle:row.item.calle,
-                Estado:row.item.estado,municipio:row.item.municipio,Regimen_Fiscal:row.item.regimen,
-                mail:row.item.email,Colonia:row.item.colonia}]"
-                      :fields="['Nombre',
-                    'Razón_social','Pais',
-                    'Estado','municipio','Colonia','Calle','Número', 'RFC','Télefono','mail','Regimen_Fiscal']"
-                    >
-                   <template v-slot:cell(name)>
-                  
-                 {{row.name}}
-                   </template> 
-                     <template v-slot:cell(municipio)>
-                  {{row.item.municipio}}
-                   </template> 
-                      <template v-slot:cell(email)>
-                  
-                 {{row.email}}
-                   </template>   
-                  <template v-slot:cell(tel)>
-                  
-                 {{row.telefono}}
-                   </template> 
-                      <template v-slot:cell(razon)>
-                  
-                 {{row.razonsocial}}
-                   </template> 
-                    </b-table>
-                    </b-card>
-               </template>
-                <template v-slot:head()="data">
-                  <span class="text-info">{{ data.label.toUpperCase() }}</span>
-                </template>
+           
                          
               </b-table>
               <b-row>
@@ -354,11 +216,7 @@ export default {
   },
   data() {
     return {
-      filteredTodos:[    
-        { key: "name", label: "Nombre Usuario", class: "text-center",component:{carpeta:"templates",file:"users"}},
-
-
-],
+    
         initrows:0,
         datosall:{
           placeholder:'generic',

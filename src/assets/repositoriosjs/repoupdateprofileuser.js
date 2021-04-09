@@ -28,6 +28,11 @@ let setcuentasempresa = `${server}/cuenta/relacionempresa`;
 let resetcontrasena = `${server}/user/refresh`;
 let addcuenta = `${server}/cuenta/create`;
 let addproyectapi = `${server}/proyecto/create`;
+let updateproyectapi = `${server}/proyecto/edit`;
+let deleteproyectoapi = `${server}/proyecto/delete`;
+
+
+let getproyectosapi = `${server}/proyecto/get`;
 
 let addsucursalapi = `${server}/sucursales/create`;
 let getcuentas = `${server}/cuenta/getall`;
@@ -233,6 +238,27 @@ const addproyect = async(request) => {
     return responses;
 
 }
+const updateproyect = async(request) => {
+    let token = store.getters.gettoken;
+
+    let config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    let responses = await Axios.post(updateproyectapi, request, config).then((res) => {
+        let mensaje = {
+            tittle: 'Proyectos',
+            text: 'Proyecto Editado Con éxito',
+            icon: 'success'
+        };
+        return response.verificayresponde(res.data, mensaje)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return responses;
+
+}
 const addsucursal = async(request) => {
     let token = store.getters.gettoken;
 
@@ -243,6 +269,27 @@ const addsucursal = async(request) => {
         let mensaje = {
             tittle: 'Sucursales',
             text: 'Sucursal Agregada Con éxito',
+            icon: 'success'
+        };
+        return response.responsenocontent(res.data, mensaje);
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+
+    return responses;
+
+}
+const deleteproyecto = async(request) => {
+    let token = store.getters.gettoken;
+
+    let config = {
+        headers: { Authorization: `Bearer ${token}` }
+    };
+    let responses = await Axios.post(deleteproyectoapi, request, config).then((res) => {
+        let mensaje = {
+            tittle: 'Proyecto',
+            text: 'Proecto Eliminado Con éxito',
             icon: 'success'
         };
         return response.responsenocontent(res.data, mensaje);
@@ -896,6 +943,22 @@ const yourusersback = async(request) => {
     });
     return result;
 }
+const getproyectos = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(getproyectosapi, request, configin).then((res) => {
+        return response.verifyrequesttables(res)
+            // return res;
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
 const yourusersbackadmin = async(request) => {
 
 
@@ -1300,6 +1363,9 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    deleteproyecto,
+    updateproyect,
+    getproyectos,
     addproyect,
     addsucursal,
     getsucursales,

@@ -19,7 +19,7 @@
           <CCol>
             <CCard>
               <CCardHeader class="bg-primary">
-                <h2 class="text-center text-white"> Proyecto</h2>
+                <h2 class="text-center text-white">{{this.$parent.config.titulo}} Proyecto</h2>
               </CCardHeader>
               <CCardBody>
                
@@ -105,6 +105,7 @@ export default {
   
      animationall:false,
    model:{
+     id:"",
     name:'',
     descripcion:'',
     
@@ -206,6 +207,7 @@ export default {
 
    resetModal:function(){
         this.model={
+          id:"",
     name:'',
     descripcion:'',
     
@@ -213,20 +215,37 @@ export default {
    },
    eventdetected:function(){
      this.animationall=false;
+     this.resetModal();
+      if (!this.$parent.config.showreset) {
+        this.updateModaledit();
+      } 
+   },
+   updateModaledit(){
+     console.log(this.$parent.user)
+      this.model.id=this.$parent.user.id;
+      
+      this.model.name=this.$parent.user.nombre;
+      this.model.descripcion=this.$parent.user.descripcion;
+
+
    },
    
   onComplete: async function(){
      
-    
- 
-     if(this.validateFirstTab()){
+     if(this.validateFirstTab()){///validacion interna js
+    !this.$parent.config.showreset?this.update():this.nuevo();
+         
+     }else{return false;}
 
-      let alerts=alertas();
+   },
+   nuevo: async function(){
+  let alerts=alertas();
         try {
             this.animationall = true;
         const repo = repocreate();
         await repo.addproyect(this.model).then((res) => {
-          console.log(res);
+      
+             this.$emit("adduserevent",res.data);
               this.hideModal();
                    });
       } catch (error) {
@@ -235,9 +254,23 @@ export default {
       } finally {
         this.animationall = false;
           }
-    
-     }else{return false;}
-
+   },
+   update:async function(){
+  let alerts=alertas();
+        try {
+            this.animationall = true;
+        const repo = repocreate();
+        await repo.updateproyect(this.model).then((res) => {
+      
+             this.$emit("edituser",res.data);
+              this.hideModal();
+                   });
+      } catch (error) {
+        console.log(error);
+           alerts.errorgenerico();
+      } finally {
+        this.animationall = false;
+          }
    },
    validateFirstTab: function(){
      return this.$refs.firstTabForm.validate();

@@ -192,7 +192,7 @@
                </b-col>
                   <b-col cols="12">
                     <label>
-                      <h4 class="text-primary">¿A quien se le solicita el pago?</h4>
+                      <h4 class="text-dark">¿A quien se le solicita el pago?</h4>
 
                     </label>
                      <b-form-tags v-model="form.value" no-outer-focus class="mb-2">
@@ -285,7 +285,7 @@
 
                     <b-form-group>
 
-                      <h3 class="text-primary mb-3 text-center" >Selecciona la empresa para obtener sus cuentas bancarias</h3>
+                      <h3 class="text-dark mb-3 text-center" >Selecciona la empresa para obtener sus cuentas bancarias</h3>
 
                       <b-row > 
                       
@@ -304,6 +304,45 @@
                    <b-row>
 
                         <b-col cols="12" lg="4" class="text-center"  v-for="option in optionsempresas" :key="option">
+
+                        <b-form-radio
+                          class="mt-3 mr-3"
+                          :value="option"
+                        >{{option}}</b-form-radio>
+                        </b-col>
+                            
+                         </b-row>
+                     
+                     </b-col>
+                      </b-form-radio-group>
+                             </b-row>
+                    </b-form-group>
+                 </b-col>
+
+
+                 <b-col cols="12" >
+
+                    <b-form-group>
+
+                      <h3 class="text-dark mb-3 text-center" >Proyecto al que se destina el pago</h3>
+
+                      <b-row > 
+                      
+                        <b-form-radio-group
+                        id="btn-radios-2"
+                        v-model="selected"
+                        switches
+                        pill
+                        button-variant="outline-info"
+                        size="lg"
+                        name="radio-btn-outline"
+                        class="w-100"
+                      >
+                    <b-col cols="12">
+                   
+                   <b-row>
+
+                        <b-col cols="12" lg="2" class="text-center"  v-for="option in optionsempresas" :key="option">
 
                         <b-form-radio
                           class="mt-3 mr-3"
