@@ -85,7 +85,7 @@ export default {
           allpermissionsd:[],///solo una vez mapeamos descripcion
           allroles:[],
           empresasall:[],
-          
+          tagsall:[],
           ////abajo es lo de back
         columns:[],  
         items:[],  
@@ -110,6 +110,7 @@ export default {
       myallcompanies:[],
       myallcuentas:[],
       myallusers:[],
+      proyectosall:[],
         }
       },mounted() {
         this.getususuarios();
@@ -354,8 +355,12 @@ metodo?this.getitems():this.getitemsback();
 
      //    let response=validaciones.validafriends(res);
        let response=res.data[0]; 
-this.empresasall=res.data[1];
-          this.totalrowsend=response.count;
+       this.empresasall=res.data[1];
+       this.proyectosall=res.data[2];
+       this.tagsall=res.data[3];
+       console.log(res);
+       
+       this.totalrowsend=response.count;
 
         let datosgenericos={
                     placeholder:"Busca Pago Solicitado",

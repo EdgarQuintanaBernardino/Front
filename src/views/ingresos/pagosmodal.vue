@@ -76,6 +76,7 @@
                           'is-valid': this.form.bruto>0,
                           'is-invalid': this.form.bruto == 0,
                         }"
+                     
                         placeholder="Cantidad solicitada"
                       ></b-form-input>
                     </b-input-group>                 
@@ -136,6 +137,100 @@
                     </b-input-group>                 
 
                   </b-col>
+                     <b-col cols="12" class="mt-3">
+                    <label>
+                      <h4 class="text-info">Comentario Y/o Descripción</h4>
+                    </label>
+                    <b-input-group size="md">
+                      <b-input-group-prepend is-text>
+    <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>
+                      </b-input-group-prepend>
+                      <b-form-textarea
+      id="textarea-state"
+      v-model="form.comentario"
+     
+      placeholder="comentario"
+      rows="3"
+    ></b-form-textarea>
+                    </b-input-group>
+                  </b-col>
+               
+               
+                        <b-col cols="12"  class="text-center mt-3">
+                    <label>
+                      <h2 class="text-info">Fecha Límite de Pago</h2>
+                    </label>
+                    <b-input-group size="md">
+                      
+    <b-form-datepicker
+      id="datepicker-full-width"
+      v-model="form.fecha"
+      menu-class="w-100"
+      calendar-width="100%"
+      locale="es-MX"
+      class="mb-2"
+      :min="minimo"
+    ></b-form-datepicker>
+                    </b-input-group>                 
+
+                  </b-col>
+                  <b-col cols="12">
+              <div>
+    <b-form-group >
+      <b-form-tags v-model="form.tags.showtags" no-outer-focus class="mb-2">
+        <template v-slot="{ tags, disabled, addTag, removeTag }">
+          <ul v-if="optionst.length > 0" class="list-inline d-inline-block mb-2">
+            <li v-for="tag in form.tags.showtags" :key="tag.id" class="list-inline-item">
+              <b-form-tag
+                @remove="removeTagcustomt(tag)"
+                :title="tag"
+                variant="info"
+              >{{ tag }}</b-form-tag>
+            </li>
+          </ul>
+
+          <b-dropdown size="sm" variant="outline-dark" block menu-class="w-100">
+       <template v-slot:button-content>
+           <b-icon icon="tag-fill" scale="2" class="mr-3 mb-1"></b-icon>
+             <span style="font-size:2em" class="mt-2">Tags</span>
+              </template>
+            <b-dropdown-form @submit.stop.prevent="() => {}">
+              <b-form-group
+              
+                label-for="tag-search-inputt"
+                label-cols-md="auto"
+                class="mb-0"
+                label-size="sm"
+              >
+                <b-form-input
+                  v-model="searcht"
+                  id="tag-search-inputt"
+                  type="search"
+                  size="sm"
+                  autocomplete="off"
+                 ></b-form-input>
+           <b-button block variant="success" class="mt-3" v-if="availableOptionst.length === 0" @click="addtagcustom"><span class="ti-tag"></span>Nuevo tag</b-button>
+
+              </b-form-group>
+            </b-dropdown-form>
+            <b-dropdown-divider></b-dropdown-divider>
+            <b-dropdown-item-button
+              v-for="option in availableOptionst"
+              :key="option.id"
+              @click="onOptionClickt({ option, addTag })"
+            >
+              {{ option.tag }}
+            </b-dropdown-item-button>
+            
+            <b-dropdown-text v-if="availableOptionst.length === 0">
+              There are no tags available to select
+            </b-dropdown-text>
+          </b-dropdown>
+        </template>
+      </b-form-tags>
+    </b-form-group>
+  </div>   
+                  </b-col>
                     <b-col cols="12">
 
                     <b-form-group class="text-center">
@@ -195,17 +290,16 @@
                       <h4 class="text-dark">¿A quien se le solicita el pago?</h4>
 
                     </label>
-                     <b-form-tags v-model="form.value" no-outer-focus class="mb-2">
+                     <b-form-tags v-model="form.users.showcomplete" no-outer-focus class="mb-2">
                         <template v-slot="{ tags, disabled, addTag}">
                           <ul v-if="tags.length > 0" class="list-inline d-inline-block mb-2">
                             <li v-for="tag in tags" :key="tag" class="list-inline-item">
                               <b-form-tag
                                 @remove="removeTagcustom(tag)"
                                 :title="tag"
-                                :disabled="disabled"
                                 variant="success"
                                 
-                              >{{ tag.value}}
+                              >{{ tag}}
                               </b-form-tag>
                             </li>
                           </ul>
@@ -231,11 +325,13 @@
                                   id="tag-search-input"
                                   type="search"
                                   size="md"
+                                  is-valid="true"
                                   autocomplete="off"
                                 >
                                
                                 </b-form-input>
-                                 <b-button block variant="info">
+                                 <b-button block variant="success" class="mt-3" v-if="availableOptions.length === 0" @click="addemail">
+                             <span class="ti-email"></span>
                                 Agregar Email
                                 </b-button>
                               </b-form-group>
@@ -328,9 +424,9 @@
 
                       <b-row > 
                       
-                        <b-form-radio-group
-                        id="btn-radios-2"
-                        v-model="selected"
+                        <b-form-checkbox-group
+                        
+                        v-model="form.selectedproyect"
                         switches
                         pill
                         button-variant="outline-info"
@@ -342,18 +438,18 @@
                    
                    <b-row>
 
-                        <b-col cols="12" lg="2" class="text-center"  v-for="option in optionsempresas" :key="option">
+                        <b-col cols="12" lg="2" class="text-center"  v-for="option in optionsproyectos" :key="option">
 
-                        <b-form-radio
+                        <b-form-checkbox
                           class="mt-3 mr-3"
                           :value="option"
-                        >{{option}}</b-form-radio>
+                        >{{option}}</b-form-checkbox>
                         </b-col>
                             
                          </b-row>
                      
                      </b-col>
-                      </b-form-radio-group>
+                      </b-form-checkbox-group>
                              </b-row>
                     </b-form-group>
                  </b-col>
@@ -488,34 +584,54 @@
                   </b-row>
                   </b-col>
                   
-                  <b-col cols="12" class="mt-3">
-                    <label>
-                      <h4 class="text-info">Comentario Y/o Descripción</h4>
-                    </label>
-                    <b-input-group size="md">
-                      <b-input-group-prepend is-text>
-    <b-icon icon="exclamation-circle-fill" variant="danger"></b-icon>
-                      </b-input-group-prepend>
-                      <b-form-textarea
-      id="textarea-state"
-      v-model="form.comentario"
+                <b-col cols="12" >
+
+                    <b-form-group>
+
+                      <h3 class="text-dark mb-3 text-center" >El pago es recurrente?</h3>
+  <div>
+    <b-form-checkbox
+      id="checkbox-1"
+      v-model="status"
+      name="checkbox-1"
+      value="No, es pago único"
+      unchecked-value="Si, es recurrente"
+      style="border:red solid 2px;float:right"
+    >
+     {{status}}
+    </b-form-checkbox>
+
+  </div>
+                    </b-form-group>
+                 </b-col>
+<b-col cols="12" v-if="status=='Si, es recurrente'">
+<h4>Cual es la frecuencia del pago?</h4>
+   <b-form-group  v-slot="{ ariaDescribedby }">
+      <b-form-radio-group
+        id="radio-slots"
+        v-model="form.recurrencia.tipo"
+        :options="optionsrecurrencia"
+        :aria-describedby="ariaDescribedby"
+        name="radio-options-slots"
+      >
      
-      placeholder="comentario"
-      rows="3"
-    ></b-form-textarea>
-                    </b-input-group>
-                  </b-col>
-               
-               
-                        <b-col cols="12"  class="text-center mt-3">
+      </b-form-radio-group>
+    </b-form-group>
+
+
+</b-col>
+
+
+         <b-col cols="6" v-if="status=='Si, es recurrente'">
+  <b-col cols="12"  class="text-center mt-3">
                     <label>
-                      <h2 class="text-info">Fecha Límite de Pago</h2>
+                      <h2 class="text-info">Fecha para iniciar recurrencia</h2>
                     </label>
                     <b-input-group size="md">
                       
     <b-form-datepicker
-      id="datepicker-full-width"
-      v-model="form.fecha"
+      
+      v-model="form.recurrencia.inicia"
       menu-class="w-100"
       calendar-width="100%"
       locale="es-MX"
@@ -525,6 +641,54 @@
                     </b-input-group>                 
 
                   </b-col>
+
+</b-col>
+<b-col cols="6" v-if="status=='Si, es recurrente'">
+
+         <b-time v-model="form.recurrencia.hora"  label="a" locale="en">
+    <div class="d-flex" dir="ltr">
+      <b-button
+        size="sm"
+        variant="outline-danger"
+        v-if="form.recurrencia.hora"
+        @click="clearTime"
+        formated="hotien"
+      >
+        Limpiar
+      </b-button>
+      <b-button
+        size="sm"
+        variant="outline-primary"
+        class="ml-auto"
+        @click="setNow"
+      >
+        Ahora
+      </b-button>
+    </div>
+  </b-time>
+</b-col>
+
+         <b-col cols="6" v-if="status=='Si, es recurrente'">
+  <b-col cols="12"  class="text-center mt-3">
+                    <label>
+                      <h2 class="text-danger">Fecha para terminar recurrencia</h2>
+                    </label>
+                    <b-input-group size="md">
+                      
+    <b-form-datepicker
+      
+      v-model="form.recurrencia.tiempo"
+      menu-class="w-100"
+      calendar-width="100%"
+      locale="es-MX"
+      class="mb-2"
+      :min="minimo"
+    ></b-form-datepicker>
+                    </b-input-group>                 
+
+                  </b-col>
+
+</b-col>
                 </b-row>
 
                 <div class="mt-5">
@@ -581,11 +745,13 @@ export default {
   name: "modalcuenta",
   data() {
     return {
-        flavours: ['Orange', 'Grape', 'Apple', 'Lime', 'Very Berry'],
+     
+        status: 'No, es pago único',
         selected: [],
         allSelected: false,
         indeterminate: false,
         optionsiva:[0,8,16],
+        optionsrecurrencia:['Diario',"Semanal","Quincenal","Mensual","Día del Mes","Bimestral","Trimestral","Semestral","Anual"],
         
       link:"",
       alloption:[],
@@ -595,16 +761,41 @@ export default {
       animationall: false,
       search:"",
       searchc:"",
+            searcht:"",
+
+
       optionsc:[],
+      
+      optionst:[],
        options:[],
        optionsempresas:[],
+       optionsproyectos:[],
 
        hoy:"",
        minimo:"2020-10-19",
        selectempresa:[],
+
      
       form: {
-          tipo:"unico",
+        recurrencia:{
+            tipo:"Diario",
+            hora:"",
+            tiempo:"",
+            inicia:""
+
+        },
+        tags:{
+            yourtags:[],
+            tagsnuevos:[],
+            showtags:[]
+        },
+       
+       users:{
+          emailsverifica:[],
+          emailstuyos:[],
+          showcomplete:[],
+       },
+        tipo:"unico",
         id: "",
         comentario:"",
         tittle: "",
@@ -616,9 +807,11 @@ export default {
          value:[],
          emails:[],
          cuentas:[],
+       
          links:[],
          iva:"0",
-         cuentasall:[]
+         cuentasall:[],
+         selectedproyect:[],
       },
       monedas:['Pesos','Dolares','Euros'],
         update: true,
@@ -632,7 +825,7 @@ export default {
   validations: {
     form: {
       concepto: { required, minLength: minLength(7) },
-       value:{required},
+       
       cuentas:{required},
          bruto:{required},
    
@@ -640,6 +833,7 @@ export default {
    
   },
    watch:{
+ 
          selected(newValue, oldValue) {
         // Handle changes in individual flavour checkboxes
         this.cuentasshow(newValue)
@@ -653,13 +847,58 @@ export default {
           this.indeterminate = true
           this.allSelected = false
         }
-      }
+      },
+     
 
     
 
    },
       
   methods: {
+   addtagcustom(){
+      let tag=this.searcht;
+          
+      this.form.tags.showtags.push(tag);
+      let verifica=this.form.tags.showtags.map(e=>e!=tag);
+      if(verifica.length>0){
+
+      }else{
+      this.form.tags.tagsnuevos.push(tag);
+
+      }
+      this.searcht="";
+   },
+    addemail(){
+      let email=this.search;
+      if(this.emailIsValid(email)){
+     if(this.form.users.showcomplete.indexOf(email) === -1){
+     this.form.users.showcomplete.push(email);
+     this.form.users.emailsverifica.push(email);  
+      }else{
+
+      }
+      }else{
+         Swal.fire({
+           position: 'rigth',
+  icon: 'error',
+  title: 'Email no valido',
+  showConfirmButton: false,
+  timer: 1000
+          });
+          
+      }
+     
+    this.search="";
+    },
+    clearTime(){
+        this.form.recurrencia.hora=""
+    },
+          setNow() {
+      const now = new Date()
+        // Grab the HH:mm:ss part of the time string
+        this.form.recurrencia.hora= now.toTimeString().slice(0, 8)
+      },
+  
     cuentasshow(val){
       this.form.cuentas=[];
       if(val.length<=0){
@@ -713,6 +952,8 @@ if(month < 10){
 this.form.fecha=fecha;
 this.minimo=fecha;
 this.hoy=fecha;
+this.form.recurrencia.inicia=fecha;
+this.form.recurrencia.tiempo=fecha;
 
     },
      encontrado(item){
@@ -745,10 +986,17 @@ this.hoy=fecha;
        
           this.link="";
     },
+    removeTagcustomt(tag){
+       this.form.tags.showtags=this.form.tags.showtags.filter(f=> f!=tag);
+       this.form.tags.yourtags=this.form.tags.yourtags.filter(f=> f.tag!=tag);
+       this.form.tags.tagsnuevos=this.form.tags.tagsnuevos.filter(f=> f!=tag);
+
+        
+    },
     removeTagcustom(tag){
-        this.form.value=this.form.value.filter(f=> f!=tag);
-        this.alloption=this.alloption.filter(f=>f.value != tag);
-        this.form.emails=this.alloption.map(f=>f.email);
+        this.form.users.showcomplete=this.form.users.showcomplete.filter(f=> f!=tag);
+        this.form.users.emailstuyos=this.form.users.emailstuyos.filter(f=>f.name != tag);
+        this.form.users.emailsverifica=this.form.users.emailsverifica.filter(f=>f!=tag);
       },
          removeTagcustomc(tag){
         this.form.cuentas=this.form.cuentas.filter(f=> f!=tag);
@@ -783,11 +1031,17 @@ this.hoy=fecha;
     },
     onOptionClick({ option, addTag }) {
     /// addTag(option);
-     this.form.value.push(option.name);
-     this.form.emails.push(option.email);
-     this.alloption.push(option);
+     this.form.users.showcomplete.push(option.name);
+     this.form.users.emailstuyos.push(option)
+
 
       this.search = "";
+    },
+      onOptionClickt({ option, addTag }) {
+    /// addTag(option);
+     this.form.tags.showtags.push(option.tag);
+      this.form.tags.yourtags.push(option)
+      this.searchct = "";
     },
      onOptionClickc({ option, addTag }) {
     /// addTag(option);
@@ -823,6 +1077,9 @@ this.hoy=fecha;
     this.selected=[];
             //this.optionsc=this.$parent.myallcuentas;
             this.optionsempresas=this.$parent.empresasall.map(e=>e.nombre)
+            this.optionsproyectos=this.$parent.proyectosall.map(e=>e.nombre);
+           this.optionst=this.$parent.tagsall;
+
       // if (this.$store.state.flagpago == 1) {
       //   this.resetModal();
        
@@ -831,6 +1088,9 @@ this.hoy=fecha;
 
       // }
     },  
+     emailIsValid (email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+},
     hideModal() {
       this.$refs["modal-pagos"].hide();
       /// console.log("maestra")
@@ -847,22 +1107,22 @@ this.hoy=fecha;
       
     },
     async empresacreate(form) {
-      this.form.users=this.alloption;
+    //  this.form.users=this.alloption;
       //    this.animationall = true;
       // this.btnadios = true;
       // this.update = false;
       // if (this.$v.$invalid) {
       //   return false;
       // }
-
+   console.log(this.form);
+            return false;
 
       const repo = repocreate();
       try {
 
         await repo.solicitarpago(this.form).then((res) => {
             
-            console.log(res);
-            return false;
+         
           
               if (res.message == "Request failed with status code 401") {
             this.$router.push(`/pages/login`);
@@ -999,6 +1259,31 @@ return false;
     total(){
         
     },
+     criteriat() {
+      // Compute the search criteria
+      return this.searcht.trim().toLowerCase();
+    },
+    availableOptionst() {
+      const criteriat = this.criteriat;
+      // Filter out already selected options
+      const optionst = this.optionst.filter(
+        (opt) => this.form.tags.showtags.indexOf(opt.tag) === -1
+      );
+      if (criteriat) {
+        // Show only options that match criteria
+        return optionst.filter(
+          (opt) => opt.tag.toLowerCase().indexOf(criteriat) > -1
+        );
+      }
+      // Show all options available
+      return optionst;
+    },
+    searchDesct() {
+      if (this.criteriat && this.availableOptionst.length === 0) {
+        return "Ningún tag concuerda, agrega el tag correctamente";
+      }
+      return "";
+    },
     criteria() {
       // Compute the search criteria
       return this.search.trim().toLowerCase();
@@ -1007,7 +1292,7 @@ return false;
       const criteria = this.criteria;
       // Filter out already selected options
       const options = this.options.filter(
-        (opt) => this.form.value.indexOf(opt.name) === -1
+        (opt) => this.form.users.showcomplete.indexOf(opt.name) === -1
       );
       if (criteria) {
         // Show only options that match criteria
