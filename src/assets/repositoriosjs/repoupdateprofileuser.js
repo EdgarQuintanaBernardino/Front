@@ -114,6 +114,9 @@ let yourusersbackadminapi = `${server}/user/interfaceuseradmin`;
 
 
 let getsucursalesapi = `${server}/sucursales/getall`;
+////PAGOS
+let sendfirstpay = `${server}/pagos/create`;
+let updatepayapi = `${server}/pagos/update`;
 
 const response = respuestas();
 const alerts = alertas();
@@ -279,6 +282,37 @@ const addsucursal = async(request) => {
 
     return responses;
 
+}
+const addsolicitud = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(sendfirstpay, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+}
+const updatesolicitud = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(updatepayapi, request, configin).then((res) => {
+        console.log(res)
+        return response.verifyrequest(res.data)
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
 }
 const deleteproyecto = async(request) => {
     let token = store.getters.gettoken;
@@ -785,10 +819,7 @@ const solicitudsinsend = async(request) => {
     return result;
 }
 const solicitarpago = async(request) => {
-
-
     let tokenin = store.getters.gettoken;
-
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -882,10 +913,7 @@ const getonlyupdate = async(request) => {
     return result;
 }
 const getallusers = async(request) => {
-
-
     let tokenin = store.getters.gettoken;
-
     let configin = {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
@@ -1363,6 +1391,8 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    updatesolicitud,
+    addsolicitud,
     deleteproyecto,
     updateproyect,
     getproyectos,
