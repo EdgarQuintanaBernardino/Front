@@ -93,13 +93,10 @@
                 id="table_generic"
               >
           <template v-slot:cell(archivos)="row">
-
                   <b-button variant="outline-primary" >
               <b-icon icon="clipboard"></b-icon> Archivos</b-button>
-       
-                </template>
-         
-             <template v-slot:cell(status)="row">
+                       </template>
+                      <template v-slot:cell(status)="row">
 
                   <b-button variant="outline-success" v-if="row.item.status[0].status.status=='Pagado'">
                   Aprobado</b-button>
@@ -108,16 +105,12 @@
                   <b-button  variant="outline-danger" v-if="row.item.status[0].status.status=='Denegado'">
                 Pago Rechazado</b-button ></b-button>
                 </template>
-         
-                 <template v-slot:cell(visto)="row">
+               <template v-slot:cell(visto)="row">
                      <b-badge variant="info" v-if="row.item.visto=='no'">
                   Aún no</b-badge>
                   <b-button variant="success" v-if="row.item.visto=='si'">
                   Visto</b-button>
-                </template>
-                 
-           
-                
+                </template>              
                 <template v-slot:cell(nombre_cuenta)="row">
                               <b-row>
                 
@@ -135,10 +128,7 @@
                       </b-button>
                     </b-col>
                   </b-row>
-                </template>
-              
-            
-               
+                </template>              
                       <template v-slot:cell(actions)="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
@@ -237,17 +227,12 @@
                     </b-table>
                   </b-card>
                 </template>
-
-
    <template v-slot:cell(fecha)="row">
                      <b-badge variant="info">
                   {{row.item.humans}}</b-badge><br>
                     {{row.item.createsmall}}
                 </template>
-               
-          
-               
-                <template v-slot:head()="data">
+               <template v-slot:head()="data">
                   <span class="text-info"
                  >{{ data.label.toUpperCase() }}</span>
                 

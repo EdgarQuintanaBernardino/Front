@@ -112,6 +112,7 @@
                         v-model="form.inicio.bruto"
                         @wheel="$event.target.blur()"
                         :min="0"
+                        @change="calcula"
                         v-on:keyup.prevent="calcula"
                         :class="{
                           'is-valid': this.form.inicio.bruto > 0,
@@ -248,7 +249,7 @@
                               <b-col cols="12" xl="4">
                                 <b-form-radio
                                   class="mt-3 mr-1"
-                                  value="multiplicar"
+                                  value="replicar"
                                   v-b-popover.hover.bottomright="{
                                     variant: 'info',
                                     content:
@@ -280,7 +281,15 @@
                   <b-col cols="12">
                     <label>
                       <h4 class="text-dark">
+                       <br>
                         ¿A quien se le solicita el pago?
+                        {{items}}{{items.length}}
+                        <br>
+                        {{form.shared.users.emailsverifica}}  {{form.shared.users.emailsverifica.length}}
+                         <br>
+                        {{form.shared.users.emailstuyos}}  {{form.shared.users.emailstuyos.length}}
+                         <br>
+                        {{form.shared.users.showcomplete}}  {{form.shared.users.showcomplete.length}}
                       </h4>
                     </label>
                     <b-form-tags
@@ -403,46 +412,38 @@
                   </b-col>
 
             <b-col cols="12">
-            <div>
-    <b-table :fields="fields" :items="usersselected"  foot-clone>
-      <!-- A custom formatted data column cell -->
-      <template #cell(name)="data">
-      {{data.item.email}}
-       
+            
+              <div>
+      <b-table :items="mostrar" :fields="fields">
+        <template #cell(name)="data">
+        <b class="text-success"> {{data.item.email}}</b>
       </template>
-  <template #cell(porcentaje)="data">
-        <b-row>
-        <b-col cols="8">
-           <b-form-input  type="number" min="0" max="100" v-model="data.item.range">{{data.item.range}}</b-form-input>
+          <template #cell(porcentaje)="data">
 
-        </b-col>
-
-        <b-col cols="4">
-        %
-        </b-col>
-        
-        </b-row>
-
-      </template>
-      <!-- A custom formatted header cell for field 'name' -->
-      <template #head(name)="data">
-        <span class="text-danger">{{ data.label.toUpperCase() }}</span>
-      </template>
-
-      <!-- A custom formatted footer cell for field 'name' -->
-      <template #foot(name)="data">
-        <span class="text-danger">{{ data.label }}</span>
-      </template>
-
-      <!-- Default fall-back custom formatted footer cell -->
-      <template #foot()="data">
-   
-        <i>{{ data.label }}</i>
+          <b-form-input 
+          v-if="items[data.index]"
+          type="text"
+           readonly
+          maxLength="3"
+          
+            :value="devuelveparametro(data.index)"
+            @change="cambiarange(data.index,data.item.range)"
+            @blur="cambiarange(data.index,data.item.range)"
+            oninput="javascript:
+            if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
+            this.value=this.value.replace('e','0');
+            if (this.value > 100||this.value <0)this.value =0
+            if (this.value[0]==0) this.value=''"
+            ></b-form-input><b-button @click="suma(data.index)">+</b-button>
+            {{mostrar}}
+      </template>   
+       <template #cell(monto)="data">
+        <b class="text-success"> {{data.item.monto}}</b>
       </template>
     </b-table>
   </div>
-            
             </b-col>
+       
               </b-row>
               </div>
             </tab-content>
@@ -489,10 +490,13 @@ export default {
   data() {
     return {
       range:"",
+      items: [
+         
+        ],
            fields: [
           // A column that needs custom formatting
           { key: 'name', label: 'Usuario' },
-           'porcentaje','monto',
+           'porcentaje','monto','iva', 'monto_sin'
 
         ],
        
@@ -533,6 +537,7 @@ export default {
       minimo: "2020-10-19",
       selectempresa: [],
         /////testeado
+        tableshow:false,
       search: "",
       form: {
         recurrencia: {
@@ -601,6 +606,7 @@ export default {
     },
   },
   watch: {
+   
     tipor: function (newval, oldval) {
       this.revisarecurrencia(newval);
     },
@@ -621,6 +627,20 @@ export default {
   },
 
   methods: {
+    suma(index){
+      console.log(this.items[index])
+          this.items[index].range=this.items[index].range-1;
+    },
+    cambiarange(index,value){
+     
+       console.log(this.items)
+    },
+   
+    revisa(){
+      console.log("vent")
+
+     this.calculainrealtime();
+    },  
     accesscontinue(){
         return true;
     },
@@ -709,6 +729,9 @@ export default {
             range:0,monto:0
           }
           this.form.shared.users.emailsverifica.push(emailverifica);
+        this.items.push(emailverifica);
+
+
         } else {
         }
       } else {
@@ -811,6 +834,43 @@ export default {
 
       this.link = "";
     },
+    onlytag(tag) {
+     
+     this.form.shared.users.showcomplete = this.form.shared.users.showcomplete.filter(
+        (f) => f == tag
+      );
+      this.form.shared.users.emailstuyos = this.form.shared.users.emailstuyos.filter(
+        (f) => f.name == tag
+      );
+      this.form.shared.users.emailsverifica = this.form.shared.users.emailsverifica.filter(
+     (f) => f.email == tag
+      );
+         this.resetunico(tag);
+    
+    
+    },
+    resetunico(tag){///name o mail
+       
+       let emailstuyos= this.form.shared.users.emailstuyos.length;
+      
+        if(emailstuyos>0){
+            this.items=this.items.filter((e)=>e.name=="vaiar");////se borra el item por filter
+             
+              for(let a=0;a<emailstuyos;a++){
+                this.form.shared.users.emailstuyos[a].range=0;
+                 this.items.push(this.form.shared.users.emailstuyos[a]);
+                     this.items[a].range=100;
+                     this.items[a].monto=this.form.inicio.monto;
+              }
+          
+        
+        }
+        else{
+          return false;
+        }
+
+
+    },
     removeTagcustom(tag) {
     this.form.shared.users.showcomplete = this.form.shared.users.showcomplete.filter(
         (f) => f != tag
@@ -821,6 +881,9 @@ export default {
       this.form.shared.users.emailsverifica = this.form.shared.users.emailsverifica.filter(
         (f) => f.email != tag
       );
+      
+     this.items =this.form.shared.users.emailstuyos.concat( this.form.shared.users.emailsverifica);
+        
     },
     removeTagcustomc(tag) {
       this.form.cuentas = this.form.cuentas.filter((f) => f != tag);
@@ -829,6 +892,12 @@ export default {
         (f) => f.nombre_cuenta != tag
       );
     },
+     devuelveparametro(index){
+
+        
+
+          return this.items[index].range;
+  },
     async getitems() {
       this.show = true;
 
@@ -854,13 +923,16 @@ export default {
       }
     },
     onOptionClick({ option, addTag }) {
-      /// addTag(option);
-      option.range=0;
-      option.monto=0;
-      this.form.shared.users.showcomplete.push(option.name);
-      this.form.shared.users.emailstuyos.push(option);
-
-      this.search = "";
+       option.range=0;
+       option.monto=0;
+      this.agregadatos(option)
+    
+    },
+    agregadatos(tag){
+    this.form.shared.users.showcomplete.push(tag.name);
+    this.form.shared.users.emailstuyos.push(tag);
+   this.items.push(tag);
+this.search = "";
     },
     onOptionClickc({ option, addTag }) {
       /// addTag(option);
@@ -889,13 +961,16 @@ export default {
       this.form.concepto = pagoedit.concepto;
     },
     async eventdetected() {
-      this.options = this.$parent.myallusers;
+     this.options = this.$parent.myallusers;
+//console.log(this.$parent.myallusers)
       this.selected = [];
       //this.optionsc=this.$parent.myallcuentas;
-      this.optionsempresas = this.$parent.empresasall.map((e) => e.nombre);
-      this.optionsproyectos = this.$parent.proyectosall.map((e) => e.nombre);
+    //  this.optionsempresas = this.$parent.empresasall.map((e) => e.nombre);
+     // this.optionsproyectos = this.$parent.proyectosall.map((e) => e.nombre);
       // if (this.$store.state.flagpago == 1) {
-       this.resetModal();
+      
+      this.tableshow=false;
+      this.resetModal();
 
       // } else {
       //   this.updateModaledit();
@@ -994,15 +1069,43 @@ export default {
         this.animationall = false;
       }
     },
+    calculainrealtime(){
+       if(this.items.length>1){
+        let allusers=this.items.length;
+         let cantidad=0;
+        let porcentaje=0;
+        porcentaje=100/allusers;
+        cantidad=this.form.inicio.monto/allusers;
+     
+        for(let a=0;a<allusers;a++){
+          this.items[a].range=porcentaje.toFixed(2);
+         this.items[a].monto=cantidad.toFixed(2);
+        }
+      
+        }else{///
+        console.log("nueto")
+        console.log(this.items[0].range)
+        //let nuevo=this.items[0];
+        this.items[0].range=10;
+        
+
+        }
+    },
     calculaporcentaje(){
-
-         if(this.form.shared.users.detalle.length>=1){
-
-            let allusers=this.form.shared.users.detalle.length;
-
-         console.log(this.form.inicio)
-         this.form.shared.users.detalle[0].range=100
-         }
+      
+         if(this.items.length>=1){
+        let allusers=this.items.length;
+         let cantidad=0;
+        let porcentaje=0;
+        porcentaje=100/allusers;
+        cantidad=this.form.inicio.monto/allusers;
+     
+        for(let a=0;a<allusers;a++){
+          this.items[a].range=porcentaje.toFixed(2);
+         this.items[a].monto=cantidad.toFixed(2);
+        }
+      
+        }///1 o mas
     },
     async empresaupdate() {
       this.form["objects"] = this.alloption;
@@ -1061,32 +1164,38 @@ export default {
     //this.fecha();
   },
   computed: {
-          usersselected(){  
-                         
-             this.form.shared.users.detalle=this.form.shared.users.emailstuyos.concat(this.form.shared.users.emailsverifica); 
-             this.calculaporcentaje();
-             return this.form.shared.users.detalle;
+ 
+ mostrar(){
+   return this.items
+ },
+   usersselected(){  
+   
+              console.log("computada")
+            this.calculaporcentaje();
+
+
+        return this.items;
+              
+    
 
           },
-       userblock() {
-      if (this.form.shared.tipo == "unico") {
+       userblock() {           
+      if(this.form.shared.tipo == "unico"){
         if (this.form.shared.users.showcomplete.length >= 1) {
-          if (this.form.shared.users.showcomplete.length > 1) {
-            let tag = this.form.shared.users.showcomplete[0];
-            this.form.shared.users.showcomplete = [];
-            this.form.shared.users.showcomplete.push(tag);
-            this.form.shared.users.emailstuyos = this.form.shared.users.emailstuyos.filter(
-              (f) => f.name == tag
-            );
-            this.form.shared.users.emailsverifica = this.form.shared.users.emailsverifica.filter(
-              (f) => f == tag
-            );
+         let tag = this.form.shared.users.showcomplete[0];
+            this.onlytag(tag);  
+            return true;  
+          }else{
+             return false;
+          }                      
+          }else{
+
+
+
+ return false;
           }
-           return true;
-        }
-      }
-      return false;
-    },
+    
+     },
     cuentasblock() {
       let response = false;
       if (this.optionsempresas.length <= 0) {
@@ -1166,6 +1275,15 @@ export default {
 
 
 <style scoped>
+th{
+  text-align:center;
+  font-size:1em;
+  color:rgb(228, 110, 7);
+  text-transform: uppercase;
+  font-weight:bold;
+
+  
+  }
 pre {
   overflow: auto;
 }

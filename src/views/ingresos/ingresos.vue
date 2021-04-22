@@ -210,7 +210,7 @@ self.iddelete=[],
         await repoitems.onlyusers().then((res) => {
           
         let response=validaciones.validafriends(res);
-                   this.myallusers=response.data;
+         this.myallusers=response.data;
                               });
       } catch (err) {
         console.log(err);
