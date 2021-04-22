@@ -411,39 +411,94 @@
                     >
                   </b-col>
 
-            <b-col cols="12">
+            <b-col cols="6" class="mt-3" v-for="(item,index) in items" :key="item.email" v-if="items.length==1">
             
-              <div>
-      <b-table :items="mostrar" :fields="fields">
-        <template #cell(name)="data">
-        <b class="text-success"> {{data.item.email}}</b>
-      </template>
-          <template #cell(porcentaje)="data">
+   <b-card-group deck>
+    <b-card
+      :header="'Total a dividir $'+String(form.inicio.monto)"
+      header-tag="header"
+      footer="Card Footer"
+      footer-tag="footer"
+       header-bg-variant="info"
+        header-text-variant="white"
+     
+       align="center"
 
-          <b-form-input 
-          v-if="items[data.index]"
-          type="text"
-           readonly
-          maxLength="3"
-          
-            :value="devuelveparametro(data.index)"
-            @change="cambiarange(data.index,data.item.range)"
-            @blur="cambiarange(data.index,data.item.range)"
-            oninput="javascript:
+    >
+      <b-card-text>
+      <b-table-simple hover small caption-top stacked>
+    <caption>Detalle del pago:</caption>
+    <colgroup><col><col></colgroup>
+    <colgroup><col><col><col></colgroup>
+    <colgroup><col><col></colgroup>
+    <b-thead head-variant="dark">
+      <b-tr>
+        <b-th colspan="2">Mail</b-th>
+        <b-th colspan="3">iVA</b-th>
+        <b-th colspan="2">Monto sin IVA</b-th>
+          <b-th colspan="2">Monto sin IVA</b-th>
+      </b-tr>
+      <b-tr>
+        <b-th>Country</b-th>
+        <b-th>City</b-th>
+        <b-th>Trousers</b-th>
+        <b-th>Skirts</b-th>
+        <b-th>Dresses</b-th>
+        <b-th>Bracelets</b-th>
+        <b-th>Rings</b-th>
+      </b-tr>
+    </b-thead>
+    <b-tbody>
+      <b-tr>
+        <b-th rowspan="3" class="text-center">Belgium (3 Cities)</b-th>
+        <b-th stacked-heading="City" class="text-left">Antwerp</b-th>
+        <b-td stacked-heading="Clothes: Trousers">56</b-td>
+        <b-td stacked-heading="Clothes: Skirts">22</b-td>
+        <b-td stacked-heading="Clothes: Dresses">43</b-td>
+        <b-td stacked-heading="Accessories: Bracelets" variant="success">72</b-td>
+        <b-td stacked-heading="Accessories: Rings">23</b-td>
+         <div>
+    <label for="sb-input">Spin button - input and change events</label>
+    <b-form-spinbutton
+      id="sb-input"
+      v-model="items[index].range"
+      @change="cambiarange($event,index)"
+      wrap
+    ></b-form-spinbutton>
+    <b-input type="text" v-model="items[index].range" 
+     maxLength="4"
+
+     oninput="javascript:
             if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
             this.value=this.value.replace('e','0');
             if (this.value > 100||this.value <0)this.value =0
             if (this.value[0]==0) this.value=''"
-            ></b-form-input><b-button @click="suma(data.index)">+</b-button>
-            {{mostrar}}
-      </template>   
-       <template #cell(monto)="data">
-        <b class="text-success"> {{data.item.monto}}</b>
-      </template>
-    </b-table>
+   
+      @change="cambiarange($event,index)" @blur="cambiarange($event,index)" ></b-input>
+    <p>Input event: {{ items[index].range }}</p>
+    <p>Change event: {{ mostrar }}</p>
   </div>
+      </b-tr>
+    </b-tbody>
+    <b-tfoot>
+      <b-tr>
+        <b-td colspan="7" variant="secondary" class="text-right">
+          Total Rows: <b>5</b>
+        </b-td>
+      </b-tr>
+    </b-tfoot>
+  </b-table-simple>
+      </b-card-text>
+      <b-button href="#" variant="primary">Go somewhere</b-button>
+    </b-card>
+   
+  </b-card-group>
+  
+  
             </b-col>
-       
+                        <b-col cols="6" class="mt-3" v-for="item in items" :key="item.email" v-if="items.length>1">
+
+       </b-col>
               </b-row>
               </div>
             </tab-content>
@@ -606,7 +661,9 @@ export default {
     },
   },
   watch: {
-   
+   items:function(nuevo,old){
+        console.log("itemscambio")
+   },
     tipor: function (newval, oldval) {
       this.revisarecurrencia(newval);
     },
@@ -631,9 +688,13 @@ export default {
       console.log(this.items[index])
           this.items[index].range=this.items[index].range-1;
     },
-    cambiarange(index,value){
-     
-       console.log(this.items)
+    cambiarange(value,indexin){
+            // this.items.forEach(function callback(currentValue, index, array){
+            //           if(index==indexin){
+            //             currentValue.range=value;
+            //           }
+            // })
+       console.log(this.mostrar)
     },
    
     revisa(){
@@ -923,9 +984,19 @@ export default {
       }
     },
     onOptionClick({ option, addTag }) {
-       option.range=0;
-       option.monto=0;
-      this.agregadatos(option)
+
+
+      let option2={
+            range:0,
+            monto:0,
+            name:option.name,
+            id:option.id,
+            email:option.email,
+            iva:this.form.inicio.iva,
+
+      }
+      
+      this.agregadatos(option2)
     
     },
     agregadatos(tag){
