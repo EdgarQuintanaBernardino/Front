@@ -1,7 +1,8 @@
 <template>
   <div>
+  <modaleditpago></modaleditpago>
     <b-modal
- id="modal-pagos-add"
+      id="modal-pagos-add"
       ref="modal-pagos"
       @show="eventdetected"
       @hidden="resetModal"
@@ -216,7 +217,9 @@
             </tab-content>
           
           <tab-content title="Modalidad"
-                         icon="ti-sharethis">
+                         icon="ti-sharethis"
+                         :before-change="validashared"
+                         >
               <div class="panel-body">
               <b-row>
                     <b-col cols="12">
@@ -262,7 +265,7 @@
                               <b-col cols="12" xl="3">
                                 <b-form-radio
                                   class="mt-3"
-                                  value="Divido"
+                                  value="dividir"
                                   v-b-popover.hover.bottomright="{
                                     variant: 'info',
                                     content:
@@ -283,13 +286,7 @@
                       <h4 class="text-dark">
                        <br>
                         ¿A quien se le solicita el pago?
-                        {{items}}{{items.length}}
-                        <br>
-                        {{form.shared.users.emailsverifica}}  {{form.shared.users.emailsverifica.length}}
-                         <br>
-                        {{form.shared.users.emailstuyos}}  {{form.shared.users.emailstuyos.length}}
-                         <br>
-                        {{form.shared.users.showcomplete}}  {{form.shared.users.showcomplete.length}}
+                  
                       </h4>
                     </label>
                     <b-form-tags
@@ -410,14 +407,13 @@
                       >campo requerido**</span
                     >
                   </b-col>
-
-            <b-col cols="6" class="mt-3" v-for="(item,index) in items" :key="item.email" v-if="items.length==1">
-            
-   <b-card-group deck>
+<b-col cols="12"  class="mt-3 mb-3" v-if="items.length>=1">
+            <b-row>
+            <b-col cols="12">
+             <b-card-group deck>
     <b-card
-      :header="'Total a dividir $'+String(form.inicio.monto)"
+      :header="'Total Solicitado $'+String(form.inicio.monto)"
       header-tag="header"
-      footer="Card Footer"
       footer-tag="footer"
        header-bg-variant="info"
         header-text-variant="white"
@@ -427,57 +423,17 @@
     >
       <b-card-text>
       <b-table-simple hover small caption-top stacked>
-    <caption>Detalle del pago:</caption>
-    <colgroup><col><col></colgroup>
-    <colgroup><col><col><col></colgroup>
-    <colgroup><col><col></colgroup>
-    <b-thead head-variant="dark">
-      <b-tr>
-        <b-th colspan="2">Mail</b-th>
-        <b-th colspan="3">iVA</b-th>
-        <b-th colspan="2">Monto sin IVA</b-th>
-          <b-th colspan="2">Monto sin IVA</b-th>
-      </b-tr>
-      <b-tr>
-        <b-th>Country</b-th>
-        <b-th>City</b-th>
-        <b-th>Trousers</b-th>
-        <b-th>Skirts</b-th>
-        <b-th>Dresses</b-th>
-        <b-th>Bracelets</b-th>
-        <b-th>Rings</b-th>
-      </b-tr>
-    </b-thead>
+   
     <b-tbody>
       <b-tr>
-        <b-th rowspan="3" class="text-center">Belgium (3 Cities)</b-th>
-        <b-th stacked-heading="City" class="text-left">Antwerp</b-th>
-        <b-td stacked-heading="Clothes: Trousers">56</b-td>
-        <b-td stacked-heading="Clothes: Skirts">22</b-td>
-        <b-td stacked-heading="Clothes: Dresses">43</b-td>
-        <b-td stacked-heading="Accessories: Bracelets" variant="success">72</b-td>
-        <b-td stacked-heading="Accessories: Rings">23</b-td>
-         <div>
-    <label for="sb-input">Spin button - input and change events</label>
-    <b-form-spinbutton
-      id="sb-input"
-      v-model="items[index].range"
-      @change="cambiarange($event,index)"
-      wrap
-    ></b-form-spinbutton>
-    <b-input type="text" v-model="items[index].range" 
-     maxLength="4"
-
-     oninput="javascript:
-            if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);
-            this.value=this.value.replace('e','0');
-            if (this.value > 100||this.value <0)this.value =0
-            if (this.value[0]==0) this.value=''"
+        <b-th rowspan="3" class="text-center">Detalle</b-th>
+        <b-td stacked-heading="Monto sin Iva">{{form.inicio.bruto}}</b-td>
+        <b-td stacked-heading="Total Iva">{{(form.inicio.bruto/100)*form.inicio.iva}}</b-td>
+        <b-td stacked-heading="Iva:">{{form.inicio.iva}}%</b-td>
+        <b-td stacked-heading="Monto Total" variant="success">{{form.inicio.monto}}</b-td>
+     
    
-      @change="cambiarange($event,index)" @blur="cambiarange($event,index)" ></b-input>
-    <p>Input event: {{ items[index].range }}</p>
-    <p>Change event: {{ mostrar }}</p>
-  </div>
+
       </b-tr>
     </b-tbody>
     <b-tfoot>
@@ -489,14 +445,59 @@
     </b-tfoot>
   </b-table-simple>
       </b-card-text>
-      <b-button href="#" variant="primary">Go somewhere</b-button>
     </b-card>
    
   </b-card-group>
+            
+            </b-col>
+            
+            </b-row>
+  
   
   
             </b-col>
-                        <b-col cols="6" class="mt-3" v-for="item in items" :key="item.email" v-if="items.length>1">
+    <b-col cols="12" class="mt-3">
+  
+<div>
+    <b-table :items="items" :fields="fields">
+
+
+
+       <template #cell(bruto)="data">
+        <span v-if="form.inicio.iva==0">{{data.item.monto}}</span>
+        <span v-else > 
+        
+         {{((form.inicio.bruto/100)*data.item.range).toFixed(3)}}
+        </span>
+      </template>
+   <template #cell(iva)="data">
+        <span v-if="form.inicio.iva==0">0</span>
+        <span v-else > 
+        
+         {{((((form.inicio.bruto/100)*form.inicio.iva)/100)*data.item.range).toFixed(3)}}
+        </span>
+      </template>
+ <template #cell(monto)="data">
+     <b-input type="number" min="0" :disabled="form.shared.tipo=='unico'||form.shared.tipo=='replicar'||items.length==1" v-if="items[data.index]" :max="form.inicio.monto"  @input="validamontototal(data.item.monto,data.index)" v-model="items[data.index].monto"></b-input>
+      </template>
+
+       <template #cell(name)="data">
+        <b class="text-info"> {{data.item.email}}  </b>
+      </template>
+   <template #cell(porcentaje)="data">
+     <b-input v-if="items[data.index]" :disabled="form.shared.tipo=='unico'||form.shared.tipo=='replicar'||items.length==1"  type="number" min="0" max="100"  @input="validapocentajein(data.item.range,data.index)"  v-model="items[data.index].range"></b-input>
+
+
+
+  
+      </template>
+         
+    </b-table>
+  <b-alert :show="mensaje" variant="success"><h3 class="text-dark">{{this.mensajeok}}!</h3></b-alert>
+  <b-alert :show="!mensaje" variant="danger"><h3 class="text-dark">Verificar monto total {{this.diferencia}} <b-button @click="calculaporcentaje"> Reset</b-button> </h3></b-alert>
+
+
+  </div>
 
        </b-col>
               </b-row>
@@ -540,21 +541,28 @@ import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser";
 import Swal from "sweetalert2";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
 import { mapActions, mapMutations } from "vuex";
+import modaleditpago  from "@/views/ingresos/modaleditcantidad";
 export default {
   name: "modalpagos",
   data() {
     return {
+      datoseditar:[],
       range:"",
+      mensaje:true,
+      mensajeok:'Sin cambios',
       items: [
          
         ],
            fields: [
           // A column that needs custom formatting
           { key: 'name', label: 'Usuario' },
-           'porcentaje','monto','iva', 'monto_sin'
-
+           {key:'porcentaje',label:'Porcentaje %'},
+          
+           {key:'bruto',label:'Monto Bruto'},
+           {key:'iva',label:'Iva'},
+ {key:'monto',label:'Monto Total'},
         ],
-       
+      diferencia:0,
       next: false,
       finish: false,
       solicitudtemp:[],
@@ -644,11 +652,26 @@ export default {
   },
   components: {
     Swal,
+    modaleditpago,
   },
   validations: {
+
+    items:{required,minLength:minLength(1)},
     form: {
       concepto: { required, minLength: minLength(7) },
       value: { required },
+
+      shared:{
+
+        tipo: required,
+
+         users: {              
+          showcomplete: required,
+      
+         }
+   
+         
+      },
       inicio:{
       concepto: { required, minLength: minLength(7) },
       bruto: { required },
@@ -661,9 +684,7 @@ export default {
     },
   },
   watch: {
-   items:function(nuevo,old){
-        console.log("itemscambio")
-   },
+   
     tipor: function (newval, oldval) {
       this.revisarecurrencia(newval);
     },
@@ -684,17 +705,156 @@ export default {
   },
 
   methods: {
-    suma(index){
-      console.log(this.items[index])
-          this.items[index].range=this.items[index].range-1;
+    async editatabla(val){
+  
+   this.datoseditar=val;
+this.openmodaledit();
+    
+
     },
-    cambiarange(value,indexin){
-            // this.items.forEach(function callback(currentValue, index, array){
-            //           if(index==indexin){
-            //             currentValue.range=value;
-            //           }
-            // })
-       console.log(this.mostrar)
+    openmodaledit(){
+      this.$bvModal.show("modal-prevent-closing");
+    },
+    editacampo(val){
+            console.log(val)
+    },
+    resetrow(index){
+        this.items[index].monto=0;
+        this.items[index].range=0;
+          this.mensajeok="Reset"
+
+    },
+     validapocentajein(val,index){
+               let nuevo=parseFloat(val);
+
+        if(this.validaentrada(nuevo,index)){
+        if(nuevo<0||nuevo>100){
+         this.resetrow(index);
+ 
+return false;
+        }else{
+
+       let numero=(this.form.inicio.monto/100)*nuevo;
+    this.items[index].monto=numero.toFixed(3);
+let resuelve=this.sumatotal;
+ if(resuelve==this.form.inicio.monto){
+this.mensaje=true;
+this.mensajeok="Todo Listo" 
+
+}else{
+  this.mensaje=false;
+   let dif=resuelve-this.form.inicio.monto;
+   if(dif>0){
+    this.diferencia="sobran "+dif.toFixed(3);
+   
+   }else{
+     this.diferencia="faltan "+Math.abs(dif).toFixed(3);
+      console.log(this.diferencia)
+   }
+
+ }    
+        } 
+          }else{
+          this.resetrow(index);
+        }      
+    },
+    validaentrada(val,index){
+       let nuevo=parseFloat(val);
+       if (isNaN(nuevo)){
+         return false;
+       } else {
+        return true;
+      }
+    },
+    validamontototal(val,index){
+        
+        let nuevo=parseFloat(val);
+        if(this.validaentrada(nuevo,index)){
+        if(nuevo<0||nuevo>this.form.inicio.monto){
+ this.resetrow(index);
+ return false;
+
+        }else{
+     let resuelve=this.sumatotal;
+    let porcentaje=(nuevo/this.form.inicio.monto)*100;
+ if(resuelve==this.form.inicio.monto){
+this.mensaje=true;
+this.mensajeok="Todo Listo" 
+   this.items[index].range=porcentaje;
+}else{
+  this.mensaje=false;
+   let dif=resuelve-this.form.inicio.monto;
+   if(dif>0){
+    this.diferencia="sobran "+dif.toFixed(3);
+   
+   }else{
+     this.diferencia="faltan "+Math.abs(dif).toFixed(3);
+  
+
+   }
+   this.items[index].range=porcentaje.toFixed(3);
+
+ }    
+        }
+        }else{
+          this.resetrow(index);
+        }     
+    },
+ validashared() {
+
+
+      this.next=false;
+ if(!this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid){/// si es valido el form
+        
+        if(this.solicitudtemp.id){///si tenemos ya una solicitud en curso
+            console.log(this.$v)
+           console.log("todo okey");
+          return false;
+      return this.updatesolicitud();
+        }else{////si es nueva se crea 
+        console.log("no");
+        return false;
+        return this.firstsend();
+        }  
+          }else{//// formulario no completo
+           Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Formulario incompleto",
+          showConfirmButton: false,
+          timer: 1000,
+        });
+        console.log(this.$v)
+            return !this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid; //// resulta del formulario
+           }
+      
+    },
+
+    cambiarange(value,indexin){   
+      
+      return false;
+        let montoinicial=parseFloat(this.form.inicio.monto);
+        let valuein=parseFloat(value);
+        let inicialsobre100=parseFloat(montoinicial/100);
+        let monto=parseFloat(inicialsobre100*valuein);   
+        let usersobrante=this.items.length-1
+        let sobrante=parseFloat(montoinicial-monto);
+        let setcantidad=parseFloat(sobrante/usersobrante);
+       
+       let setporcentaje=parseFloat((100-value)/usersobrante);
+         
+            this.items.forEach(function callback(currentValue, index, array){
+                     if(index==indexin){
+                      currentValue.range=valuein;
+                      currentValue.monto=monto;
+                    }else{
+                      currentValue.range=setporcentaje;
+                      currentValue.monto=setcantidad;
+                    }
+                   
+                    
+            })
+      // console.log(this.mostrar)
     },
    
     revisa(){
@@ -754,7 +914,6 @@ export default {
      
       },
     validateFirstTab(acces=false) {
-     return true;
       this.next=false;
       if(acces){
         return acces;
@@ -791,7 +950,7 @@ export default {
           }
           this.form.shared.users.emailsverifica.push(emailverifica);
         this.items.push(emailverifica);
-
+            this.calculaporcentaje();
 
         } else {
         }
@@ -840,7 +999,7 @@ export default {
         } else {
           let ivacomp = (bruto / 100) * iva;
 
-          this.form.inicio.monto = bruto + ivacomp;
+          this.form.inicio.monto = (bruto + ivacomp).toFixed(3);
         }
       }
     },
@@ -943,8 +1102,10 @@ export default {
         (f) => f.email != tag
       );
       
-     this.items =this.form.shared.users.emailstuyos.concat( this.form.shared.users.emailsverifica);
-        
+     this.items =this.items.filter((e)=>e.name!=tag);
+     
+     this.items =this.items.filter((e)=>e.email!=tag);
+        this.calculaporcentaje();
     },
     removeTagcustomc(tag) {
       this.form.cuentas = this.form.cuentas.filter((f) => f != tag);
@@ -953,12 +1114,7 @@ export default {
         (f) => f.nombre_cuenta != tag
       );
     },
-     devuelveparametro(index){
-
-        
-
-          return this.items[index].range;
-  },
+  
     async getitems() {
       this.show = true;
 
@@ -1004,6 +1160,7 @@ export default {
     this.form.shared.users.emailstuyos.push(tag);
    this.items.push(tag);
 this.search = "";
+this.calculaporcentaje();
     },
     onOptionClickc({ option, addTag }) {
       /// addTag(option);
@@ -1163,20 +1320,30 @@ this.search = "";
         }
     },
     calculaporcentaje(){
-      
-         if(this.items.length>=1){
-        let allusers=this.items.length;
+       let allusers=this.items.length;
+         if(this.items.length>=1&&this.form.shared.tipo=='dividir'
+         ||this.items.length>=1&&this.form.shared.tipo=='unico'){
+       
          let cantidad=0;
         let porcentaje=0;
         porcentaje=100/allusers;
         cantidad=this.form.inicio.monto/allusers;
      
         for(let a=0;a<allusers;a++){
-          this.items[a].range=porcentaje.toFixed(2);
-         this.items[a].monto=cantidad.toFixed(2);
+          this.items[a].range=parseFloat(porcentaje.toFixed(2));
+         this.items[a].monto=parseFloat(cantidad.toFixed(2));
         }
-      
-        }///1 o mas
+        this.mensaje=true;
+         }
+        else{
+
+         for(let a=0;a<allusers;a++){
+          this.items[a].range=100;
+         this.items[a].monto=parseFloat(this.form.inicio.monto);
+        }
+
+
+          }///1 o mas
     },
     async empresaupdate() {
       this.form["objects"] = this.alloption;
@@ -1235,22 +1402,39 @@ this.search = "";
     //this.fecha();
   },
   computed: {
- 
+    sumatotal(){
+      let resuelve=0;
+      for(let a=0;a<this.items.length;a++){
+
+          if( this.items[a].monto>0){
+        resuelve +=parseFloat(this.items[a].monto);
+          }
+         
+         }
+
+         return resuelve;
+    },
+    validasuma(){
+        if(this.items.length==0){
+          return true
+        }else{
+        
+
+      return false;
+
+ }
+
+      
+        
+    },
+ maximoselect(){
+   return 100;
+ },
  mostrar(){
    return this.items
  },
-   usersselected(){  
-   
-              console.log("computada")
-            this.calculaporcentaje();
-
-
-        return this.items;
-              
-    
-
-          },
-       userblock() {           
+       userblock() {    
+         this.calculaporcentaje();       
       if(this.form.shared.tipo == "unico"){
         if (this.form.shared.users.showcomplete.length >= 1) {
          let tag = this.form.shared.users.showcomplete[0];
