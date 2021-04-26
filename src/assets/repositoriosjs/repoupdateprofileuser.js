@@ -117,6 +117,7 @@ let getsucursalesapi = `${server}/sucursales/getall`;
 ////PAGOS
 let sendfirstpay = `${server}/pagos/create`;
 let updatepayapi = `${server}/pagos/update`;
+let createsolicitudapi = `${server}/pagos/createnotemp`;
 
 const response = respuestas();
 const alerts = alertas();
@@ -311,6 +312,23 @@ const updatesolicitud = async(request) => {
         return response.verifyrequest(res.data)
     }).catch((error) => {
         return response.filtraerror(error);
+    });
+    return result;
+}
+const addsolicitudformal = async(request) => {
+
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(createsolicitudapi, request, configin).then((res) => {
+       return console.log(res)
+        return response.verifyrequest(res.data)
+    }).catch((error) => {
+        return error
+       /// return response.filtraerror(error);
     });
     return result;
 }
@@ -1391,6 +1409,7 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    addsolicitudformal,
     updatesolicitud,
     addsolicitud,
     deleteproyecto,
