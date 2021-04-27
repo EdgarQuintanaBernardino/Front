@@ -293,6 +293,8 @@ const addsolicitud = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(sendfirstpay, request, configin).then((res) => {
+
+
         return response.verifyrequest(res.data)
     }).catch((error) => {
         return response.filtraerror(error);
@@ -324,11 +326,11 @@ const addsolicitudformal = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(createsolicitudapi, request, configin).then((res) => {
-       return console.log(res)
+        return console.log(res)
         return response.verifyrequest(res.data)
     }).catch((error) => {
         return error
-       /// return response.filtraerror(error);
+            /// return response.filtraerror(error);
     });
     return result;
 }
@@ -481,7 +483,7 @@ const deletecuentashared = async(request) => {
 }
 const consultasepomex = async(request) => {
     let endpoint_sepomex = "https://api-sepomex.hckdrk.mx/query/info_cp/";
-    let url = endpoint_sepomex + request;
+    let url = endpoint_sepomex + request + '?token=42fd5bc7-bc25-496b-ba24-2b1235445e43';
     let result = await Axios.get(url).then((res) => {
         return res.data;
     }).catch((error) => {

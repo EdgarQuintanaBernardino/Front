@@ -831,7 +831,7 @@ this.mensajeok="Todo Listo"
         
       }else{
 
-
+              if(this.form.shared.tipo!='replicar'){
           Swal.fire({
           position: "center",
           showCloseButton: true,
@@ -841,11 +841,11 @@ this.mensajeok="Todo Listo"
         });
         return false;
       }
-
+            }
     },
  validashared() {
 
-   if(this.revisadatos()){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
+   if(this.revisadatos()||this.form.shared.tipo=='replicar'){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
 
       
       this.next=false;
@@ -924,7 +924,11 @@ this.mensajeok="Todo Listo"
       try {
         let repoitems = repo();
         await repoitems.addsolicitudformal(this.form).then((res) => {
+        
           console.log(res)
+
+
+
             if(res.id){           
                 this.solicitudtemp=res;
                  this.next=true;
@@ -950,6 +954,7 @@ this.mensajeok="Todo Listo"
         await repoitems.addsolicitud(this.form.inicio).then((res) => {
             if(res.id){           
                 this.solicitudtemp=res;
+                this.form.inicio.id=res.id;
                  this.next=true;
         }else{
            this.next=false;
@@ -995,8 +1000,7 @@ this.mensajeok="Todo Listo"
       if(acces){
         return acces;
       }else{
-         if(!this.$v.form.inicio.$invalid){/// si es valido el form
-        
+        if(!this.$v.form.inicio.$invalid){/// si es valido el form
         if(this.solicitudtemp.id){///si tenemos ya una solicitud en curso
         return this.updatesolicitud();
         }else{////si es nueva se crea 
@@ -1010,7 +1014,7 @@ this.mensajeok="Todo Listo"
           showConfirmButton: false,
           timer: 1000,
         });
-            return !this.$v.form.inicio.$invalid; //// resulta del formulario
+       return !this.$v.form.inicio.$invalid; //// resulta del formulario
                     }
       }
     },
@@ -1023,7 +1027,7 @@ this.mensajeok="Todo Listo"
           this.form.shared.users.showcomplete.push(email);
           let emailverifica={
             email:email,
-            range:0,monto:0
+            range:0,monto:0,id:'verifica'
           }
           this.form.shared.users.emailsverifica.push(emailverifica);
         this.items.push(emailverifica);
