@@ -329,8 +329,8 @@ const addsolicitudformal = async(request) => {
         return console.log(res)
         return response.verifyrequest(res.data)
     }).catch((error) => {
-        return error
-            /// return response.filtraerror(error);
+        // return error
+        return response.filtraerror(error);
     });
     return result;
 }

@@ -109,7 +109,12 @@
                       </b-input-group-prepend>
                       <b-form-input
                         type="number"
-                        oninput="javascript:value=this.value.replace('e','')"
+                          
+                           oninput="javascript:value=this.value.replace('e','');
+                  if(this.value.length>=20)this.value=this.value.substr(0,15);
+                  
+                  "
+
                         v-model="form.inicio.bruto"
                         @wheel="$event.target.blur()"
                         :min="0"
@@ -467,21 +472,23 @@
         <span v-if="form.inicio.iva==0">{{data.item.monto}}</span>
         <span v-else > 
         
-         {{((form.inicio.bruto/100)*data.item.range).toFixed(3)}}
+         {{((form.inicio.bruto/100)*data.item.range).toFixed(2)}}
         </span>
       </template>
    <template #cell(iva)="data">
         <span v-if="form.inicio.iva==0">0</span>
         <span v-else > 
         
-         {{((((form.inicio.bruto/100)*form.inicio.iva)/100)*data.item.range).toFixed(3)}}
+         {{((((form.inicio.bruto/100)*form.inicio.iva)/100)*data.item.range).toFixed(2)}}
         </span>
       </template>
  <template #cell(monto)="data">
      <b-input
       min="0" :disabled="form.shared.tipo=='unico'||form.shared.tipo=='replicar'||items.length==1"
        v-if="items[data.index]" :max="form.inicio.monto" 
-        @input="validamontototal(data.item.monto,data.index)" 
+        oninput="javascript:value=this.value.replace('e','');
+       if(this.value.length>=20);"
+        @keyup="validamontototal(data.item.monto,data.index)"
         v-model="items[data.index].monto"></b-input>
       </template>
 
@@ -489,7 +496,15 @@
         <b class="text-info"> {{data.item.email}}  </b>
       </template>
    <template #cell(porcentaje)="data">
-     <b-input v-if="items[data.index]" :disabled="form.shared.tipo=='unico'||form.shared.tipo=='replicar'||items.length==1"  type="number" min="0" max="100"  @input="validapocentajein(data.item.range,data.index)"  v-model="items[data.index].range"></b-input>
+     <b-input v-if="items[data.index]" 
+     :disabled="form.shared.tipo=='unico'||form.shared.tipo=='replicar'||items.length==1" 
+      type="number" min="0" max="100"
+       oninput="javascript:value=this.value.replace('e','');
+       if(this.value.length>=5)this.value=this.value.substr(0,5)
+     "
+
+        @input="validapocentajein(data.item.range,data.index)"  
+        v-model="items[data.index].range"></b-input>
 
 
 
@@ -497,9 +512,9 @@
       </template>
          
     </b-table>
-  <b-alert :show="mensaje" variant="success"><h3 class="text-dark">{{this.mensajeok}}!</h3></b-alert>
+  <b-alert :show="mensaje" variant="success"><h3 class="text-dark">{{this.mensajeok}}</h3></b-alert>
   <b-alert :show="!mensaje" variant="danger">
-  <h3 class="text-dark">Verificar monto total
+  <h3 class="text-dark">{{mensajealert}}
      {{this.diferencia}} <b-button @click="calculaporcentaje" 
      variant="success"><span class="ti-loop"></span> Reset</b-button> 
      </h3></b-alert>
@@ -558,6 +573,7 @@ export default {
       range:"",
       mensaje:true,
       mensajeok:'Sin cambios',
+      mensajealert:'',
       items: [
          
         ],
@@ -693,8 +709,7 @@ export default {
     },
   },
   watch: {
-   
-    tipor: function (newval, oldval) {
+       tipor: function (newval, oldval) {
       this.revisarecurrencia(newval);
     },
     selected(newValue, oldValue) {
@@ -714,14 +729,16 @@ export default {
   },
 
   methods: {
-       
-    resetrow(index){
-        this.items[index].monto=0;
-        this.items[index].range=0;
+          resetrow(index){
+        this.items[index].monto="";
+        this.items[index].range="";
           this.mensajeok="Reset"
 
     },
      validapocentajein(val,index){
+       if(val.length>=6){
+         return false;
+       }
          let nuevo=parseFloat(val);
         if(this.validaentrada(nuevo,index)){
         if(nuevo<0||nuevo>100){
@@ -732,19 +749,26 @@ export default {
        let numero=(this.form.inicio.monto/100)*nuevo;
     this.items[index].monto=numero.toFixed(3);
 let resuelve=this.sumatotal;
- if(resuelve==this.form.inicio.monto){
+ if(resuelve==this.form.inicio.monto||Math.round(resuelve)==Math.round(this.form.inicio.monto)){
 this.mensaje=true;
+if(Math.round(resuelve)==Math.round(this.form.inicio.monto)){
+    this.mensajeok="Redondeo en cantidad y porcentaje "; 
+
+}else{
 this.mensajeok="Todo Listo" 
+
+}
 
 }else{
   this.mensaje=false;
    let dif=resuelve-this.form.inicio.monto;
    if(dif>0){
+     this.mensajealert="verifica el monto total ";
     this.diferencia="sobran "+dif.toFixed(3);
    
    }else{
+     this.mensajealert="verifica el monto total ";
      this.diferencia="faltan "+Math.abs(dif).toFixed(3);
-      console.log(this.diferencia)
    }
 
  }    
@@ -761,8 +785,26 @@ this.mensajeok="Todo Listo"
         return true;
       }
     },
+    seteamonto(monto,index){
+  
+   this.items[index].monto=monto;
+   
+    },
     validamontototal(val,index){
-        
+     
+      let uno=val.split('.',2);
+ console.log(uno);
+      if(uno.length>1){
+      if(uno[1].length>2){
+        uno[1]=uno[1].slice('0',2);
+        console.log(uno[0]+'.'+uno[1])
+        let setea=uno[0]+'.'+uno[1];
+       
+      this.seteamonto(setea,index)
+      }
+      }
+
+return false;
         let nuevo=parseFloat(val);
         if(this.validaentrada(nuevo,index)){
         if(nuevo<0||nuevo>this.form.inicio.monto){
@@ -783,12 +825,9 @@ this.mensajeok="Todo Listo"
     this.diferencia="sobran "+dif.toFixed(3);
    
    }else{
-     this.diferencia="faltan "+Math.abs(dif).toFixed(3);
-  
-
+     this.diferencia="faltan "+Math.abs(dif).toFixed(3); 
    }
    this.items[index].range=porcentaje.toFixed(3);
-
  }    
         }
         }else{
@@ -810,7 +849,7 @@ this.mensajeok="Todo Listo"
           }
 
         if(encontrado){
-           Swal.fire({
+          Swal.fire({
           position: "center",
           showCloseButton: true,
           icon: "error",
@@ -824,19 +863,19 @@ this.mensajeok="Todo Listo"
         }
       },
     revisadatos(){
-      
-      if(this.sumatotal==this.form.inicio.monto){
+
+      let montoround=Math.round(this.form.inicio.monto);
+      if(Math.round(this.sumatotal)==montoround||this.sumatotal==this.form.inicio.monto){
 
      return this.buscacero();
         
       }else{
-
-              if(this.form.shared.tipo!='replicar'){
+         if(this.form.shared.tipo!='replicar'){
           Swal.fire({
           position: "center",
           showCloseButton: true,
           icon: "error",
-          title: "Verifica el monto total debe ser igual a $"+this.form.inicio.monto,
+          title: "Verifica el monto total debe ser igual a $"+montoround,
           showConfirmButton: true,
         });
         return false;
@@ -846,9 +885,7 @@ this.mensajeok="Todo Listo"
  validashared() {
 
    if(this.revisadatos()||this.form.shared.tipo=='replicar'){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
-
-      
-      this.next=false;
+     this.next=false;
  if(!this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid){/// si es valido el form
         
       //  if(this.solicitudtemp.id){///si tenemos ya una solicitud en curso
@@ -879,6 +916,8 @@ this.mensajeok="Todo Listo"
         });
             return !this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid; //// resulta del formulario
            }
+   }else{
+     return false;
    }
     },
 
@@ -909,35 +948,28 @@ this.mensajeok="Todo Listo"
       // console.log(this.mostrar)
     },
    
-    revisa(){
-      console.log("vent")
-
-     this.calculainrealtime();
-    },  
-    accesscontinue(){
-        return true;
-    },
+  
     
     async secondsend(){ 
     
       this.animationall = true;
+
+      
       try {
         let repoitems = repo();
         await repoitems.addsolicitudformal(this.form).then((res) => {
-        
+              console.log(res)
+           if(res.data.length>0){
+            this.next=true;
           console.log(res)
-
-
-
-            if(res.id){           
-                this.solicitudtemp=res;
-                 this.next=true;
-        }else{
-           this.next=false;
-        }
-               
+           }else{
+             this.next=false;
+           }
+          
+       
         });
       } catch (err) {
+        this.next=false;
         console.log(err);
       } finally {
         this.animationall = false;
@@ -977,7 +1009,6 @@ this.mensajeok="Todo Listo"
         let repoitems = repo();
         await repoitems.updatesolicitud(this.form.inicio).then((res) => {
         if(res.id){
-          console.log(res);
                 this.solicitudtemp=res;
                  this.next=true;
         }else{
@@ -996,6 +1027,7 @@ this.mensajeok="Todo Listo"
      
       },
     validateFirstTab(acces=false) {
+
      this.next=false;
       if(acces){
         return acces;
@@ -1069,6 +1101,17 @@ this.mensajeok="Todo Listo"
       this.selected = checked ? this.optionsempresas.slice() : [];
     },
     calcula() {
+      let uno=this.form.inicio.bruto.split('.',2);
+
+      if(uno.length>1){
+      if(uno[1].length>2){
+        uno[1]=uno[1].slice('0',2);
+      this.form.inicio.bruto=uno[0]+'.'+uno[1];
+      }
+      }
+     //this.form.inicio.bruto= this.form.inicio.bruto.stopPropagation();
+     
+
       if(this.form.inicio.bruto==0||this.form.inicio.bruto==""){this.form.inicio.monto=0;return false;}
       let bruto = parseFloat(this.form.inicio.bruto);
       let iva = parseFloat(this.form.inicio.iva);
@@ -1380,29 +1423,50 @@ this.calculaporcentaje();
     },
    
     calculaporcentaje(){
-       let allusers=this.items.length;
+       let allusers=parseFloat(this.items.length);
          if(this.items.length>=1&&this.form.shared.tipo=='dividir'
          ||this.items.length>=1&&this.form.shared.tipo=='unico'){
-       
-         let cantidad=0;
+        let cantidad=0;
         let porcentaje=0;
         porcentaje=100/allusers;
-        cantidad=this.form.inicio.monto/allusers;
-     
-        for(let a=0;a<allusers;a++){
+        porcentaje=parseFloat(porcentaje.toFixed(2));
+        let comparativa=Math.round(this.form.inicio.monto/allusers)*allusers;
+
+        cantidad=parseFloat((this.form.inicio.monto/allusers).toFixed(2));
+        cantidad=parseFloat(cantidad.toFixed(2));
+        if((porcentaje*allusers)==100||comparativa==this.form.inicio.monto){
+          ////todo cuadra
+          for(let a=0;a<allusers;a++){
           this.items[a].range=parseFloat(porcentaje.toFixed(2));
          this.items[a].monto=parseFloat(cantidad.toFixed(2));
         }
+        this.mensaje=true;             
+         }else{////
+         porcentaje=Math.round(porcentaje);
+              let union=porcentaje*allusers;
+              let faltante=100-union;
+        faltante=parseFloat(faltante.toFixed(2));
+        let faltantemonto=(this.form.inicio.monto/100)*faltante;
+       cantidad=(this.form.inicio.monto/100)*porcentaje;
+       cantidad=parseFloat(cantidad.toFixed(2));
+       let nuevoporcentaje=(porcentaje)+(faltante);
+        for(let a=0;a<allusers;a++){
+        if(a==allusers-1){
+         this.items[a].range=nuevoporcentaje;
+         this.items[a].monto=parseFloat((cantidad+faltantemonto).toFixed(2));
+          }else{
+        this.items[a].range=parseFloat(porcentaje.toFixed(2));
+         this.items[a].monto=parseFloat(cantidad.toFixed(2));
+          }
+        }
         this.mensaje=true;
-         }
+                 }
+                      }
         else{
-
          for(let a=0;a<allusers;a++){
           this.items[a].range=100;
          this.items[a].monto=parseFloat(this.form.inicio.monto);
         }
-
-
           }///1 o mas
     },
     async empresaupdate() {

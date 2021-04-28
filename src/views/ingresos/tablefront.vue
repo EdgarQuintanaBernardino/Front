@@ -97,13 +97,14 @@
               <b-icon icon="clipboard"></b-icon> Archivos</b-button>
                        </template>
                       <template v-slot:cell(status)="row">
-
+            <div  v-if="row.item.status.length>0">
                   <b-button variant="outline-success" v-if="row.item.status[0].status.status=='Pagado'">
                   Aprobado</b-button>
                   <b-button  variant="outline-warning" v-if="row.item.status[0].status.status=='Pendiente'">
                   No revisado</b-button >
                   <b-button  variant="outline-danger" v-if="row.item.status[0].status.status=='Denegado'">
                 Pago Rechazado</b-button ></b-button>
+                </div>
                 </template>
                <template v-slot:cell(visto)="row">
                      <b-badge variant="info" v-if="row.item.visto=='no'">
