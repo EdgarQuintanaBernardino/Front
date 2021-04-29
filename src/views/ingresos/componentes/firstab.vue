@@ -3,13 +3,13 @@
   <div>  
   <b-row>
     <b-col cols="12">
-     <h1 class="text-primary mb-3 text-center">Concepto</h1>              
+     <h1 class="text-primary mb-3 text-center">Concepto</h1>            
                     <b-input-group size="md">
                     <b-input-group-prepend is-text>
                  <b-icon icon="plus-square"></b-icon>
                       </b-input-group-prepend>
                       <b-form-input
-                        v-model="form.concepto"
+                        v-model="form.concepto "
                         placeholder="Concepto del Pago"
                          :state="$v.form.concepto.minLength&&$v.form.concepto.required"
                         @input="verifica"
@@ -44,7 +44,7 @@ import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
 
 export default {
-  name: "firstab",
+  name: "tabinedex",
    
 
   data(){
@@ -60,7 +60,7 @@ export default {
       watch:{
        validation:function(){
          console.log("ya paso")
-                this.$emit("busca",this.validation);
+                this.$emit("getprueba",this.validation);
 
        }
 
@@ -77,12 +77,13 @@ export default {
             }
   
       },
-      created(){
-          let busca=this.$parent.$parent;
+      mounted(){
+          let busca=this.$parent.$parent.$parent.$parent.$parent.$parent.form;
+          busca=this.form;
           console.log(busca)
       }, validations: {
     form: {
-      concepto: { required, minLength: minLength(7),   
+      concepto: { required, minLength: minLength(2),   
        },
     //  cuentas:{required},
     //     bruto:{required},

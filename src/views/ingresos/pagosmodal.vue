@@ -1,6 +1,5 @@
 <template>
   <div>
-  <modaleditpago></modaleditpago>
     <b-modal
       id="modal-pagos-add"
       ref="modal-pagos"
@@ -45,6 +44,7 @@
         </div>
         
 </template>
+   
             <tab-content title="Nuevo Pago" 
             icon="ti-money" :before-change="validateFirstTab">
            <b-row>
@@ -221,6 +221,7 @@
                   </b-row>
             </tab-content>
           
+           
           <tab-content title="Modalidad"
                          icon="ti-sharethis"
                          :before-change="validashared"
@@ -503,7 +504,7 @@
        if(this.value.length>=5)this.value=this.value.substr(0,5)
      "
 
-        @input="validapocentajein(data.item.range,data.index)"  
+        @input="validaporcentajein(data.item.range,data.index)"  
         v-model="items[data.index].range"></b-input>
 
 
@@ -524,6 +525,14 @@
 
        </b-col>
               </b-row>
+              </div>
+            </tab-content>
+            
+          <tab-content title="Cuenta Bancaria"
+                         icon="ti-check" :before-change="tabprueba">
+                                       <tabprueba @getprueba="pruebaget" ></tabprueba>
+
+              <div class="panel-body">
               </div>
             </tab-content>
             <tab-content title="Todo listo"
@@ -564,9 +573,12 @@ import repocreate from "@/assets/repositoriosjs/repoupdateprofileuser";
 import Swal from "sweetalert2";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
 import { mapActions, mapMutations } from "vuex";
-import modaleditpago  from "@/views/ingresos/modaleditcantidad";
+import tabprueba  from "@/views/ingresos/componentes/firstab";
+import Vue2Filters from 'vue2-filters'
+
 export default {
   name: "modalpagos",
+   
   data() {
     return {
       datoseditar:[],
@@ -627,6 +639,7 @@ export default {
         tableshow:false,
       search: "",
       form: {
+          sends:[],
         recurrencia: {
           tipo: [],
           hora: "",
@@ -677,12 +690,14 @@ export default {
   },
   components: {
     Swal,
-    modaleditpago,
+    tabprueba,
+    
   },
   validations: {
 
     items:{required,minLength:minLength(1)},
     form: {
+      
       concepto: { required, minLength: minLength(7) },
       value: { required },
 
@@ -729,16 +744,26 @@ export default {
   },
 
   methods: {
+
+    pruebaget(){
+          console.log("si llegaa??");
+    },
+    tabprueba(){
+      
+console.log("entravalidacion")
+      return false;
+      },
           resetrow(index){
         this.items[index].monto="";
         this.items[index].range="";
           this.mensajeok="Reset"
 
     },
-     validapocentajein(val,index){
+     validaporcentajein(val,index){
        if(val.length>=6){
          return false;
        }
+   
          let nuevo=parseFloat(val);
         if(this.validaentrada(nuevo,index)){
         if(nuevo<0||nuevo>100){
@@ -746,29 +771,24 @@ export default {
           return false;
         }else{
 
-       let numero=(this.form.inicio.monto/100)*nuevo;
-    this.items[index].monto=numero.toFixed(3);
-let resuelve=this.sumatotal;
- if(resuelve==this.form.inicio.monto||Math.round(resuelve)==Math.round(this.form.inicio.monto)){
+    let numero=(this.form.inicio.monto/100)*nuevo;
+    this.items[index].monto=numero.toFixed(2);
+    let resuelve=this.sumatotal;
+
+ if(resuelve==this.form.inicio.monto){
 this.mensaje=true;
-if(Math.round(resuelve)==Math.round(this.form.inicio.monto)){
-    this.mensajeok="Redondeo en cantidad y porcentaje "; 
-
-}else{
 this.mensajeok="Todo Listo" 
-
-}
 
 }else{
   this.mensaje=false;
    let dif=resuelve-this.form.inicio.monto;
    if(dif>0){
      this.mensajealert="verifica el monto total ";
-    this.diferencia="sobran "+dif.toFixed(3);
+    this.diferencia="sobran "+dif.toFixed(2);
    
    }else{
      this.mensajealert="verifica el monto total ";
-     this.diferencia="faltan "+Math.abs(dif).toFixed(3);
+     this.diferencia="faltan "+Math.abs(dif).toFixed(2);
    }
 
  }    
@@ -791,43 +811,44 @@ this.mensajeok="Todo Listo"
    
     },
     validamontototal(val,index){
-     
-      let uno=val.split('.',2);
- console.log(uno);
+     // this.items[index].monto=val.split('.',2).join(' ');
+       
+     let uno=val.split('.');
       if(uno.length>1){
+        console.log(uno)
+        console.log(uno.length)
+        if(uno.length==2){
       if(uno[1].length>2){
         uno[1]=uno[1].slice('0',2);
-        console.log(uno[0]+'.'+uno[1])
-        let setea=uno[0]+'.'+uno[1];
-       
-      this.seteamonto(setea,index)
+       let setea=uno[0]+'.'+uno[1];
+       this.seteamonto(setea,index)
       }
-      }
+        }else{
+ this.resetrow(index)
 
-return false;
+        }
+      }
         let nuevo=parseFloat(val);
         if(this.validaentrada(nuevo,index)){
         if(nuevo<0||nuevo>this.form.inicio.monto){
  this.resetrow(index);
- return false;
-
         }else{
      let resuelve=this.sumatotal;
-    let porcentaje=(nuevo/this.form.inicio.monto)*100;
+    let porcentaje=parseFloat(((nuevo/this.form.inicio.monto)*100).toFixed(2));
  if(resuelve==this.form.inicio.monto){
 this.mensaje=true;
 this.mensajeok="Todo Listo" 
-   this.items[index].range=porcentaje;
+   this.items[index].range=porcentaje.toFixed(2);
 }else{
   this.mensaje=false;
    let dif=resuelve-this.form.inicio.monto;
    if(dif>0){
-    this.diferencia="sobran "+dif.toFixed(3);
+    this.diferencia="sobran "+dif.toFixed(2);
    
    }else{
-     this.diferencia="faltan "+Math.abs(dif).toFixed(3); 
+     this.diferencia="faltan "+Math.abs(dif).toFixed(2); 
    }
-   this.items[index].range=porcentaje.toFixed(3);
+   this.items[index].range=porcentaje.toFixed(2);
  }    
         }
         }else{
@@ -987,6 +1008,7 @@ this.mensajeok="Todo Listo"
             if(res.id){           
                 this.solicitudtemp=res;
                 this.form.inicio.id=res.id;
+                this.form.sends=res.data
                  this.next=true;
         }else{
            this.next=false;
@@ -1009,7 +1031,7 @@ this.mensajeok="Todo Listo"
         let repoitems = repo();
         await repoitems.updatesolicitud(this.form.inicio).then((res) => {
         if(res.id){
-                this.solicitudtemp=res;
+                this.form.sends=res;
                  this.next=true;
         }else{
            this.next=false;
@@ -1027,7 +1049,6 @@ this.mensajeok="Todo Listo"
      
       },
     validateFirstTab(acces=false) {
-
      this.next=false;
       if(acces){
         return acces;
@@ -1101,13 +1122,18 @@ this.mensajeok="Todo Listo"
       this.selected = checked ? this.optionsempresas.slice() : [];
     },
     calcula() {
-      let uno=this.form.inicio.bruto.split('.',2);
-
+      
+      let uno=this.form.inicio.bruto.split('.');
       if(uno.length>1){
+        if(uno.length==2){
       if(uno[1].length>2){
         uno[1]=uno[1].slice('0',2);
       this.form.inicio.bruto=uno[0]+'.'+uno[1];
       }
+        }else{
+             this.form.inicio.bruto=0; 
+
+        }
       }
      //this.form.inicio.bruto= this.form.inicio.bruto.stopPropagation();
      
@@ -1123,7 +1149,7 @@ this.mensajeok="Todo Listo"
         } else {
           let ivacomp = (bruto / 100) * iva;
 
-          this.form.inicio.monto = (bruto + ivacomp).toFixed(3);
+          this.form.inicio.monto = (bruto + ivacomp).toFixed(2);
         }
       }
     },
@@ -1423,51 +1449,46 @@ this.calculaporcentaje();
     },
    
     calculaporcentaje(){
+        let cantidad=0;
+      let porcentaje=0;
        let allusers=parseFloat(this.items.length);
+      cantidad=this.form.inicio.monto/allusers;
+      cantidad=parseFloat(cantidad.toFixed(1));  ///// a dos decimales la division
+      let totalcantidad=parseFloat((cantidad*allusers).toFixed(1));
          if(this.items.length>=1&&this.form.shared.tipo=='dividir'
          ||this.items.length>=1&&this.form.shared.tipo=='unico'){
-        let cantidad=0;
-        let porcentaje=0;
-        porcentaje=100/allusers;
-        porcentaje=parseFloat(porcentaje.toFixed(2));
-        let comparativa=Math.round(this.form.inicio.monto/allusers)*allusers;
+          if(totalcantidad==this.form.inicio.monto){
+            ///todo ok cuadra
+            porcentaje=parseFloat((100/allusers).toFixed(0));
+         for(let a=0;a<allusers;a++){
+         this.items[a].range=porcentaje;
+         this.items[a].monto=cantidad;
+        }
+this.mensaje=true;  
+        }else{////no cuadra
+  let sumardecimales=parseFloat(((this.form.inicio.monto)-(totalcantidad)).toFixed(1));
+    porcentaje=parseFloat((100/allusers).toFixed(2));
+         for(let a=0;a<allusers;a++){
 
-        cantidad=parseFloat((this.form.inicio.monto/allusers).toFixed(2));
-        cantidad=parseFloat(cantidad.toFixed(2));
-        if((porcentaje*allusers)==100||comparativa==this.form.inicio.monto){
-          ////todo cuadra
-          for(let a=0;a<allusers;a++){
-          this.items[a].range=parseFloat(porcentaje.toFixed(2));
-         this.items[a].monto=parseFloat(cantidad.toFixed(2));
+           if(a==allusers-1){
+            cantidad=cantidad+sumardecimales;
+           }
+         this.items[a].range=porcentaje;
+         this.items[a].monto=cantidad.toFixed(1);
         }
-        this.mensaje=true;             
-         }else{////
-         porcentaje=Math.round(porcentaje);
-              let union=porcentaje*allusers;
-              let faltante=100-union;
-        faltante=parseFloat(faltante.toFixed(2));
-        let faltantemonto=(this.form.inicio.monto/100)*faltante;
-       cantidad=(this.form.inicio.monto/100)*porcentaje;
-       cantidad=parseFloat(cantidad.toFixed(2));
-       let nuevoporcentaje=(porcentaje)+(faltante);
-        for(let a=0;a<allusers;a++){
-        if(a==allusers-1){
-         this.items[a].range=nuevoporcentaje;
-         this.items[a].monto=parseFloat((cantidad+faltantemonto).toFixed(2));
-          }else{
-        this.items[a].range=parseFloat(porcentaje.toFixed(2));
-         this.items[a].monto=parseFloat(cantidad.toFixed(2));
-          }
+
+this.mensaje=true;  
+
         }
-        this.mensaje=true;
-                 }
-                      }
+
+         }
         else{
          for(let a=0;a<allusers;a++){
           this.items[a].range=100;
          this.items[a].monto=parseFloat(this.form.inicio.monto);
         }
-          }///1 o mas
+          }///1
+         
     },
     async empresaupdate() {
       this.form["objects"] = this.alloption;
