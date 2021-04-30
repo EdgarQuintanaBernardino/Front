@@ -118,6 +118,8 @@ let getsucursalesapi = `${server}/sucursales/getall`;
 let sendfirstpay = `${server}/pagos/create`;
 let updatepayapi = `${server}/pagos/update`;
 let createsolicitudapi = `${server}/pagos/createnotemp`;
+let apiaddcuenta = `${server}/pagos/addcuentas`;
+
 
 const response = respuestas();
 const alerts = alertas();
@@ -159,6 +161,22 @@ const update = async(request) => {
 
 }
 
+const addcuentassolicitud = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apiaddcuenta, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
 const createempresa = async(request) => {
 
     let tokenin = store.getters.gettoken;
@@ -310,7 +328,6 @@ const updatesolicitud = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(updatepayapi, request, configin).then((res) => {
-        console.log(res)
         return response.verifyrequest(res.data)
     }).catch((error) => {
         return response.filtraerror(error);
@@ -326,7 +343,6 @@ const addsolicitudformal = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(createsolicitudapi, request, configin).then((res) => {
-        return console.log(res)
         return response.verifyrequest(res.data)
     }).catch((error) => {
         // return error
@@ -1411,6 +1427,7 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    addcuentassolicitud,
     addsolicitudformal,
     updatesolicitud,
     addsolicitud,

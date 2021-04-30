@@ -193,8 +193,7 @@ self.iddelete=[],
             showreset:false,
          }
               this.openmodal();
-              console.log(item)
-
+              
        },
        itemsusers(){
 
@@ -358,8 +357,7 @@ metodo?this.getitems():this.getitemsback();
        this.empresasall=res.data[1];
        this.proyectosall=res.data[2];
        this.tagsall=res.data[3];
-       console.log(res);
-       
+      
        this.totalrowsend=response.count;
 
         let datosgenericos={

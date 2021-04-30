@@ -22,7 +22,7 @@
           </template>
           <CCol>
               <CCardHeader class="bg-primary">
-                <h2 class="text-center text-white"><span class="ti-money"></span>{{this.$parent.config.titulo}} Pago</h2>
+                <h2 class="text-center text-white"><span class="ti-money"></span>{{this.$parent.config.titulo}} Pago </h2>
               </CCardHeader>
             <CCard>
               <CCardBody> 
@@ -529,8 +529,8 @@
             </tab-content>
             
           <tab-content title="Cuenta Bancaria"
-                         icon="ti-check" :before-change="tabprueba">
-                                       <tabprueba @getprueba="pruebaget" ></tabprueba>
+                         icon="ti-credit-card" :before-change="validacuentas">
+     <tabprueba @getprueba="pruebaget"  ref="cuenta"></tabprueba>
 
               <div class="panel-body">
               </div>
@@ -586,6 +586,7 @@ export default {
       mensaje:true,
       mensajeok:'Sin cambios',
       mensajealert:'',
+      toglecuenta:false,
       items: [
          
         ],
@@ -659,8 +660,7 @@ export default {
          shared:{
          tipo: "unico",
          users: {
-          emailsverifica: [],
-          emailstuyos: [],
+       
           showcomplete: [],
           value:[],
           emails:[],
@@ -680,7 +680,6 @@ export default {
         value: [],
       cuentas: [],
         links: [],
-        cuentasall: [],
         selectedproyect: [],
       },
       monedas: ["Pesos", "Dolares", "Euros"],
@@ -724,34 +723,32 @@ export default {
     },
   },
   watch: {
+    toglecuenta:function(newval,oldval){
+
+
+    },
        tipor: function (newval, oldval) {
       this.revisarecurrencia(newval);
     },
-    selected(newValue, oldValue) {
-      // Handle changes in individual flavour checkboxes
-      this.cuentasshow(newValue);
-      if (newValue.length === 0) {
-        this.indeterminate = false;
-        this.allSelected = false;
-      } else if (newValue.length === this.optionsempresas.length) {
-        this.indeterminate = false;
-        this.allSelected = true;
-      } else {
-        this.indeterminate = true;
-        this.allSelected = false;
-      }
-    },
+  
   },
 
   methods: {
 
-    pruebaget(){
-          console.log("si llegaa??");
-    },
-    tabprueba(){
+     pruebaget(cuentas){
+       
+         this.form.cuentas=cuentas;
+          this.next=false;
       
-console.log("entravalidacion")
-      return false;
+        
+    },
+    validacuentas(){
+      let respuesta=this.$refs.cuenta.verifica();
+     if(respuesta){
+       return this.firstcuentas();
+       }else{
+       return false;
+     }
       },
           resetrow(index){
         this.items[index].monto="";
@@ -904,7 +901,6 @@ this.mensajeok="Todo Listo"
             }
     },
  validashared() {
-
    if(this.revisadatos()||this.form.shared.tipo=='replicar'){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
      this.next=false;
  if(!this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid){/// si es valido el form
@@ -968,7 +964,29 @@ this.mensajeok="Todo Listo"
             })
       // console.log(this.mostrar)
     },
+    async firstcuentas(){ 
+      this.animationall = true;
    
+      try {
+        let repoitems = repo();
+        await repoitems.addcuentassolicitud(this.form).then((res) => {
+          if(res){
+             this.next=true;
+          }else{
+            console.log("no lleg")
+          } 
+        });
+      } catch (err) {
+        this.next=false;
+        console.log("catch")
+        console.log(err);
+      } finally {
+        this.animationall = false;
+         return this.next;
+       
+      }
+    },
+      
   
     
     async secondsend(){ 
@@ -979,10 +997,9 @@ this.mensajeok="Todo Listo"
       try {
         let repoitems = repo();
         await repoitems.addsolicitudformal(this.form).then((res) => {
-              console.log(res)
-           if(res.data.length>0){
+          if(res.length>0){
             this.next=true;
-          console.log(res)
+             this.form.sends=res;
            }else{
              this.next=false;
            }
@@ -1008,7 +1025,6 @@ this.mensajeok="Todo Listo"
             if(res.id){           
                 this.solicitudtemp=res;
                 this.form.inicio.id=res.id;
-                this.form.sends=res.data
                  this.next=true;
         }else{
            this.next=false;
@@ -1031,7 +1047,7 @@ this.mensajeok="Todo Listo"
         let repoitems = repo();
         await repoitems.updatesolicitud(this.form.inicio).then((res) => {
         if(res.id){
-                this.form.sends=res;
+                this.solicitudtemp=res;
                  this.next=true;
         }else{
            this.next=false;
@@ -1082,7 +1098,6 @@ this.mensajeok="Todo Listo"
             email:email,
             range:0,monto:0,id:'verifica'
           }
-          this.form.shared.users.emailsverifica.push(emailverifica);
         this.items.push(emailverifica);
             this.calculaporcentaje();
 
@@ -1109,15 +1124,7 @@ this.mensajeok="Todo Listo"
       this.form.recurrencia.hora = now.toTimeString().slice(0, 8);
     },
     revisarecurrencia(val) {},
-    cuentasshow(val) {
-      this.form.cuentas = [];
-      if (val.length <= 0) {
-        return false;
-      }
-
-      let options = this.$parent.empresasall.filter((r) => r.nombre == val);
-      this.optionsc = options[0]["cuentas"];
-    },
+  
     toggleAll(checked) {
       this.selected = checked ? this.optionsempresas.slice() : [];
     },
@@ -1209,61 +1216,25 @@ this.mensajeok="Todo Listo"
      this.form.shared.users.showcomplete = this.form.shared.users.showcomplete.filter(
         (f) => f == tag
       );
-      this.form.shared.users.emailstuyos = this.form.shared.users.emailstuyos.filter(
-        (f) => f.name == tag
-      );
-      this.form.shared.users.emailsverifica = this.form.shared.users.emailsverifica.filter(
-     (f) => f.email == tag
-      );
-         this.resetunico(tag);
-    
+  
+
+      this.items =this.items.filter((e)=>e.name==tag||e.email==tag);
+     
+     this.calculaporcentaje();
     
     },
-    resetunico(tag){///name o mail
-       
-       let emailstuyos= this.form.shared.users.emailstuyos.length;
-      
-        if(emailstuyos>0){
-            this.items=this.items.filter((e)=>e.name=="vaiar");////se borra el item por filter
-             
-              for(let a=0;a<emailstuyos;a++){
-                this.form.shared.users.emailstuyos[a].range=0;
-                 this.items.push(this.form.shared.users.emailstuyos[a]);
-                     this.items[a].range=100;
-                     this.items[a].monto=this.form.inicio.monto;
-              }
-          
-        
-        }
-        else{
-          return false;
-        }
-
-
-    },
+  
     removeTagcustom(tag) {
     this.form.shared.users.showcomplete = this.form.shared.users.showcomplete.filter(
         (f) => f != tag
       );
-      this.form.shared.users.emailstuyos = this.form.shared.users.emailstuyos.filter(
-        (f) => f.name != tag
-      );
-      this.form.shared.users.emailsverifica = this.form.shared.users.emailsverifica.filter(
-        (f) => f.email != tag
-      );
-      
+        
      this.items =this.items.filter((e)=>e.name!=tag);
      
      this.items =this.items.filter((e)=>e.email!=tag);
         this.calculaporcentaje();
     },
-    removeTagcustomc(tag) {
-      this.form.cuentas = this.form.cuentas.filter((f) => f != tag);
-      this.form.value = this.form.value.filter((f) => f != tag);
-      this.form.cuentasall = this.form.cuentasall.filter(
-        (f) => f.nombre_cuenta != tag
-      );
-    },
+   
   
     async getitems() {
       this.show = true;
@@ -1307,17 +1278,11 @@ this.mensajeok="Todo Listo"
     },
     agregadatos(tag){
     this.form.shared.users.showcomplete.push(tag.name);
-    this.form.shared.users.emailstuyos.push(tag);
    this.items.push(tag);
 this.search = "";
 this.calculaporcentaje();
     },
-    onOptionClickc({ option, addTag }) {
-      /// addTag(option);
-      this.form.cuentas.push(option.nombre_cuenta);
-      this.form.cuentasall.push(option);
-      this.searchc = "";
-    },
+  
     updateModaledit() {
       let pagoedit = this.$store.getters.getpagoedit;
       this.form.id = pagoedit.id;
