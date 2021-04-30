@@ -191,8 +191,11 @@
                       <b-form-input
                         type="number"
                         oninput="javascript:value=this.value.replace('e','')"
-                        disabled
+                        
                         v-model="form.inicio.monto"
+                         @change="calculamontoneto"
+                        v-on:keyup.prevent="calculamontoneto"
+
                         placeholder="Total"
                       ></b-form-input>
                     </b-input-group>
@@ -528,13 +531,37 @@
               </div>
             </tab-content>
             
-          <tab-content title="Cuenta Bancaria"
+        <!-  <tab-content title="Cuenta Bancaria"
                          icon="ti-credit-card" :before-change="validacuentas">
      <tabprueba @getprueba="pruebaget"  ref="cuenta"></tabprueba>
 
               <div class="panel-body">
               </div>
             </tab-content>
+                 <tab-content title="Links de Pago"
+                         icon="ti-link" :before-change="validalinks">
+     <links @getlinks="getlinkssoli"  ref="linkstab"></links> 
+
+              <div class="panel-body">
+              </div>
+          
+            </tab-content>
+            
+              <tab-content title="Proyectos"
+                         icon="ti-tag" :before-change="validaproyectos">
+     <proyectos @getproyectos="getproyecto"  ref="proyectostab"></proyectos> 
+
+              <div class="panel-body">
+              </div>
+            </tab-content>
+             <tab-content title="Tags"
+                         icon="ti-brush-alt" :before-change="validaproyectos">
+     <proyectos @getproyectos="getproyecto"  ref="proyectostab"></proyectos> 
+
+              <div class="panel-body">
+              </div>
+            </tab-content>
+            -->
             <tab-content title="Todo listo"
                          icon="ti-check">
               <div class="panel-body">
@@ -574,6 +601,9 @@ import Swal from "sweetalert2";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
 import { mapActions, mapMutations } from "vuex";
 import tabprueba  from "@/views/ingresos/componentes/firstab";
+import links  from "@/views/ingresos/componentes/links";
+import proyectos  from "@/views/ingresos/componentes/proyect";
+
 import Vue2Filters from 'vue2-filters'
 
 export default {
@@ -680,6 +710,7 @@ export default {
         value: [],
       cuentas: [],
         links: [],
+        linksold:[],
         selectedproyect: [],
       },
       monedas: ["Pesos", "Dolares", "Euros"],
@@ -690,6 +721,7 @@ export default {
   components: {
     Swal,
     tabprueba,
+    links,proyectos
     
   },
   validations: {
@@ -734,13 +766,52 @@ export default {
   },
 
   methods: {
+    calculamontoneto(){
+  let uno=this.form.inicio.monto.split('.');
+      if(uno.length>1){
+        if(uno.length==2){
+      if(uno[1].length>2){
+        uno[1]=uno[1].slice('0',2);
+      this.form.inicio.monto=uno[0]+'.'+uno[1];
+      }
+        }else{
+             this.form.inicio.monto=0; 
 
+        }
+      }
+     //this.form.inicio.bruto= this.form.inicio.bruto.stopPropagation();
+           if(this.form.inicio.bruto==0||this.form.inicio.bruto==""||this.form.inicio.monto==0){this.form.inicio.monto=0;return false;}
+      let monto = parseFloat(this.form.inicio.monto);
+      let iva = parseFloat(this.form.inicio.iva);
+      if (monto <= 0 || this.form.inicio.iva < 0) {
+        return false;
+      } else {
+        if (iva == 0) {
+          this.form.inicio.bruto = monto;
+        } else {
+        
+        let ivacomp = (monto / ((100+iva)/100)).toFixed(2);
+        this.form.inicio.bruto =  ivacomp;
+      }
+      }
+    },
+      getproyecto(proyectos){
+       this.form.selectedproyect=proyectos;
+      },
      pruebaget(cuentas){
        
          this.form.cuentas=cuentas;
           this.next=false;
       
         
+    },
+    getlinkssoli(links){
+      if(links.length>0){
+         this.form.links=links;
+      }else{
+  this.form.links=[];
+      }
+               this.next=false;
     },
     validacuentas(){
       let respuesta=this.$refs.cuenta.verifica();
@@ -749,7 +820,24 @@ export default {
        }else{
        return false;
      }
+      },validalinks(){
+      let respuesta=this.$refs.linkstab.getlinks();
+     if(respuesta){
+       return this.firstlinks();
+       }else{
+       return false;
+     }
       },
+      validaproyectos(){
+      let respuesta=this.$refs.proyectostab.getproyect();
+     if(respuesta){
+       return this.firstproyect();
+       }else{
+       return false;
+     }
+      },
+      
+      
           resetrow(index){
         this.items[index].monto="";
         this.items[index].range="";
@@ -812,9 +900,7 @@ this.mensajeok="Todo Listo"
        
      let uno=val.split('.');
       if(uno.length>1){
-        console.log(uno)
-        console.log(uno.length)
-        if(uno.length==2){
+       if(uno.length==2){
       if(uno[1].length>2){
         uno[1]=uno[1].slice('0',2);
        let setea=uno[0]+'.'+uno[1];
@@ -971,14 +1057,15 @@ this.mensajeok="Todo Listo"
         let repoitems = repo();
         await repoitems.addcuentassolicitud(this.form).then((res) => {
           if(res){
+
              this.next=true;
+
           }else{
-            console.log("no lleg")
+
           } 
         });
       } catch (err) {
         this.next=false;
-        console.log("catch")
         console.log(err);
       } finally {
         this.animationall = false;
@@ -986,8 +1073,48 @@ this.mensajeok="Todo Listo"
        
       }
     },
-      
-  
+       async firstlinks(){ 
+      this.animationall = true;
+   
+      try {
+        let repoitems = repo();
+        await repoitems.addlinkssolicitud(this.form).then((res) => {
+       if(res.length>0){
+     this.form.linksold=res;
+       }else{
+      this.form.linksold=[];
+       }
+           
+             this.next=true;
+       
+          
+        });
+      } catch (err) {
+        this.next=false;
+        console.log(err);
+      } finally {
+        this.animationall = false;
+         return this.next;
+       
+      }
+    }, 
+       async firstproyect(){ 
+      this.animationall = true;
+   
+      try {
+        let repoitems = repo();
+        await repoitems.addproyectsolicitud(this.form).then((res) => {               
+             this.next=true;                
+        });
+      } catch (err) {
+        this.next=false;
+        console.log(err);
+      } finally {
+        this.animationall = false;
+         return this.next;
+       
+      }
+    }, 
     
     async secondsend(){ 
     
@@ -1143,9 +1270,7 @@ this.mensajeok="Todo Listo"
         }
       }
      //this.form.inicio.bruto= this.form.inicio.bruto.stopPropagation();
-     
-
-      if(this.form.inicio.bruto==0||this.form.inicio.bruto==""){this.form.inicio.monto=0;return false;}
+           if(this.form.inicio.bruto==0||this.form.inicio.bruto==""){this.form.inicio.monto=0;return false;}
       let bruto = parseFloat(this.form.inicio.bruto);
       let iva = parseFloat(this.form.inicio.iva);
       if (bruto <= 0 || this.form.inicio.iva < 0) {
@@ -1160,9 +1285,7 @@ this.mensajeok="Todo Listo"
         }
       }
     },
-    eliminalink(item) {
-      this.form.links = this.form.links.filter((itemin) => itemin != item);
-    },
+ 
 
     fecha() {
       let date = new Date();
@@ -1182,35 +1305,8 @@ this.mensajeok="Todo Listo"
       this.hoy = fecha;
       this.form.recurrencia.inicia = fecha;
     },
-    encontrado(item) {
-      let noencontrado = true;
-      for (let i = 0; i < this.form.links.length; i++) {
-        if (this.form.links[i] == item) {
-          noencontrado = false;
-          break;
-        }
-      }
-      return noencontrado;
-    },
-    addlink() {
-      if (this.link == "") {
-        return false;
-      }
-
-      if (this.encontrado(this.link)) {
-        this.form.links.push(this.link);
-      } else {
-        Swal.fire({
-          position: "center",
-          icon: "error",
-          title: "Link ya agregado",
-          showConfirmButton: false,
-          timer: 1000,
-        });
-      }
-
-      this.link = "";
-    },
+   
+  
     onlytag(tag) {
      
      this.form.shared.users.showcomplete = this.form.shared.users.showcomplete.filter(

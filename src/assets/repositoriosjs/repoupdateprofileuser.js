@@ -119,6 +119,8 @@ let sendfirstpay = `${server}/pagos/create`;
 let updatepayapi = `${server}/pagos/update`;
 let createsolicitudapi = `${server}/pagos/createnotemp`;
 let apiaddcuenta = `${server}/pagos/addcuentas`;
+let apiaddlinks = `${server}/pagos/addlinks`;
+let apiaddproyects = `${server}/pagos/addproyects`;
 
 
 const response = respuestas();
@@ -177,6 +179,40 @@ const addcuentassolicitud = async(request) => {
     return result;
 
 }
+const addlinkssolicitud = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apiaddlinks, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+const addproyectsolicitud = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apiaddproyects, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+
+
 const createempresa = async(request) => {
 
     let tokenin = store.getters.gettoken;
@@ -1427,6 +1463,8 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    addproyectsolicitud,
+    addlinkssolicitud,
     addcuentassolicitud,
     addsolicitudformal,
     updatesolicitud,
