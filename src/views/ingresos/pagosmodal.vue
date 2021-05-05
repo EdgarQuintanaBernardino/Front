@@ -21,7 +21,7 @@
             </div>
           </template>
           <CCol>
-              <CCardHeader class="bg-primary">
+              <CCardHeader class="bg-info">
                 <h2 class="text-center text-white"><span class="ti-money"></span>{{this.$parent.config.titulo}} Pago </h2>
               </CCardHeader>
             <CCard>
@@ -46,7 +46,7 @@
 </template>
    
             <tab-content title="Nuevo Pago" 
-            icon="ti-money" :before-change="validateFirstTab">
+            icon="ti-money" :before-change="validateone">
            <b-row>
            <b-col cols="12" lg="6" class="text-center mt-3">
             <label><h4 class="text-primary">Concepto</h4></label>
@@ -232,6 +232,10 @@
               <div class="panel-body">
               <b-row>
                     <b-col cols="12">
+                     <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Modalidad*</h2>
+                    </label>
+                 
                     <b-form-group class="text-center">
                     
                       <b-row>
@@ -291,13 +295,10 @@
                     </b-form-group>
                   </b-col>
                   <b-col cols="12">
-                    <label>
-                      <h4 class="text-dark">
-                       <br>
-                        ¿A quien se le solicita el pago?
-                  
-                      </h4>
+                    <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">    ¿A quién se le solicita el pago?*</h2>
                     </label>
+                 
                     <b-form-tags
                       v-model="form.shared.users.showcomplete"
                       no-outer-focus
@@ -445,13 +446,7 @@
 
       </b-tr>
     </b-tbody>
-    <b-tfoot>
-      <b-tr>
-        <b-td colspan="7" variant="secondary" class="text-right">
-          Total Rows: <b>5</b>
-        </b-td>
-      </b-tr>
-    </b-tfoot>
+   
   </b-table-simple>
       </b-card-text>
     </b-card>
@@ -531,14 +526,14 @@
               </div>
             </tab-content>
             
-        <!-  <tab-content title="Cuenta Bancaria"
+        <tab-content title="Cuenta Bancaria & Proyectos"
                          icon="ti-credit-card" :before-change="validacuentas">
      <tabprueba @getprueba="pruebaget"  ref="cuenta"></tabprueba>
 
               <div class="panel-body">
               </div>
             </tab-content>
-                 <tab-content title="Links de Pago"
+                 <tab-content title="Datos Opcionales"
                          icon="ti-link" :before-change="validalinks">
      <links @getlinks="getlinkssoli"  ref="linkstab"></links> 
 
@@ -547,21 +542,10 @@
           
             </tab-content>
             
-              <tab-content title="Proyectos"
-                         icon="ti-tag" :before-change="validaproyectos">
-     <proyectos @getproyectos="getproyecto"  ref="proyectostab"></proyectos> 
-
-              <div class="panel-body">
+             <div class="panel-body">
               </div>
             </tab-content>
-             <tab-content title="Tags"
-                         icon="ti-brush-alt" :before-change="validaproyectos">
-     <proyectos @getproyectos="getproyecto"  ref="proyectostab"></proyectos> 
-
-              <div class="panel-body">
-              </div>
-            </tab-content>
-            -->
+        
             <tab-content title="Todo listo"
                          icon="ti-check">
               <div class="panel-body">
@@ -602,7 +586,6 @@ import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
 import { mapActions, mapMutations } from "vuex";
 import tabprueba  from "@/views/ingresos/componentes/firstab";
 import links  from "@/views/ingresos/componentes/links";
-import proyectos  from "@/views/ingresos/componentes/proyect";
 
 import Vue2Filters from 'vue2-filters'
 
@@ -611,6 +594,7 @@ export default {
    
   data() {
     return {
+      debug:true,
       datoseditar:[],
       range:"",
       mensaje:true,
@@ -721,7 +705,7 @@ export default {
   components: {
     Swal,
     tabprueba,
-    links,proyectos
+    links,
     
   },
   validations: {
@@ -795,12 +779,17 @@ export default {
       }
       }
     },
+    sendtags(tags){
+      this.form.tags=tags;
+    },
       getproyecto(proyectos){
        this.form.selectedproyect=proyectos;
       },
-     pruebaget(cuentas){
+     pruebaget(form){
        
-         this.form.cuentas=cuentas;
+      
+         this.form.cuentas=form.cuentasall;
+         this.form.selectedproyect=form.selectedproyect;
           this.next=false;
       
         
@@ -814,27 +803,51 @@ export default {
                this.next=false;
     },
     validacuentas(){
+       if(!this.debug){
+  
       let respuesta=this.$refs.cuenta.verifica();
      if(respuesta){
        return this.firstcuentas();
        }else{
        return false;
      }
+      }else{
+        return true;
+      }
       },validalinks(){
+        if(!this.debug){
+  
       let respuesta=this.$refs.linkstab.getlinks();
      if(respuesta){
        return this.firstlinks();
        }else{
        return false;
      }
+        }else{return true;}
       },
+        validatags(){
+             if(!this.debug){
+  
+      let respuesta=this.$refs.tagstab.addtags();
+     if(respuesta){
+       return this.firsttags();
+       }else{
+       return false;
+     }
+             }else{return true;}
+
+        },
       validaproyectos(){
+      
+         if(!this.debug){
+  
       let respuesta=this.$refs.proyectostab.getproyect();
      if(respuesta){
        return this.firstproyect();
        }else{
        return false;
      }
+         }else{return true;}
       },
       
       
@@ -987,6 +1000,8 @@ this.mensajeok="Todo Listo"
             }
     },
  validashared() {
+    if(!this.debug){
+ 
    if(this.revisadatos()||this.form.shared.tipo=='replicar'){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
      this.next=false;
  if(!this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid){/// si es valido el form
@@ -1022,6 +1037,9 @@ this.mensajeok="Todo Listo"
    }else{
      return false;
    }
+    }else{
+      return true;
+    }
     },
 
     cambiarange(value,indexin){   
@@ -1056,6 +1074,7 @@ this.mensajeok="Todo Listo"
       try {
         let repoitems = repo();
         await repoitems.addcuentassolicitud(this.form).then((res) => {
+          console.log(res)
           if(res){
 
              this.next=true;
@@ -1072,7 +1091,33 @@ this.mensajeok="Todo Listo"
          return this.next;
        
       }
-    },
+    }, async firsttags(){ 
+      this.animationall = true;
+   
+      try {
+        let repoitems = repo();
+        await repoitems.addtagssolicitud(this.form).then((res) => {
+           console.log(res);
+           this.next.false;
+    //    if(res.length>0){
+    //  this.form.linksold=res;
+    //    }else{
+    //   this.form.linksold=[];
+    //    }
+           
+    //          this.next=true;
+       
+          
+        });
+      } catch (err) {
+        this.next=false;
+        console.log(err);
+      } finally {
+        this.animationall = false;
+         return this.next;
+       
+      }
+    }, 
        async firstlinks(){ 
       this.animationall = true;
    
@@ -1191,7 +1236,8 @@ this.mensajeok="Todo Listo"
       }
      
       },
-    validateFirstTab(acces=false) {
+    validateone(acces=false) {
+      if(!this.debug){
      this.next=false;
       if(acces){
         return acces;
@@ -1212,6 +1258,9 @@ this.mensajeok="Todo Listo"
         });
        return !this.$v.form.inicio.$invalid; //// resulta del formulario
                     }
+      }
+      }else{
+        return true;
       }
     },
     handleValidation() {},

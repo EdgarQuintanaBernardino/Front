@@ -121,6 +121,7 @@ let createsolicitudapi = `${server}/pagos/createnotemp`;
 let apiaddcuenta = `${server}/pagos/addcuentas`;
 let apiaddlinks = `${server}/pagos/addlinks`;
 let apiaddproyects = `${server}/pagos/addproyects`;
+let apiaddtags = `${server}/pagos/addtags`;
 
 
 const response = respuestas();
@@ -211,7 +212,22 @@ const addproyectsolicitud = async(request) => {
     return result;
 
 }
+const addtagssolicitud = async(request) => {
 
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apiaddtags, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
 
 const createempresa = async(request) => {
 
@@ -1463,6 +1479,7 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    addtagssolicitud,
     addproyectsolicitud,
     addlinkssolicitud,
     addcuentassolicitud,

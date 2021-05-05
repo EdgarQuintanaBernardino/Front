@@ -19,9 +19,10 @@
                             >
                               <li
                                 v-for="tag in form.tags.showtags"
-                                :key="tag.id"
+                                :key="tag"
                                 class="list-inline-item"
                               >
+                              
                                 <b-form-tag
                                   @remove="removeTagcustomt(tag)"
                                   :title="tag"
@@ -61,6 +62,7 @@
                                     size="sm"
                                     autocomplete="off"
                                   ></b-form-input>
+            
                                   <b-button
                                     block
                                     variant="success"
@@ -84,15 +86,16 @@
                               <b-dropdown-text
                                 v-if="availableOptionst.length === 0"
                               >
-                                There are no tags available to select
+                                Ningún tag concuerda con su busqueda
                               </b-dropdown-text>
                             </b-dropdown>
                           </template>
                         </b-form-tags>
                       </b-form-group>
                     </div>
-                  </b-col>
+                    {{form.tags}}
 
+                  </b-col>
   </b-row>
    </div>
 </template>
@@ -108,15 +111,18 @@ export default {
 
   data(){
       return{
+           
+           searcht:'',
           form:{
                 link:'',
-       searcht:'',
+    
             tags:{
-              showtags:[]
+              showtags:[],
+              yourtags:[],
+              tagsnuevos:[],
            
            }
           },
-          optionsproyectos:[],
              optionst:[],
       }
       },
@@ -128,10 +134,40 @@ export default {
     Swal,
   },
       methods: {
+         onOptionClickt({ option, addTag }) {
+      /// addTag(option);
+      this.form.tags.showtags.push(option.tag);
+      this.form.tags.yourtags.push(option);
+      this.searchct = "";
+    },
+      removeTagcustomt(tag) {
+      this.form.tags.showtags = this.form.tags.showtags.filter((f) => f != tag);
+      this.form.tags.yourtags = this.form.tags.yourtags.filter(
+        (f) => f.tag != tag
+      );
+      this.form.tags.tagsnuevos = this.form.tags.tagsnuevos.filter(
+        (f) => f != tag
+      );
+    },
+         
+        addtagcustom() {
+           
+      let tag = this.searcht;
+
+      let verifica = this.form.tags.showtags.filter((e) => e == tag);
+      console.log(verifica.length)
+      if (verifica.length > 0) {
+            
+      } else {
+          this.form.tags.showtags.push(tag);
+        this.form.tags.tagsnuevos.push(tag);
+      }
+      this.searcht = "";
+    },
           
-             getproyect(){
+             addtags(){
                     
-               this.$emit("getproyectos",this.form.selectedproyect);
+               this.$emit("gettags",this.form.tags);
             return true;
                  
             },          
@@ -168,9 +204,8 @@ export default {
       },
     
       mounted(){
-       this.optionsproyectos = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.proyectosall;
-
-    
+  this.optionst = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.tagsall;
+   
     }, 
       validations: {
     form: {

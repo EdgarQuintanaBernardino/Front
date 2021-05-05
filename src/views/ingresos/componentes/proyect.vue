@@ -81,6 +81,7 @@ export default {
       computed:{
       },
       mounted(){
+
        this.optionsproyectos = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.proyectosall;
 
     

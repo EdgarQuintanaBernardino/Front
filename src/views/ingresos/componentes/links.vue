@@ -2,9 +2,104 @@
 <template>
   <div>  
   <b-row>
+       <b-col cols="12">
+           <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Etiqueta tu Ingreso</h2>
+                    </label>
+                    <div>
+                      <b-form-group>
+                        <b-form-tags
+                          v-model="form.tags.showtags"
+                          no-outer-focus
+                          class="mb-2"
+                        >
+                          <template
+                            v-slot="{ tags, disabled, addTag, removeTag }"
+                          >
+                            <ul
+                              class="list-inline d-inline-block mb-2"
+                            >
+                              <li
+                                v-for="tag in form.tags.showtags"
+                                :key="tag"
+                                class="list-inline-item"
+                              >
+                                <b-form-tag
+                                  @remove="removeTagcustomt(tag)"
+                                  :title="tag"
+                                  variant="info"
+                                  >{{ tag }}</b-form-tag
+                                >
+                              </li>
+                              
+                            </ul>
+
+                            <b-dropdown
+                              size="sm"
+                              variant="outline-dark"
+                              block
+                              menu-class="w-100"
+                            >
+                              <template v-slot:button-content>
+                                <b-icon
+                                  icon="tag-fill"
+                                  scale="2"
+                                  class="mr-3 mb-1"
+                                ></b-icon>
+                                <span style="font-size: 2em" class="mt-2"
+                                  >Tags</span
+                                >
+                              </template>
+                              <b-dropdown-form @submit.stop.prevent="() => {}">
+                                <b-form-group
+                                  label-for="tag-search-inputt"
+                                  label-cols-md="auto"
+                                  class="mb-0"
+                                  label-size="sm"
+                                >
+                                  <b-form-input
+                                    v-model="searcht"
+                                    id="tag-search-inputt"
+                                    type="search"
+                                    size="sm"
+                                    autocomplete="off"
+                                  ></b-form-input>
+            
+                                  <b-button
+                                    block
+                                    variant="success"
+                                    class="mt-3"
+                                    v-if="availableOptionst.length === 0"
+                                    @click="addtagcustom"
+                                    ><span class="ti-tag"></span>Nuevo
+                                    tag</b-button
+                                  >
+                                </b-form-group>
+                              </b-dropdown-form>
+                              <b-dropdown-divider></b-dropdown-divider>
+                              <b-dropdown-item-button
+                                v-for="option in availableOptionst"
+                                :key="option.id"
+                                @click="onOptionClickt({ option, addTag })"
+                              >
+                                {{ option.tag }}
+                              </b-dropdown-item-button>
+
+                              <b-dropdown-text
+                                v-if="availableOptionst.length === 0"
+                              >
+                                Ningún tag concuerda con su busqueda
+                              </b-dropdown-text>
+                            </b-dropdown>
+                          </template>
+                        </b-form-tags>
+                      </b-form-group>
+                    </div>
+
+                  </b-col>
          <b-col cols="12" class="mt-4">
-                    <label>
-                      <h4 class="text-info">links de pago</h4>
+                        <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Links de pago</h2>
                     </label>
                   </b-col>
                   <b-col cols="12">
@@ -51,6 +146,153 @@
                     </b-row>
                   </b-col>
 
+                  <!--RECURRENCIA-->
+                    <b-col cols="12">
+                                    <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">El pago es recurrente?</h2>
+                    </label>
+                    <b-form-group>
+                   
+                      <div>
+                        <b-form-checkbox
+                          id="checkbox-1"
+                          v-model="status"
+                          name="checkbox-1"
+                          value="No, es pago único"
+                          unchecked-value="Si, es recurrente"
+                          style="border: red solid 2px; float: right"
+                        >
+                          {{ status }}
+                        </b-form-checkbox>
+                      </div>
+                    </b-form-group>
+                  </b-col>
+                  <b-col cols="12" v-if="status == 'Si, es recurrente'">
+                         <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Cual es la frecuencia del pago?</h2>
+                    </label>
+            
+                    <b-form-group v-slot="{ ariaDescribedby }">
+                      <b-form-radio-group
+                        id="radio-slots"
+                        v-model="form.recurrencia.tipo"
+                        :options="optionsrecurrencia"
+                        @change="calculapagos"
+                        :aria-describedby="ariaDescribedby"
+                        name="radio-options-slots"
+                      >
+                      </b-form-radio-group>
+                    </b-form-group>
+                  </b-col>
+
+                  <b-col cols="6" v-if="status == 'Si, es recurrente'">
+                    <b-col cols="12" class="text-center mt-3">
+                      <label class="" >
+                        <h2 class="text-success">
+                          Iniciar recurrencia
+                        </h2>
+                      </label>
+                      <b-input-group size="md">
+                        <b-form-datepicker
+                          v-model="form.recurrencia.inicia"
+                          menu-class="w-100"
+                          calendar-width="100%"
+                          locale="es-MX"
+                          class="mb-2"
+                        
+                          @input="cambiafechainicial"
+                          :min="minimo"
+                        ></b-form-datepicker>
+                      </b-input-group>
+                    </b-col>
+                  </b-col>
+               <!--   <b-col cols="6" v-if="status == 'Si, es recurrente'">
+                 <b-time
+                      v-model="form.recurrencia.hora"
+                      label="a"
+                      locale="en"
+                    >
+                      <div class="d-flex" dir="ltr">
+                        <b-button
+                          size="sm"
+                          variant="outline-danger"
+                          v-if="form.recurrencia.hora"
+                          @click="clearTime"
+                          formated="hotien"
+                        >
+                          Limpiar
+                        </b-button>
+                        <b-button
+                          size="sm"
+                          variant="outline-primary"
+                          class="ml-auto"
+                          @click="setNow"
+                        >
+                          Ahora
+                        </b-button>
+                      </div>
+                    </b-time>
+                  </b-col>-->
+
+                  <b-col cols="6" v-if="status == 'Si, es recurrente'">
+                    <b-col cols="12" class="text-center mt-3">
+                      <label>
+                        <h2 class="text-danger">
+                         Terminar recurrencia
+                        </h2>
+                      </label>
+                      <b-input-group size="md">
+                        <b-form-datepicker
+                          v-model="form.recurrencia.tiempo"
+                          menu-class="w-100"
+                          calendar-width="100%"
+                          locale="es-MX"
+                          class="mb-2"
+                          :min="minimofinish"
+                          @input="cambiafecha"
+                        ></b-form-datepicker>
+                      </b-input-group>
+                    </b-col>
+                  </b-col>
+           <b-col cols="12" v-if="status == 'Si, es recurrente'" class="mt-5">
+                <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Fechas de Pago </br>Total de Pagos{{items.length}}</h2>
+                    </label>
+                    <b-row>
+                    <b-col cols="12" lg="2">
+                    
+                    </b-col>
+                    
+                    <b-col cols="12" lg="8">
+                      <b-table 
+                       responsive 
+                    :current-page="currentPage"
+                    :per-page="filasmostradas"
+                        striped hover 
+                        sticky-header :items="items"
+             :fields="fields">
+                  <b-row>
+              
+              </b-row>
+             </b-table>
+              <b-pagination
+                    v-model="currentPage"
+                    :total-rows="items.length"
+                    :per-page="perpage"
+                    align="fill"
+                    size="sm"
+                    class="my-0"
+                  ></b-pagination>
+                    </b-col>
+                    <b-col cols="12" lg="2">
+                    
+                    </b-col>
+                    
+                    </b-row>
+           
+           
+           </b-col>
+
   </b-row>
    </div>
 </template>
@@ -59,16 +301,51 @@
 import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
-
+import moment from 'moment';
 export default {
   name: "links",
    
 
   data(){
       return{
+        currentPage:1,
+        perpage:10,
+        filasmostradas:10,
           link:'',
+         searcht:'',
+       optionst:[],
+       fields:['Pago','Tipo','Fecha'],
+          items: [
+          
+        ],
+       minimofinish:'',
+         status: "No, es pago único",
+             optionsrecurrencia: [
+        "Diario",
+        "Semanal",
+        "Mensual",
+        "Día del Mes",
+        "Bimestral",
+        "Trimestral",
+        "Semestral",
+        "Anual",
+      ],
+    
+          minimo: "2020-10-19",
        form:{
-            links:[]
+            links:[],
+               tags:{
+              showtags:['ads','as123'],
+              yourtags:[],
+              tagsnuevos:[],
+           
+           },
+            recurrencia: {
+          tipo: "Diario",
+          hora: "",
+          tiempo: "",
+          inicia: "",
+        },
        },
     
       }
@@ -81,7 +358,181 @@ export default {
     Swal,
   },
       methods: {
+              mensual(){
+            this.items=[];
+             
+
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(' ');
+        let fijardia=arrayinicio[1];
+        let contador=0;
+          for(let a=1;a<=this.diferencia();a++){
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(' ');
+         let verificardia=arrayinicio[1];
+            if(fijardia==verificardia){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Mensual',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+                }
+        
+          }
+        },
+           semanal(){
+            this.items=[];
+             
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(',');
+        let fijardia=arrayinicio[0];
+        let contador=0;
+          for(let a=1;a<=this.diferencia();a++){
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(',');
+         let verificardia=arrayinicio[0];
+            if(fijardia==verificardia){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Semanal',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+                }
+        
+          }
+        },
+      diario(){
+      this.items=[];
+           for(let a=1;a<=this.diferencia();a++){
+              let objet={
+                Pago:a,
+                Tipo:'Diario',
+                Fechainterna:this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l')),
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+              }
+              this.items.push(objet);
+              
+          }
+
+      },
+
+   calculapagos(val){
+  
+switch(val) {
+  case 'Diario':
+   this.diario();
+      break;
+  case 'Semanal':
+   this.semanal();
+    break;
+  case 'Mensual':
+   this.mensual();
+    break;
+  default:
+    // code block
+}
+
+      },
+      cambiafecha(){
+          this.calculapagos(this.form.recurrencia.tipo);
+      },
+     cambiafechainicial(){
+       let suma=this.conviertefecha(moment(this.form.recurrencia.inicia).add(1,'d').format('l'));
+          this.form.recurrencia.tiempo=suma;
+          this.minimofinish=suma;
+
+          this.calculapagos(this.form.recurrencia.tipo);
+      },
+       diferencia(){
+        let fecha1=moment(this.form.recurrencia.inicia);
+          let fecha2=moment(this.form.recurrencia.tiempo);
+          return fecha2.diff(fecha1,'days');
+      },
+      
+       conviertefecha($fecha){
+
+          let conviert=$fecha.split('/');
+          return conviert[2]+'-'+conviert[1]+'-'+conviert[0];
+       },
+    sumarfechadate(date){
+
+       let day = date.getDate();
+      let month = date.getMonth() + 1;
+      let year = date.getFullYear();
+      let fecha;
+      if (month < 10) {
+        fecha = `${year}-0${month}-${day}`;
+
+      } else {
+        fecha = `${year}-${month}-${day}`;
+
+      }
+      return fecha;
+
+    },
+         fecha() {   
+      let date = new Date();
+      this.minimo = this.sumarfechadate(date);
+      this.hoy = this.sumarfechadate(date);
+      this.form.recurrencia.inicia = this.sumarfechadate(date);
+      date.setDate(date.getDate() + 1);///se suma 1 dia a la fecha del dia actual 
+      this.form.recurrencia.tiempo =this.sumarfechadate(date);
+      this.minimofinish =this.sumarfechadate(date);
+     },
+    //      clearTime() {
+    //   this.form.recurrencia.hora = "";
+    // },
+    // setNow() {
+    //   const now = new Date();
+    //   // Grab the HH:mm:ss part of the time string
+    //   this.form.recurrencia.hora = now.toTimeString().slice(0, 8);
+    // },
+           onOptionClickt({ option, addTag }) {
+      /// addTag(option);
+      this.form.tags.showtags.push(option.tag);
+      this.form.tags.yourtags.push(option);
+      this.searchct = "";
+    },
+      removeTagcustomt(tag) {
+      this.form.tags.showtags = this.form.tags.showtags.filter((f) => f != tag);
+      this.form.tags.yourtags = this.form.tags.yourtags.filter(
+        (f) => f.tag != tag
+      );
+      this.form.tags.tagsnuevos = this.form.tags.tagsnuevos.filter(
+        (f) => f != tag
+      );
+    },
+         
+        addtagcustom() {
+           
+      let tag = this.searcht;
+
+      let verifica = this.form.tags.showtags.filter((e) => e == tag);
+      console.log(verifica.length)
+      if (verifica.length > 0) {
+            
+      } else {
+          this.form.tags.showtags.push(tag);
+        this.form.tags.tagsnuevos.push(tag);
+      }
+      this.searcht = "";
+    },
           
+             addtags(){
+                    
+               this.$emit("gettags",this.form.tags);
+            return true;
+                 
+            },          
+  
                     getlinks(){
                     
                this.$emit("getlinks",this.form.links);
@@ -124,10 +575,38 @@ export default {
   
       },
       computed:{
-    
+        criteriat() {
+      // Compute the search criteria
+      return this.searcht.trim().toLowerCase();
+    },
+    availableOptionst() {
+      const criteriat = this.criteriat;
+      // Filter out already selected options
+      const optionst = this.optionst.filter(
+        (opt) => this.form.tags.showtags.indexOf(opt.tag) === -1
+      );
+      if (criteriat) {
+        // Show only options that match criteria
+        return optionst.filter(
+          (opt) => opt.tag.toLowerCase().indexOf(criteriat) > -1
+        );
+      }
+      // Show all options available
+      return optionst;
+    },
+    searchDesct() {
+      if (this.criteriat && this.availableOptionst.length === 0) {
+        return "Ningún tag concuerda, agrega el tag correctamente";
+      }
+      return "";
+    }
+
       },
       mounted(){
-    
+        this.fecha();
+      moment.locale('es');
+      this.optionst = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.tagsall;
+
     
     }, 
       validations: {

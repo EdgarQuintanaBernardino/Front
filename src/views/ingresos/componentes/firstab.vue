@@ -2,12 +2,12 @@
 <template>
   <div>  
   <b-row>
-      <b-col cols="12">
+      <b-col cols="12" class="">
+       <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Selecciona una de tus empresas</h2>
+                    </label>
                     <b-form-group>
-                      <h3 class="text-dark mb-3 text-center">
-                        Selecciona la empresa para obtener sus cuentas bancarias
-                      </h3>
-
+                 
                       <b-row>
                         <b-form-radio-group
                           id="btn-radios-3"
@@ -23,16 +23,20 @@
                             <b-row>
                               <b-col
                                 cols="12"
-                                lg="4"
+                                lg="2"
                                 class="text-center"
                                 v-for="(option,index) in optionsempresas"
                                 :key="option.id"
                               >
                                 <b-form-radio
-                                  class="mt-3 mr-3"
+                                  class="mt-3"
                                   :value="index"
                                   >{{ option.nombre }}</b-form-radio
+                                  
                                 >
+                   
+                                  
+                                
                               </b-col>
                             </b-row>
                           </b-col>
@@ -40,14 +44,14 @@
                       </b-row>
                     </b-form-group>
                   </b-col>
-   <b-col cols="12">
-                    <label>
-                      <h4 class="text-primary">¿A que cuenta bancaria?</h4>
+   <b-col cols="12" class="">
+                    <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">¿A que cuenta bancaria?*</h2>
                     </label>
                     <b-form-tags
                       v-model="form.cuentas"
                       no-outer-focus
-                      class="mb-2"
+                      class="mb-2 mt-2"
                     >
                       <template v-slot="{ tags, disabled, addTag }">
                         <ul
@@ -156,7 +160,45 @@
                     >
                   </b-col>
 
-  
+     <b-col cols="12" class="mt-2">
+      <label  class="d-block  bg-primary">
+                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Proyecto al que se destina el pago</h2>
+                    </label>
+                    <b-form-group>
+                   
+
+                      <b-row>
+                        <b-form-checkbox-group
+                          v-model="form.selectedproyect"
+                          switches
+                          pill
+                          button-variant="outline-info"
+                          size="lg"
+                          name="radio-btn-outline"
+                          class="w-100"
+                        >
+                          <b-col cols="12">
+                            <b-row>
+                              <b-col
+                                cols="12"
+                                lg="2"
+                                class="text-center"
+                                v-for="option in optionsproyectos"
+                                :key="option.id"
+                              >
+                                <b-form-checkbox
+                                  class="mt-3 mr-3"
+                                  :value="option"
+                                  >{{ option.nombre }}</b-form-checkbox
+                                >
+                              </b-col>
+                            </b-row>
+                          </b-col>
+                        </b-form-checkbox-group>
+                      </b-row>
+                    </b-form-group>
+                  </b-col>
+
   </b-row>
    </div>
 </template>
@@ -176,9 +218,12 @@ export default {
         cuentasblock:false,
         selected:[],
         optionsc:[],
+                  optionsproyectos:[],
+
         optionsempresas:[],
           form:{
-          
+                      selectedproyect:[],
+
               cuentas:[],
               value:[],
               cuentasall:[],
@@ -213,11 +258,9 @@ export default {
         (f) => f.nombre_cuenta != tag
       );
     },
-                    verifica(){
-          
-          
-           if(!this.$v.form.cuentas.$invalid){
-             this.$emit("getprueba",this.form.cuentasall);
+                   verifica(){
+                   if(!this.$v.form.cuentas.$invalid){
+             this.$emit("getprueba",this.form);
             return true;
               }else{
                 console.log("no pasa la validacion")
@@ -258,7 +301,8 @@ export default {
       this.selected = [];
       //this.optionsc=this.$parent.myallcuentas;
      this.optionsempresas = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.empresasall;
-    
+           this.optionsproyectos = this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.proyectosall;
+
     }, 
       validations: {
     form: {
