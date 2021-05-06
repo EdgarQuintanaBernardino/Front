@@ -149,18 +149,20 @@
                   <!--RECURRENCIA-->
                     <b-col cols="12">
                                     <label  class="d-block  bg-primary">
-                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">El pago es recurrente?</h2>
+                      <h2 class="text-white text-center" 
+                      style="padding-top:10px;padding-bottom:10px">El pago es recurrente?</h2>
                     </label>
                     <b-form-group>
                    
-                      <div>
+                      <div style=" font-size:1.5em">
                         <b-form-checkbox
                           id="checkbox-1"
                           v-model="status"
                           name="checkbox-1"
+                          @change="resetitems"
                           value="No, es pago único"
                           unchecked-value="Si, es recurrente"
-                          style="border: red solid 2px; float: right"
+                          style="float: right;"
                         >
                           {{ status }}
                         </b-form-checkbox>
@@ -169,7 +171,8 @@
                   </b-col>
                   <b-col cols="12" v-if="status == 'Si, es recurrente'">
                          <label  class="d-block  bg-primary">
-                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Cual es la frecuencia del pago?</h2>
+                      <h2 class="text-white text-center" 
+                      style="padding-top:10px;padding-bottom:10px">Cual es la frecuencia del pago?</h2>
                     </label>
             
                     <b-form-group v-slot="{ ariaDescribedby }">
@@ -186,8 +189,9 @@
                   </b-col>
 
                   <b-col cols="6" v-if="status == 'Si, es recurrente'">
+
                     <b-col cols="12" class="text-center mt-3">
-                      <label class="" >
+                      <label class="">
                         <h2 class="text-success">
                           Iniciar recurrencia
                         </h2>
@@ -199,12 +203,15 @@
                           calendar-width="100%"
                           locale="es-MX"
                           class="mb-2"
-                        
                           @input="cambiafechainicial"
                           :min="minimo"
                         ></b-form-datepicker>
+                
+
                       </b-input-group>
+                        
                     </b-col>
+
                   </b-col>
                <!--   <b-col cols="6" v-if="status == 'Si, es recurrente'">
                  <b-time
@@ -254,9 +261,23 @@
                       </b-input-group>
                     </b-col>
                   </b-col>
+              <b-col cols="12" v-if="status == 'Si, es recurrente'&& form.recurrencia.tipo=='Dias del Mes'" 
+              class="mt-5 text-center">
+            <label class="bg-info w-100" >
+            <h2 class="text-white">
+             Días que se quieren fijar
+                        </h2>
+                      </label>
+
+                         <Calendar :attributes="attributes" @dayclick="onDayClick" 
+                    class="w-100" style=""/>
+
+                             </b-col>
            <b-col cols="12" v-if="status == 'Si, es recurrente'" class="mt-5">
                 <label  class="d-block  bg-primary">
-                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Fechas de Pago </br>Total de Pagos{{items.length}}</h2>
+                      <h2 class="text-white text-center" 
+                      style="padding-top:10px;padding-bottom:10px">Fechas de Pago
+                       <strong>{{items.length}}</strong></h2>
                     </label>
                     <b-row>
                     <b-col cols="12" lg="2">
@@ -296,18 +317,26 @@
   </b-row>
    </div>
 </template>
-
+<style scoped>
+.vc-title-layout {
+  color:red;
+  display: none
+}
+</style>
 <script>
 import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
 import Swal from "sweetalert2";
 import moment from 'moment';
+import Calendar from 'v-calendar/lib/components/calendar.umd'
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 export default {
   name: "links",
    
 
   data(){
       return{
+         days: [],
         currentPage:1,
         perpage:10,
         filasmostradas:10,
@@ -324,7 +353,7 @@ export default {
         "Diario",
         "Semanal",
         "Mensual",
-        "Día del Mes",
+        "Dias del Mes",
         "Bimestral",
         "Trimestral",
         "Semestral",
@@ -335,7 +364,7 @@ export default {
        form:{
             links:[],
                tags:{
-              showtags:['ads','as123'],
+              showtags:[],
               yourtags:[],
               tagsnuevos:[],
            
@@ -345,6 +374,7 @@ export default {
           hora: "",
           tiempo: "",
           inicia: "",
+          items:[]
         },
        },
     
@@ -355,10 +385,60 @@ export default {
             
       },
        components: {
-    Swal,
+    Swal,Calendar,DatePicker
   },
       methods: {
-              mensual(){
+        resetitems(){
+            this.items=[];
+            this.days=[];
+            this.fecha();
+            this.calculapagos(this.form.recurrencia.tipo);
+        },
+         onDayClick(day) {
+      const idx = this.days.findIndex(d => d.id === day.id);
+      if (idx >= 0) {
+        this.days.splice(idx, 1);
+      } else {
+        this.days.push({
+          id: day.id,
+          date: day.date,
+        });
+      }
+      this.dias();
+    },
+      dias(){
+        this.items=[];
+        let dias=[];
+        for(let a=0;a<this.days.length;a++){
+        let cortar=this.days[a].id.split('-');
+        dias.push(cortar[2])
+        }
+          let contador=0;
+          for(let a=1;a<=this.diferencia();a++){
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let arrayinicio=fechain.split('-');
+         let verificardia=arrayinicio[2];
+         for(let b=0;b<dias.length;b++){
+              if(verificardia/dias[b]==1){
+               contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Dia del Mes',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+              }
+
+         }
+          
+            
+            
+        
+          }
+        }, 
+        
+        mensual(){
             this.items=[];
              
 
@@ -382,6 +462,138 @@ export default {
               this.items.push(objet);
                 }
         
+          }
+        }, 
+          anual(){
+            this.items=[];
+             
+
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(' ');
+        let fijardia=arrayinicio[1];
+        let contador=0;
+        let entra=0;
+          for(let a=1;a<=this.diferencia();a++){
+
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(' ');
+         let verificardia=arrayinicio[1];
+
+            if(fijardia==verificardia){
+                  if(entra==11){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Anual',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+              entra=0;
+                }else{
+                  entra++;
+                }
+            }
+          }
+        },
+          semestral(){
+            this.items=[];
+             
+
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(' ');
+        let fijardia=arrayinicio[1];
+        let contador=0;
+        let entra=0;
+          for(let a=1;a<=this.diferencia();a++){
+
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(' ');
+         let verificardia=arrayinicio[1];
+
+            if(fijardia==verificardia){
+                  if(entra==5){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Semestral',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+              entra=0;
+                }else{
+                  entra++;
+                }
+            }
+          }
+        },
+        trimestral(){
+            this.items=[];
+             
+
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(' ');
+        let fijardia=arrayinicio[1];
+        let contador=0;
+        let entra=0;
+          for(let a=1;a<=this.diferencia();a++){
+
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(' ');
+         let verificardia=arrayinicio[1];
+
+            if(fijardia==verificardia){
+                  if(entra==2){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Trimestral',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+              entra=0;
+                }else{
+                  entra++;
+                }
+            }
+          }
+        },
+              bimestral(){
+            this.items=[];
+             
+
+        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
+        let arrayinicio=inicio.split(' ');
+        let fijardia=arrayinicio[1];
+        let contador=0;
+        let entra=false;;
+          for(let a=1;a<=this.diferencia();a++){
+
+         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
+         let inicio=moment(fechain).format('LLLL');            
+         let arrayinicio=inicio.split(' ');
+         let verificardia=arrayinicio[1];
+
+            if(fijardia==verificardia){
+                  if(entra){
+              contador++;
+               let objet={
+                Pago:contador,
+                Tipo:'Bimestral',
+                Fechainterna:fechain,
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+             }
+              this.items.push(objet);
+              entra=false;
+                }else{
+                  entra=true;
+                }
+            }
           }
         },
            semanal(){
@@ -435,6 +647,21 @@ switch(val) {
     break;
   case 'Mensual':
    this.mensual();
+    break;
+  case 'Dias del Mes':
+   this.dias();
+    break;
+    case 'Bimestral':
+   this.bimestral();
+    break;
+   case 'Trimestral':
+   this.trimestral();
+    break;
+    case 'Semestral':
+   this.semestral();
+    break;
+     case 'Anual':
+   this.anual();
     break;
   default:
     // code block
@@ -533,7 +760,7 @@ switch(val) {
                  
             },          
   
-                    getlinks(){
+     getlinks(){
                     
                this.$emit("getlinks",this.form.links);
             return true;
@@ -575,6 +802,15 @@ switch(val) {
   
       },
       computed:{
+        dates() {
+      return this.days.map(day => day.date);
+    },
+    attributes() {
+      return this.dates.map(date => ({
+        highlight: true,
+        dates: date,
+      }));
+    },
         criteriat() {
       // Compute the search criteria
       return this.searcht.trim().toLowerCase();
