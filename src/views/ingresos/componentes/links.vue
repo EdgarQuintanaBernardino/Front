@@ -147,7 +147,7 @@
                   </b-col>
 
                   <!--RECURRENCIA-->
-                    <b-col cols="12">
+                    <b-col cols="12"> 
                                     <label  class="d-block  bg-primary">
                       <h2 class="text-white text-center" 
                       style="padding-top:10px;padding-bottom:10px">El pago es recurrente?</h2>
@@ -169,7 +169,9 @@
                       </div>
                     </b-form-group>
                   </b-col>
-                  <b-col cols="12" v-if="status == 'Si, es recurrente'">
+          <b-row v-if="this.form.recurrencia.isrecurrente">
+
+                  <b-col cols="12">
                          <label  class="d-block  bg-primary">
                       <h2 class="text-white text-center" 
                       style="padding-top:10px;padding-bottom:10px">Cual es la frecuencia del pago?</h2>
@@ -188,7 +190,7 @@
                     </b-form-group>
                   </b-col>
 
-                  <b-col cols="6" v-if="status == 'Si, es recurrente'">
+                  <b-col cols="6">
 
                     <b-col cols="12" class="text-center mt-3">
                       <label class="">
@@ -241,7 +243,7 @@
                     </b-time>
                   </b-col>-->
 
-                  <b-col cols="6" v-if="status == 'Si, es recurrente'">
+                  <b-col cols="6">
                     <b-col cols="12" class="text-center mt-3">
                       <label>
                         <h2 class="text-danger">
@@ -261,7 +263,7 @@
                       </b-input-group>
                     </b-col>
                   </b-col>
-              <b-col cols="12" v-if="status == 'Si, es recurrente'&& form.recurrencia.tipo=='Dias del Mes'" 
+              <b-col cols="12" v-if="form.recurrencia.tipo=='Dias del Mes'" 
               class="mt-5 text-center">
             <label class="bg-info w-100" >
             <h2 class="text-white">
@@ -273,11 +275,11 @@
                     class="w-100" style=""/>
 
                              </b-col>
-           <b-col cols="12" v-if="status == 'Si, es recurrente'" class="mt-5">
+           <b-col cols="12" class="mt-5">
                 <label  class="d-block  bg-primary">
                       <h2 class="text-white text-center" 
                       style="padding-top:10px;padding-bottom:10px">Fechas de Pago
-                       <strong>{{items.length}}</strong></h2>
+                       <strong>{{form.recurrencia.total}}</strong></h2>
                     </label>
                     <b-row>
                     <b-col cols="12" lg="2">
@@ -313,7 +315,7 @@
            
            
            </b-col>
-
+</b-row>
   </b-row>
    </div>
 </template>
@@ -374,7 +376,8 @@ export default {
           hora: "",
           tiempo: "",
           inicia: "",
-          items:[]
+          isrecurrente:false,
+          total:0,
         },
        },
     
@@ -393,6 +396,7 @@ export default {
             this.days=[];
             this.fecha();
             this.calculapagos(this.form.recurrencia.tipo);
+            this.form.recurrencia.isrecurrente=!this.form.recurrencia.isrecurrente;
         },
          onDayClick(day) {
       const idx = this.days.findIndex(d => d.id === day.id);
@@ -431,198 +435,104 @@ export default {
               }
 
          }
-          
+                                         this.form.recurrencia.total=this.items.length;
+
             
             
         
           }
         }, 
-        
-        mensual(){
-            this.items=[];
-             
-
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(' ');
-        let fijardia=arrayinicio[1];
-        let contador=0;
-          for(let a=1;a<=this.diferencia();a++){
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(' ');
-         let verificardia=arrayinicio[1];
-            if(fijardia==verificardia){
-              contador++;
-               let objet={
-                Pago:contador,
+         mensual(){
+           this.items=[];
+           for(let a=1;a<=this.diferenciames();a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'M').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Mensual',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'M').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-                }
-        
+             this.items.push(objet);     
           }
+                               this.form.recurrencia.total=this.diferenciames();
+
         }, 
           anual(){
-            this.items=[];
-             
-
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(' ');
-        let fijardia=arrayinicio[1];
-        let contador=0;
-        let entra=0;
-          for(let a=1;a<=this.diferencia();a++){
-
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(' ');
-         let verificardia=arrayinicio[1];
-
-            if(fijardia==verificardia){
-                  if(entra==11){
-              contador++;
-               let objet={
-                Pago:contador,
+              this.items=[];
+           for(let a=1;a<=this.diferenciaanual();a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'y').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Anual',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'y').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-              entra=0;
-                }else{
-                  entra++;
-                }
-            }
+             this.items.push(objet);     
           }
+                     this.form.recurrencia.total=this.diferenciaanual();
+
         },
           semestral(){
-            this.items=[];
-             
-
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(' ');
-        let fijardia=arrayinicio[1];
-        let contador=0;
-        let entra=0;
-          for(let a=1;a<=this.diferencia();a++){
-
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(' ');
-         let verificardia=arrayinicio[1];
-
-            if(fijardia==verificardia){
-                  if(entra==5){
-              contador++;
-               let objet={
-                Pago:contador,
+          this.items=[];
+           for(let a=1;a<=this.diferenciageneric(6);a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*6,'M').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Semestral',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*6,'M').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-              entra=0;
-                }else{
-                  entra++;
-                }
-            }
-          }
+             this.items.push(objet);  
+           }
+                      this.form.recurrencia.total=this.diferenciageneric(6);
+
         },
         trimestral(){
-            this.items=[];
-             
-
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(' ');
-        let fijardia=arrayinicio[1];
-        let contador=0;
-        let entra=0;
-          for(let a=1;a<=this.diferencia();a++){
-
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(' ');
-         let verificardia=arrayinicio[1];
-
-            if(fijardia==verificardia){
-                  if(entra==2){
-              contador++;
-               let objet={
-                Pago:contador,
+        this.items=[];
+           for(let a=1;a<=this.diferenciageneric(3);a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*3,'M').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Trimestral',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*3,'M').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-              entra=0;
-                }else{
-                  entra++;
-                }
-            }
-          }
+             this.items.push(objet);  
+           }
+                      this.form.recurrencia.total=this.diferenciageneric(3);
+
         },
-              bimestral(){
-            this.items=[];
-             
-
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(' ');
-        let fijardia=arrayinicio[1];
-        let contador=0;
-        let entra=false;;
-          for(let a=1;a<=this.diferencia();a++){
-
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(' ');
-         let verificardia=arrayinicio[1];
-
-            if(fijardia==verificardia){
-                  if(entra){
-              contador++;
-               let objet={
-                Pago:contador,
+              bimestral(){      
+              this.items=[];
+           for(let a=1;a<=this.diferenciageneric(2);a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*2,'M').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Bimestral',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a*2,'M').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-              entra=false;
-                }else{
-                  entra=true;
-                }
-            }
-          }
+             this.items.push(objet);  
+           }
+           this.form.recurrencia.total=this.diferenciageneric(2);
         },
            semanal(){
             this.items=[];
-             
-        let inicio=moment(this.form.recurrencia.inicia).format('LLLL');
-        let arrayinicio=inicio.split(',');
-        let fijardia=arrayinicio[0];
-        let contador=0;
-          for(let a=1;a<=this.diferencia();a++){
-         let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'));
-         let inicio=moment(fechain).format('LLLL');            
-         let arrayinicio=inicio.split(',');
-         let verificardia=arrayinicio[0];
-            if(fijardia==verificardia){
-              contador++;
-               let objet={
-                Pago:contador,
+           for(let a=1;a<=this.diferenciasemana();a++){
+          let fechain=this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'w').format('l'));
+                let objet={
+                Pago:a,
                 Tipo:'Semanal',
                 Fechainterna:fechain,
-                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'d').format('l'))).format('LLLL').slice(0,-4)
+                Fecha:moment(this.conviertefecha(moment(this.form.recurrencia.inicia).add(a,'w').format('l'))).format('LLLL').slice(0,-4)
              }
-              this.items.push(objet);
-                }
-        
+             this.items.push(objet);     
           }
+            this.form.recurrencia.total=this.diferenciasemana();
         },
       diario(){
       this.items=[];
+
            for(let a=1;a<=this.diferencia();a++){
               let objet={
                 Pago:a,
@@ -633,6 +543,7 @@ export default {
               this.items.push(objet);
               
           }
+          this.form.recurrencia.total=this.diferencia();
 
       },
 
@@ -664,7 +575,7 @@ switch(val) {
    this.anual();
     break;
   default:
-    // code block
+  
 }
 
       },
@@ -678,12 +589,41 @@ switch(val) {
 
           this.calculapagos(this.form.recurrencia.tipo);
       },
+          diferenciames(){
+  let fecha1=moment(this.form.recurrencia.inicia);
+  let fecha2=moment(this.form.recurrencia.tiempo);
+  return fecha2.diff(fecha1,'M');
+  //// retorna el año moment(fecha1).year();//
+  //// te da el trimestre del mes enero feb y marzo =1 abril mayo junio =2 moment(fecha1).quarter();
+  
+// retorna el mes comenzando en 0 enero  moment(fecha1).month(); // 
+
+          /// moment(fecha1).dayOfYear(); dia del año 120 124 etc.
+
+           // return moment(fecha1).day();///// regresa el dia de la semana comenzando con 0 en domingo y terminando en 6 sabado
+
+        // let fecha1=moment(this.form.recurrencia.inicia);
+        //   let fecha2=moment(this.form.recurrencia.tiempo);
+        //   return fecha2.diff(fecha1,'days');
+      },
+       diferenciaanual(){
+          let fecha1=moment(this.form.recurrencia.inicia);
+          let fecha2=moment(this.form.recurrencia.tiempo);
+          return fecha2.diff(fecha1,'y');          
+      },
+         diferenciageneric(num){
+         return Math.trunc(this.diferenciames()/num);            
+      },
        diferencia(){
         let fecha1=moment(this.form.recurrencia.inicia);
           let fecha2=moment(this.form.recurrencia.tiempo);
           return fecha2.diff(fecha1,'days');
       },
-      
+          diferenciasemana(){
+        let fecha1=moment(this.form.recurrencia.inicia);
+          let fecha2=moment(this.form.recurrencia.tiempo);
+          return fecha2.diff(fecha1,'w');
+      },
        conviertefecha($fecha){
 
           let conviert=$fecha.split('/');
@@ -752,17 +692,15 @@ switch(val) {
       }
       this.searcht = "";
     },
-          
-             addtags(){
-                    
-               this.$emit("gettags",this.form.tags);
-            return true;
+     addtags(){                
+      this.$emit("gettags",this.form.tags);
+      return true;
                  
             },          
   
      getlinks(){
                     
-               this.$emit("getlinks",this.form.links);
+               this.$emit("getlinks",this.form);
             return true;
                  
             },

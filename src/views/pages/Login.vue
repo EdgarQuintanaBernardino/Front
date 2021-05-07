@@ -145,7 +145,6 @@ export default {
         self.$store.commit('set','fotouser',result.user.photo);
         self.$store.commit('setmetodo',result.sistema.metodo==2?true:false);
         result.token = self.CryptoJS.AES.encrypt(result.token.toString(),self.$keysecret).toString();
-
         service.logininicial(result);
         result.nuevo==1||result.nuevo==null||result.nuevo=="NULL"?self.$router.push(`/settings`):self.$router.push(`/`);
         }else{self.sinroles(alert)}      

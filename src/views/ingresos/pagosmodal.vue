@@ -99,7 +99,7 @@
                       ></b-form-datepicker>
                     </b-input-group>
                   </b-col>
-                  <b-col cols="12" lg="3" class="text-center mt-3">
+                  <b-col cols="12" xl="3" class="text-center mt-3">
                     <label>
                       <h4 class="text-primary">Monto Solicitado</h4>
                     </label>
@@ -135,7 +135,7 @@
                       v-if="!$v.form.inicio.bruto.required"
                       >Campo requerido**</span>
                   </b-col>
-                  <b-col cols="12" lg="3" class="text-center mt-3">
+                  <b-col cols="12" xl="3" class="text-center mt-3">
                     <label>
                       <h4 class="text-primary">Moneda</h4>
                     </label>
@@ -165,7 +165,7 @@
                       >Campo requerido**</span>
                     </b-input-group>
                   </b-col>
-                  <b-col cols="12" lg="2" class="text-center mt-3">
+                  <b-col cols="12" xl="2" class="text-center mt-3">
                     <label>
                       <h4 class="text-primary">IVA %</h4>
                     </label>
@@ -180,7 +180,7 @@
                     >
                     </b-form-select>
                   </b-col>
-                  <b-col cols="12" lg="4" class="text-center mt-3">
+                  <b-col cols="12" xl="4" class="text-center mt-3">
                     <label>
                       <h4 class="text-primary">Monto Solicitado Neto</h4>
                     </label>
@@ -191,11 +191,8 @@
                       <b-form-input
                         type="number"
                         oninput="javascript:value=this.value.replace('e','')"
-                        
+                        readonly
                         v-model="form.inicio.monto"
-                         @change="calculamontoneto"
-                        v-on:keyup.prevent="calculamontoneto"
-
                         placeholder="Total"
                       ></b-form-input>
                     </b-input-group>
@@ -541,6 +538,14 @@
               </div>
           
             </tab-content>
+             <tab-content title="Cargar Archivos"
+                         icon="ti-clip" :before-change="validalinks">
+     <archivos @getlinks="getlinkssoli"  ref="archivosstab"></archivos> 
+
+              <div class="panel-body">
+              </div>
+          
+            </tab-content>
             
              <div class="panel-body">
               </div>
@@ -586,6 +591,7 @@ import repo from "@/assets/repositoriosjs/repoupdateprofileuser";
 import { mapActions, mapMutations } from "vuex";
 import tabprueba  from "@/views/ingresos/componentes/firstab";
 import links  from "@/views/ingresos/componentes/links";
+import archivos  from "@/views/ingresos/componentes/archivos";
 
 import Vue2Filters from 'vue2-filters'
 
@@ -695,6 +701,7 @@ export default {
       cuentas: [],
         links: [],
         linksold:[],
+        recurrenciaold:[],
         selectedproyect: [],
       },
       monedas: ["Pesos", "Dolares", "Euros"],
@@ -705,7 +712,7 @@ export default {
   components: {
     Swal,
     tabprueba,
-    links,
+    links,archivos
     
   },
   validations: {
@@ -794,13 +801,18 @@ export default {
       
         
     },
-    getlinkssoli(links){
-      if(links.length>0){
-         this.form.links=links;
-      }else{
-  this.form.links=[];
-      }
-               this.next=false;
+    getlinkssoli(form){
+  //     if(links.length>0){
+  //        this.form.links=links;
+  //     }else{
+  // this.form.links=[];
+  //     }
+  console.log(form)
+  console.log("shi")
+  this.form.links=form.links;
+  this.form.recurrencia=form.recurrencia;
+  this.form.tags=form.tags;
+ this.next=false;
     },
     validacuentas(){
        if(!this.debug){
@@ -815,7 +827,7 @@ export default {
         return true;
       }
       },validalinks(){
-        if(!this.debug){
+     if(!this.debug){
   
       let respuesta=this.$refs.linkstab.getlinks();
      if(respuesta){
@@ -823,9 +835,11 @@ export default {
        }else{
        return false;
      }
-        }else{return true;}
+        }else{
+          return true;}
       },
         validatags(){
+         
              if(!this.debug){
   
       let respuesta=this.$refs.tagstab.addtags();
@@ -834,7 +848,9 @@ export default {
        }else{
        return false;
      }
-             }else{return true;}
+             }else{
+              
+               return true;}
 
         },
       validaproyectos(){
@@ -1074,14 +1090,9 @@ this.mensajeok="Todo Listo"
       try {
         let repoitems = repo();
         await repoitems.addcuentassolicitud(this.form).then((res) => {
-          console.log(res)
           if(res){
-
              this.next=true;
-
-          }else{
-
-          } 
+          }
         });
       } catch (err) {
         this.next=false;
@@ -1124,14 +1135,13 @@ this.mensajeok="Todo Listo"
       try {
         let repoitems = repo();
         await repoitems.addlinkssolicitud(this.form).then((res) => {
-       if(res.length>0){
-     this.form.linksold=res;
-       }else{
-      this.form.linksold=[];
-       }
-           
-             this.next=true;
+
+
+     this.form.linksold=res['links'];
+     this.form.recurrenciaold=res['recurrencia'];
        
+             this.next=true;
+       console.log(res['links'])
           
         });
       } catch (err) {
@@ -1217,7 +1227,7 @@ this.mensajeok="Todo Listo"
       this.form.inicio.id=this.solicitudtemp.id;
       try {
         let repoitems = repo();
-        await repoitems.updatesolicitud(this.form.inicio).then((res) => {
+        await repoitems.updatesolicitud(this.form).then((res) => {
         if(res.id){
                 this.solicitudtemp=res;
                  this.next=true;

@@ -4,26 +4,30 @@
   <b-row>
       <b-col cols="12" class="">
        <label  class="d-block  bg-primary">
-                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">Selecciona una de tus empresas</h2>
+                      <h2 class="text-white text-center"
+                       style="padding-top:10px;padding-bottom:10px">Selecciona una de tus empresas</h2>
                     </label>
+                     <b-row>
+                      <b-col cols="12">
                     <b-form-group>
                  
-                      <b-row>
+                     
                         <b-form-radio-group
                           id="btn-radios-3"
                           v-model="selected"
                           buttons
                           pill
                           button-variant="outline-info"
-                          size="lg"
+                          size="md"
                           name="radio-btn-outline"
                           class="w-100"
                         >
-                          <b-col cols="12">
-                            <b-row>
+                          <b-row class="w-100">
+                        
                               <b-col
+                            
                                 cols="12"
-                                lg="2"
+                                xl="3"
                                 class="text-center"
                                 v-for="(option,index) in optionsempresas"
                                 :key="option.id"
@@ -39,10 +43,12 @@
                                 
                               </b-col>
                             </b-row>
-                          </b-col>
+                          
                         </b-form-radio-group>
-                      </b-row>
+                    
                     </b-form-group>
+                    </b-col>
+                      </b-row>
                   </b-col>
    <b-col cols="12" class="">
                     <label  class="d-block  bg-primary">
@@ -67,7 +73,7 @@
                               @remove="removeTagcustomc(tag)"
                               :title="tag"
                               :disabled="disabled"
-                              variant="danger"
+                              variant="success"
                               >{{ tag.nombre_cuenta }}
                             </b-form-tag>
                           </li>
@@ -127,17 +133,21 @@
                             >
                               <b-row>
                                 <b-col md="auto">
-                                  <strong>Cuenta</strong>&nbsp;
                                   <span class="text-dark">
-                                    <b-badge variant="primary">{{
+                                  Cuenta: 
+                                    <b-badge variant="primary">
+                                    {{
                                       option.nombre_cuenta
-                                    }}</b-badge></span
-                                  >&nbsp;
+                                    }}
+                                    
+                                    </b-badge>
+                                    </span
+                                  >
                                 </b-col>
                                 <b-col md="auto"
-                                  ><strong>Banco</strong>&nbsp;
-                                  <span class="text-info">
-                                    <b-badge variant="info"
+                                  >Banco&nbsp;
+                                  <span class="text-primary">
+                                    <b-badge variant="primary"
                                       >{{ option.banco }}
                                     </b-badge></span
                                   >&nbsp;
@@ -206,11 +216,14 @@
 <script>
 import "regenerator-runtime/runtime";
 import { required, minLength } from "vuelidate/lib/validators";
+import Swal from "sweetalert2";
 
 export default {
   name: "tabinedex",
    
-
+  components: {
+    Swal
+  },
   data(){
       return{
         searchc:'',
@@ -263,7 +276,13 @@ export default {
              this.$emit("getprueba",this.form);
             return true;
               }else{
-                console.log("no pasa la validacion")
+                      Swal.fire({
+          position: "center",
+          showCloseButton: true,
+          icon: "error",
+          title: "Cuenta Bancaria Obligatoria.\n Selecciona una empresa para obtener sus cuentas bancarias",
+          showConfirmButton: true,
+                      });
                 return false;
               }
 
