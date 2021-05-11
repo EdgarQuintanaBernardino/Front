@@ -6,7 +6,11 @@
       @show="eventdetected"
       @hidden="resetModal"
       size="xl"
+      :title="this.$parent.config.titulo+' Pago'"
       hide-footer
+      header-text-variant='light'
+      header-bg-variant='primary'
+      header-text-size="xl"
     >
       <b-form autocomplete="off">
         <b-overlay :show="animationall" rounded="sm">
@@ -21,9 +25,9 @@
             </div>
           </template>
           <CCol>
-              <CCardHeader class="bg-info">
+            <!--  <CCardHeader class="bg-info">
                 <h2 class="text-center text-white"><span class="ti-money"></span>{{this.$parent.config.titulo}} Pago </h2>
-              </CCardHeader>
+              </CCardHeader>-->
             <CCard>
               <CCardBody> 
                 <form-wizard 
@@ -600,7 +604,7 @@ export default {
    
   data() {
     return {
-      debug:true,
+      debug:false,
       datoseditar:[],
       range:"",
       mensaje:true,
