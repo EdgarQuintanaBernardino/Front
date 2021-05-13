@@ -301,11 +301,13 @@ console.log(response,file)
     console.log(this.$parent.$parent.$parent.$parent.$parent.$parent.form.inicio.id)
     formData.append('idsolicitud',this.$parent.$parent.$parent.$parent.$parent.$parent.form.inicio.id);
 //  formData.append('idsolicitud',1);//// solicitud madre
-  formData.append('tipo','Factura');
-  formData.append('formato', tipo[1]);///xml o pdf
-  formData.append('idtipo',1);///1= factura
-   formData.append('permitido',['xml','pdf']);
-  formData.append('maxpermitido',2);
+    formData.append('tipo','Factura');
+    formData.append('formato', tipo[1]);///xml o pdf
+    formData.append('idtipo',1);///1= factura
+    formData.append('permitido',['xml','pdf']);
+    formData.append('maxpermitido',2);
+    formData.append('iguales',false);///// valor para determinar si de maxpermitidos se pueden hacer 2 del mismo o 1 y 1 
+
       },
     cargando(){
         this.upload=true;
