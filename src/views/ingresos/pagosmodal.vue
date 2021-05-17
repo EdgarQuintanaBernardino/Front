@@ -35,8 +35,8 @@
                      error-color="#a94442"
                      title=""
                      subtitle=""
-                     @on-validate="handleValidation"
                     finishButtonText="Finalizar"
+                      :start-index="tabIndex"
                      >
                    <template slot="footer" slot-scope="props">
           <div class="wizard-footer-left">
@@ -297,7 +297,9 @@
                   </b-col>
                   <b-col cols="12">
                     <label  class="d-block  bg-primary">
-                      <h2 class="text-white text-center" style="padding-top:10px;padding-bottom:10px">    ¿A quién se le solicita el pago?*</h2>
+                      <h2 class="text-white text-center" 
+                      style="padding-top:10px;padding-bottom:10px">
+                      ¿A quién se le solicita el pago?*</h2>
                     </label>
                  
                     <b-form-tags
@@ -555,11 +557,7 @@
               </div>
             </tab-content>
         
-            <tab-content title="Todo listo"
-                         icon="ti-check">
-              <div class="panel-body">
-              </div>
-            </tab-content>
+         
         </form-wizard>
  
               
@@ -605,6 +603,7 @@ export default {
   data() {
     return {
       debug:false,
+      tabIndex:0,
       datoseditar:[],
       range:"",
       mensaje:true,
@@ -1277,7 +1276,10 @@ this.mensajeok="Todo Listo"
         return true;
       }
     },
-    handleValidation() {},
+    onComplete() {
+
+      console.log("termina")
+    },
     addemail() {
      let email = this.search;
       if (this.emailIsValid(email)) {
@@ -1489,7 +1491,23 @@ this.calculaporcentaje();
     resetModal() {      
     ///reset para primera ventana
      this.resetfirstwindow();
+     this.resetsecondwindow();
     },
+    resetsecondwindow(){
+
+  this.form.shared.tipo="unico";
+  this.form.shared.users.showcomplete=[];
+  this.form.shared.users.value=[];
+  this.form.shared.users.emails=[];
+  this.form.shared.users.alloption=[];
+  this.form.shared.users.detalle=[];
+  this.items=[];
+        
+    
+         
+
+    },
+
     resetfirstwindow(){
        this.next=false;
        this.form.inicio= {

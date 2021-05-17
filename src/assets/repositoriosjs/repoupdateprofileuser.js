@@ -122,6 +122,7 @@ let apiaddcuenta = `${server}/pagos/addcuentas`;
 let apiaddlinks = `${server}/pagos/addlinks`;
 let apiaddproyects = `${server}/pagos/addproyects`;
 let apiaddtags = `${server}/pagos/addtags`;
+let apideletefile = `${server}/pagos/deletefile`;
 
 
 const response = respuestas();
@@ -212,6 +213,23 @@ const addproyectsolicitud = async(request) => {
     return result;
 
 }
+const deletefile = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apideletefile, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+
 const addtagssolicitud = async(request) => {
 
     let tokenin = store.getters.gettoken;
@@ -1479,6 +1497,8 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+
+    deletefile,
     addtagssolicitud,
     addproyectsolicitud,
     addlinkssolicitud,

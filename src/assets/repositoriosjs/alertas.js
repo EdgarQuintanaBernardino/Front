@@ -128,6 +128,55 @@ const imagenotvalid = async() => {
     response(mensaje);
 
 }
+
+
+const fileexist = async(datos) => {
+    let msj = 'Ya se encuentra en la base datos un archivo de tipo ' + datos.data[0].tipo.toUpperCase();
+
+    let mensaje = {
+        tittle: 'Archivo',
+        text: msj,
+        icon: 'error'
+    };
+    response(mensaje);
+
+}
+const limit = async() => {
+    let msj = 'Llegaste al límite de archivos';
+
+    let mensaje = {
+        tittle: 'Archivo',
+        text: msj,
+        icon: 'error'
+    };
+    response(mensaje);
+
+}
+const filesuccess = async() => {
+    let msj = 'Archivo eliminado con éxito';
+
+    let mensaje = {
+        tittle: 'Archivo',
+        text: msj,
+        icon: 'success'
+    };
+    response(mensaje);
+
+}
+const fileaun = async(conteo) => {
+    let msj = 'Archivo cargado con éxito, aún te queda espacio para ' +
+        conteo + ' archivo(s).';
+    if (conteo == 0) {
+        msj = "Llegaste al límite de archivos permitidos."
+    }
+    let mensaje = {
+        tittle: 'Archivo',
+        text: msj,
+        icon: 'success'
+    };
+    response(mensaje);
+
+}
 const errorcp = async() => {
     let mensaje = {
         tittle: '"Código Postal',
@@ -369,6 +418,10 @@ const intentos = async(intentos) => {
 
 }
 export default () => ({
+    filesuccess,
+    limit,
+    fileexist,
+    fileaun,
     filenotvalidorsize,
     response,
     deletemsj,
