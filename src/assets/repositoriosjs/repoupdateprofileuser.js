@@ -123,7 +123,8 @@ let apiaddlinks = `${server}/pagos/addlinks`;
 let apiaddproyects = `${server}/pagos/addproyects`;
 let apiaddtags = `${server}/pagos/addtags`;
 let apideletefile = `${server}/pagos/deletefile`;
-
+let apifinishpago = `${server}/pagos/finish`;
+let apiPagosBack = `${server}/pagos/getpagosback`;
 
 const response = respuestas();
 const alerts = alertas();
@@ -221,6 +222,38 @@ const deletefile = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apideletefile, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+const finishpago = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apifinishpago, request, configin).then((res) => {
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+const PagosBack = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(apiPagosBack, request, configin).then((res) => {
         return response.verifyrequest(res.data)
 
     }).catch((error) => {
@@ -1497,7 +1530,8 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
-
+    PagosBack,
+    finishpago,
     deletefile,
     addtagssolicitud,
     addproyectsolicitud,

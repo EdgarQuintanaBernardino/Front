@@ -2,7 +2,7 @@
   <CRow>
     <CCol sm="12">
       <CCard>
-        <CCardHeader v-if="datosall.header">
+        <CCardHeader v-if="datosall.header" >
               <h3>
                 {{datosall.headername}}
               <b-badge :variant="datosall.badgevariant" pill>{{ datosall.totalRow }}</b-badge>
@@ -22,15 +22,21 @@
                 </b-btn>
               </h3>
                </CCardHeader>
-     
-        <CCardBody>
+   
+        <CCardBody style="border:solid red 2px;width:100%;overflow:auto;height:50%;" >
           <CDataTable
+
+              
             :items="datosall.items"
             :fields="datosall.columns"
             index-column
             hover
+            size="md"
+
+            no-border-collapse
+            striped
             footer
-            table-column
+            table-column            
             :itemsPerPage="datosall.totalfilasmostradas"
             :sorter="{ external: true, resetable: true }"
             :columnFilter="{ external: true, lazy: true }"
@@ -46,7 +52,11 @@
                       noItems: 'No hay registros disponibles',
                     }"
           >
-     
+          <template #headers()="data">asd
+                  <span class="text-info"
+                 >{{ data.label.toUpperCase() }}</span>
+                
+                </template>
             
               <template #actions="row">
               <b-container fluid>
@@ -133,6 +143,7 @@
             :active-page.sync="activePage"
           />
         </CCardBody>
+        
       </CCard>
     </CCol>
       <sidebarcustom :userin="userin"></sidebarcustom>
@@ -140,17 +151,8 @@
   </CRow>
 </template>
 
-<style>
-  .lazyTable{
-    display: block;
-    height: 450px;
-    overflow-y: scroll;
-  }
 
-  .lazyTable tr{
-    height:50px;
-  }
-</style>
+
 
 <script>
 import sidebarcustom from '@/views/empresas/sidebarcustom';
@@ -160,6 +162,7 @@ export default {
   props:['loadingin','iddeletein','datosallin','idedit'],
   data () {
     return {
+      headervar:false,
       datosall:{
     placeholder:'generic',
           columns:[],
@@ -263,6 +266,9 @@ this.$emit('info',item);
      // this.getNotes();
     },
     eventdispatch(){
+
+ 
+      
    this.$emit('getparams',{
              currentpage:this.activePage,
              itemsLimit: this.itemsLimit,

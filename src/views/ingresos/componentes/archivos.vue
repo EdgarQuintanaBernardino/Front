@@ -16,7 +16,7 @@
 
         <!--INICIAN LOS DROPBOX -->
         <b-row >
-        <b-col cols="6" style="padding:12px;" >
+        <b-col cols="12" lg="6" style="padding:12px;" >
         <b-row>
         <b-col cols="12"  >
        <label  class="d-block"  style="background-color:#2D4262">
@@ -87,7 +87,7 @@
         
            </b-row>    
         </b-col>
-    <b-col cols="6" style="padding:12px;">
+    <b-col cols="12" lg="6" style="padding:12px;">
         <b-row>
         <b-col cols="12" >
        <label  class="d-block"  style="background-color:#2D4262">
@@ -145,12 +145,17 @@
             
 
  
-        
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/xml-file.png" class="" style="width:60px;;margin-bottom:1px"   v-if="item.tipo=='xml'">
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else-if="item.tipo=='pdf'">
-   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else-if="item.tipo=='image'">
-   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/archivo.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else>
-
+   <a :href="item.url" target="_blank" v-if="item.tipo=='pdf'">
+<img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png"
+    class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"  >{{item.nameoriginal}}</a>
+<a :href="item.url" target="_blank" v-if="item.tipo=='image'" class="ml-1">
+   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;" >{{item.nameoriginal}}</a>
+   <a :href="item.url" target="_blank" v-if="item.tipo=='docx'||item.tipo=='doc'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/word.jpg" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a>
+ <a :href="item.url" target="_blank" v-if="item.tipo=='xlsx'||item.tipo=='xls'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/excel.png" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a> 
   
           </br>
       <b-button class="btn btn-danger ml-2" d-block sytle="display:block" :id="item.id+'btnc'" @click="deletefilec(item)"><b-icon icon="trash-fill" scale="1" style="color:white;"></b-icon>
@@ -164,7 +169,7 @@
            </b-row>    
         </b-col>
     
-     <b-col cols="6" style="padding:12px;">
+     <b-col cols="12" lg="6" style="padding:12px;">
         <b-row>
         <b-col cols="12" >
        <label  class="d-block"  style="background-color:#2D4262">
@@ -223,11 +228,17 @@
 
  
         
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/xml-file.png" class="" style="width:60px;;margin-bottom:1px"   v-if="item.tipo=='xml'">
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else-if="item.tipo=='pdf'">
-   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else-if="item.tipo=='image'">
-   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/archivo.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else>
-
+  <a :href="item.url" target="_blank" v-if="item.tipo=='pdf'">
+<img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png"
+    class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"  >{{item.nameoriginal}}</a>
+<a :href="item.url" target="_blank" v-if="item.tipo=='image'" class="ml-1">
+   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;" >{{item.nameoriginal}}</a>
+   <a :href="item.url" target="_blank" v-if="item.tipo=='docx'||item.tipo=='doc'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/word.jpg" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a>
+ <a :href="item.url" target="_blank" v-if="item.tipo=='xlsx'||item.tipo=='xls'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/excel.png" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a> 
   
           </br>
       <b-button class="btn btn-danger ml-2" d-block sytle="display:block" :id="item.id+'btno'" @click="deletefileo(item)"><b-icon icon="trash-fill" scale="1" style="color:white;"></b-icon>
@@ -240,7 +251,7 @@
         
            </b-row>    
         </b-col>
-     <b-col cols="6" style="padding:12px;">
+     <b-col cols="12" lg="6" style="padding:12px;">
         <b-row>
         <b-col cols="12" >
        <label  class="d-block"  style="background-color:#2D4262">
@@ -299,11 +310,17 @@
 
  
         
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/xml-file.png" class="" style="width:60px;;margin-bottom:1px"   v-if="item.tipo=='xml'">
-    <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-if="item.tipo=='pdf'">
-   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-if="item.tipo=='image'">
-   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/archivo.png" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"   v-else>
-
+  <a :href="item.url" target="_blank" v-if="item.tipo=='pdf'">
+<img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/pdfimage.png"
+    class="ml-2 mb-1 mt-1" style="width:45px; height:52px;"  >{{item.nameoriginal}}</a>
+<a :href="item.url" target="_blank" v-if="item.tipo=='image'" class="ml-1">
+   <img :src="item.url" class="ml-2 mb-1 mt-1" style="width:45px; height:52px;" >{{item.nameoriginal}}</a>
+   <a :href="item.url" target="_blank" v-if="item.tipo=='docx'||item.tipo=='doc'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/word.jpg" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a>
+ <a :href="item.url" target="_blank" v-if="item.tipo=='xlsx'||item.tipo=='xls'" class="ml-1">
+   <img src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/archivos/excel.png" 
+     class="ml-2 mb-1 mt-1" style="width:45px; height:52px;">{{item.nameoriginal}}</a> 
   
           </br>
       <b-button class="btn btn-danger ml-2" d-block sytle="display:block" :id="item.id+'btncp'" @click="deletefilecp(item)"><b-icon icon="trash-fill" scale="1" style="color:white;"></b-icon>

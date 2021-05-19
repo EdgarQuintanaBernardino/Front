@@ -45,14 +45,14 @@
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
-           <pagosmodal></pagosmodal>
+           <pagosmodal @reload="getitems"></pagosmodal>
 
   </b-container>
   
 </template>
 
 <script>
-import back from "@/views/cuentas/table"
+import back from "@/views/ingresos/table"
 import allfront from "@/views/ingresos/tablefront";
 import repo from "@/assets/repositoriosjs/repoupdateprofileuser.js";
 import respuestas from "@/assets/repositoriosjs/respuestas.js";
@@ -240,14 +240,14 @@ metodo?this.getitems():this.getitemsback();
 
        },
            async getitemsback() {
-             return false;
+            
       try {
         let repoitems = repo();
       let self = this;
       self.show=true;
       this.items = [];
         let validaciones=respuestas();
-        await repoitems.getcuentasback({
+        await repoitems.PagosBack({
           ////iniciamos la parte del back en 
           sorter:       self.sorter,
           tableFilter:  self.tableFilter,
@@ -256,41 +256,57 @@ metodo?this.getitems():this.getitemsback();
           currentpage: self.currentpage
         }).then((res) => {
 
-        
-         //   let response=validaciones.validafriends(res);
-              let response=res.data;
+              
+             
                   let datosgenericos={
-                  placeholder:"Busca Cuenta",
+                  placeholder:"Busca Pago",
                     columns:[
-                        { key: "nombre_cuenta", label: "Nombre de la Cuenta", sortable: true},
-                        { key: "banco",label: "Banco", sortable: true, class: "text-center"},
-                        { key: "moneda", label: "Moneda", class: "text-center"},
-                        { key: "numero_cuenta", label: "Número de Cuenta", class: "text-center"},
+                        { key: "user", label: "Usuarios", sortable: true,},
+                        { key: "concepto", label: "Concepto de Pago", sortable: true},
+                        { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                        
+                        { key: "moneda",label: "Moneda", sortable: true, class: "text-center"},
+                        { key: "iva",label: "Iva", sortable: true, class: "text-center"},
+                        { key: "monto_solicitado",label: "Monto Solicitado", sortable: true, class: "text-center"},
+                        { key: "usersin", label: "Solicitado a", class: "text-center"},///todos los usuarios
+                        { key: "titulo", label: "Tipo", class: "text-center"},
+                        { key: "visto", label: "Visto", class: "text-center"},
+                        { key: "recurrente", label: "Recurrente", class: "text-center"},
+                        { key: "tiempo_recurrencia", label: "Tiempos de Recurrencia", class: "text-center"},
+                        { key: "cuenta", label: "Cuenta Bancaria", class: "text-center"},
+                        { key: "links", label: "Links", class: "text-center"},
+                        { key: "proyecto", label: "Proyecto", class: "text-center"},
+                        { key: "comentario", label: "Comentario", class: "text-center"},
+                        { key: "status", label: "Proyecto", class: "text-center"},
+                        { key: "enviado", label: "Enviado", class: "text-center"},
+                        { key: "archivos", label: "Archivos", class: "text-center"},
+                        
                         { key: "actions", label: "Acciones", class: "text-center"},
+
+
                              ],
-            totalfilasmostradas:15,
-            items:response.data,
+            totalfilasmostradas:5,
+            items:res.data,
             resuelve:12,////el col
-            initrows:response.data.length,
-            totalRow:res.count,
+            initrows:res.data.length,
+            totalRow:res.total,
             acciones:[1,3],
-            maxPages:response.last_page,
+            maxPages:res.last_page,
             ///header
             header:true,///bolean heeader
-            headername:'Cuentas Registradas',
+            headername:'Pagos Registrados',
             btnadd:true,
             iconadd:'pencil',
             animation:'fade',
             fontscale:'2',
             classicon:'mr-2',
-            namebtn:'Agrega Cuenta',
+            namebtn:'Agrega Pago',
             badgevariant:'primary',
             btnvariant:'info',
             btnstyle:'float:right',
             component:"empresashow"
 
                 }
-                this.totalrowsend=res.count;
+                this.totalrowsend=res.total;
             this.datosallback=datosgenericos;
      //   self.datosallback =res.data;
       //  self.maxPages = res.last_page;

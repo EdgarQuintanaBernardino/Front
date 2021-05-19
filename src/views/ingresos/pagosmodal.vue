@@ -1276,9 +1276,31 @@ this.mensajeok="Todo Listo"
         return true;
       }
     },
-    onComplete() {
+   async onComplete() {
+          
+         
+      this.animationall = true;
 
-      console.log("termina")
+      try {
+        let repoitems = repo();
+        await repoitems.finishpago(this.form).then((res) => {
+       Swal.fire({
+          position: "center",
+          showCloseButton: true,
+          icon: "success",
+          title:" Pago solicitado con éxito",
+          showConfirmButton: false,
+        });
+              this.hideModal();    
+         
+        });
+      } catch (err) {
+        console.log(err);
+      } finally {
+        this.animationall = false;
+      }
+   
+
     },
     addemail() {
      let email = this.search;
@@ -1474,7 +1496,7 @@ this.calculaporcentaje();
       // if (this.$store.state.flagpago == 1) {
       
       this.tableshow=false;
-      this.resetModal();
+    //  this.resetModal();
 
       // } else {
       //   this.updateModaledit();
@@ -1486,12 +1508,15 @@ this.calculaporcentaje();
     },
     hideModal() {
       this.$refs["modal-pagos"].hide();
+     // this.$emit("reload",'');
+
       /// console.log("maestra")
     },
     resetModal() {      
     ///reset para primera ventana
      this.resetfirstwindow();
      this.resetsecondwindow();
+     this.$emit("reload",'');
     },
     resetsecondwindow(){
 
@@ -1521,73 +1546,6 @@ this.calculaporcentaje();
           id:""
         };
       this.solicitudtemp=[];
-    },
-    async empresacreate(form) {
-      this.form.users = this.alloption;
-      //    this.animationall = true;
-      // this.btnadios = true;
-      // this.update = false;
-      // if (this.$v.$invalid) {
-      //   return false;
-      // }
-
-      const repo = repocreate();
-      try {
-        await repo.solicitarpago(this.form).then((res) => {
-          console.log(res);
-          return false;
-
-          if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-          if (res.code == 200) {
-            Swal.fire({
-              title: "Pagos",
-              text: `Solicitud de Pago Generada con éxito`,
-              icon: "success",
-            });
-            this.resetModal();
-            this.$emit("itemsproducts", res.data);
-
-            this.hideModal();
-            Swal.fire({
-              title: this.form.tittle,
-              text:
-                this.form.tittle +
-                ` creado con éxito,¿Desea cargar evidencia fotografica?`,
-              icon: "success",
-              showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Si, Cargar Galeria!",
-            }).then((result) => {
-              if (result.value) {
-                this.$store.commit("productogalerianew", res.solicitud);
-                this.$bvModal.show("modal-producto-galery");
-              }
-            });
-          } else {
-            console.log(error);
-
-            Swal.fire({
-              title: "No se pudo crear la cuenta",
-              text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-              icon: "error",
-            });
-          }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo crear la cuenta",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.update = true;
-        this.btnadios = false;
-        this.animationall = false;
-      }
     },
    
     calculaporcentaje(){
@@ -1632,57 +1590,7 @@ this.mensaje=true;
           }///1
          
     },
-    async empresaupdate() {
-      this.form["objects"] = this.alloption;
-      this.animationall = true;
-
-      this.btnadios = true;
-      this.update = false;
-      // if(this.$v.$invalid){
-      ///    return false
-      ///  }
-      if (this.$v.$invalid) {
-        return false;
-      }
-      const repo = repocreate();
-      try {
-        await repo.editpago(this.form).then((res) => {
-          if (res.message == "Request failed with status code 401") {
-            this.$router.push(`/pages/login`);
-          }
-          if (res.code == 200) {
-            this.resetModal();
-            this.$emit("itemsproducts", res.data);
-
-            this.hideModal();
-
-            Swal.fire({
-              title: "Pagos",
-              text: `Pago Editado con éxito`,
-              icon: "success",
-            });
-          } else {
-            Swal.fire({
-              title: "No se pudo editar el pago",
-              text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-              icon: "error",
-            });
-          }
-        });
-      } catch (error) {
-        console.log(error);
-        Swal.fire({
-          title: "No se pudo editar el pago",
-          text: `No se realizo ningun cambio,Intentelo Nuevamente porfavor`,
-          icon: "error",
-        });
-      } finally {
-        this.animationall = false;
-        this.$forceUpdate();
-        this.update = true;
-        this.btnadios = false;
-      }
-    },
+  
   },
   mounted() {
     // this.getitems();
