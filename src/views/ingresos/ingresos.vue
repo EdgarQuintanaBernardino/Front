@@ -261,32 +261,12 @@ metodo?this.getitems():this.getitemsback();
                   let datosgenericos={
                   placeholder:"Busca Pago",
                     columns:[
-                        { key: "user", label: "Usuarios", sortable: true,},
-                        { key: "concepto", label: "Concepto de Pago", sortable: true},
-                        { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                        
-                        { key: "moneda",label: "Moneda", sortable: true, class: "text-center"},
-                        { key: "iva",label: "Iva", sortable: true, class: "text-center"},
-                        { key: "monto_solicitado",label: "Monto Solicitado", sortable: true, class: "text-center"},
-                        { key: "usersin", label: "Solicitado a", class: "text-center"},///todos los usuarios
-                        { key: "titulo", label: "Tipo", class: "text-center"},
-                        { key: "visto", label: "Visto", class: "text-center"},
-                        { key: "recurrente", label: "Recurrente", class: "text-center"},
-                        { key: "tiempo_recurrencia", label: "Tiempos de Recurrencia", class: "text-center"},
-                        { key: "cuenta", label: "Cuenta Bancaria", class: "text-center"},
-                        { key: "links", label: "Links", class: "text-center"},
-                        { key: "proyecto", label: "Proyecto", class: "text-center"},
-                        { key: "comentario", label: "Comentario", class: "text-center"},
-                        { key: "status", label: "Proyecto", class: "text-center"},
-                        { key: "enviado", label: "Enviado", class: "text-center"},
-                        { key: "archivos", label: "Archivos", class: "text-center"},
-                        
-                        { key: "actions", label: "Acciones", class: "text-center"},
 
 
                              ],
             totalfilasmostradas:5,
             items:res.data,
-            resuelve:12,////el col
+            resuelve:6,////el col
             initrows:res.data.length,
             totalRow:res.total,
             acciones:[1,3],

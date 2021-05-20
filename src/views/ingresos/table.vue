@@ -22,17 +22,32 @@
                 </b-btn>
               </h3>
                </CCardHeader>
-   
-        <CCardBody style="border:solid red 2px;width:100%;overflow:auto;height:50%;" >
+             <div>
+    <b-form-group
+    style="border:2px dotted gray"
+    class="p-3"
+      v-slot="{ ariaDescribedby }"
+    >
+    <h4 class="text-center">Columnas que desea visualizar</h4>
+      <b-form-checkbox-group
+        v-model="selected"
+        :options="columnscomputed"
+        :aria-describedby="ariaDescribedby"
+        switches
+      ></b-form-checkbox-group>
+    </b-form-group>
+
+    
+  </div>   
+        <CCardBody style="" >
           <CDataTable
 
-              
+            :responsive="true"
             :items="datosall.items"
-            :fields="datosall.columns"
+            :fields="columnsalldates"
             index-column
             hover
-            size="md"
-
+            
             no-border-collapse
             striped
             footer
@@ -52,17 +67,13 @@
                       noItems: 'No hay registros disponibles',
                     }"
           >
-          <template #headers()="data">asd
-                  <span class="text-info"
-                 >{{ data.label.toUpperCase() }}</span>
-                
-                </template>
-            
+       
+             
               <template #actions="row">
               <b-container fluid>
                   <b-row class="justify-content-md-center">
 
-                    <b-col cols="12"  :xl="datosall.resuelve" v-for="permi in getacciones" :key="permi">
+                    <b-col :md="datosall.resuelve"  lg="12" v-for="permi in getacciones" :key="permi">
                       <b-button
                     v-if="permi==1"
                         size="md"
@@ -136,14 +147,14 @@
              
        
                  
-      
+     
           </CDataTable>
           <CPagination
             :pages="datosall.maxPages"
             :active-page.sync="activePage"
           />
         </CCardBody>
-        
+       
       </CCard>
     </CCol>
       <sidebarcustom :userin="userin"></sidebarcustom>
@@ -155,17 +166,47 @@
 
 
 <script>
+import HorizontalScroll from 'vue-horizontal-scroll'
+import 'vue-horizontal-scroll/dist/vue-horizontal-scroll.css'
 import sidebarcustom from '@/views/empresas/sidebarcustom';
 export default {
-  components:{sidebarcustom},
+  components:{sidebarcustom,HorizontalScroll},
   name: 'generic',
   props:['loadingin','iddeletein','datosallin','idedit'],
   data () {
     return {
+      columns:[ { key: "user", label: "Usuarios", sortable: true,},
+                        { key: "concepto", label: "Concepto de Pago", sortable: true},
+                        { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                        
+                        { key: "moneda",label: "Moneda", sortable: true, class: "text-center"},
+                        { key: "iva",label: "Iva", sortable: true, class: "text-center"},
+                        { key: "monto_solicitado",label: "Monto Solicitado", sortable: true, class: "text-center"},
+                        { key: "usersin", label: "Solicitado a", class: "text-center"},///todos los usuarios
+                        { key: "titulo", label: "Tipo", class: "text-center"},
+                        { key: "visto", label: "Visto", class: "text-center"},
+                        { key: "recurrente", label: "Recurrente", class: "text-center"},
+                        { key: "tiempo_recurrencia", label: "Tiempos de Recurrencia", class: "text-center"},
+                        { key: "cuenta", label: "Cuenta Bancaria", class: "text-center"},
+                        { key: "links", label: "Links", class: "text-center"},
+                        { key: "proyecto", label: "Proyecto", class: "text-center"},
+                        { key: "comentario", label: "Comentario", class: "text-center"},
+                        { key: "status", label: "Status", class: "text-center"},
+                        { key: "enviado", label: "Enviado", class: "text-center"},
+                        { key: "archivos", label: "Archivos", class: "text-center"},
+                        
+                        { key: "actions", label: "Acciones", class: "text-center"},],
+       selected: [], // Must be an array reference!
+        options: [
+          { text: 'Red', value: 'red' },
+          { text: 'Green', value: 'green' },
+          { text: 'Yellow (disabled)', value: 'yellow', disabled: true },
+          { text: 'Blue', value: 'blue' }
+        ],
       headervar:false,
       datosall:{
     placeholder:'generic',
-          columns:[],
+          columns:[
+                       ],
 
       },
       lazyTableFields: [],
@@ -286,6 +327,15 @@ this.$emit('info',item);
  // this.getNotes();
   },
   computed:{
+    columnsalldates(){
+ return this.columns.filter(
+        (opt) => this.selected.indexOf(opt.label) != -1
+      );
+
+    },
+    columnscomputed(){
+          return this.columns.map(e=>e.label);
+    },
     getacciones(){
 
       return this.datosall.acciones;
