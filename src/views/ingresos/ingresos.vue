@@ -256,7 +256,7 @@ metodo?this.getitems():this.getitemsback();
           currentpage: self.currentpage
         }).then((res) => {
 
-              
+              console.log(res);
              
                   let datosgenericos={
                   placeholder:"Busca Pago",
