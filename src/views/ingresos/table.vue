@@ -52,7 +52,7 @@
   <multiselect
    v-model="selected" 
    tag-placeholder="Add this as new tag"
-    placeholder="Columna a filtrar"
+    placeholder="Columna a visualizar"
      label="label" track-by="key" 
      :options="columns" :multiple="true" 
      :taggable="true"></multiselect>
@@ -134,9 +134,10 @@
 
     <!-- Main table element -->
       <b-row>
-    <b-col cols="12">
-     
-      <table class="table table-striped table-responsive table-lg table-hover;overflow:scroll;height:200px;">
+          <b-col cols="12">     
+    <b-form-group class="table-responsive">
+      <table
+ class="table table-striped table-md table-hover height:200px;">
         <thead class="text-center" 
         style="font-size:1.1em;">
           <draggable v-model="selected" tag="tr">
@@ -149,7 +150,7 @@
 
      >
      <b-link class="text-white">
-     {{header.label}}
+     {{header.label}}<b-icon class="ml-2" icon="hand-index-thumb" animation="cylon" font-scale="1" shift-v="-10"></b-icon>
       </b-link>
             </th>
           </draggable>
@@ -157,20 +158,18 @@
         <tbody class="text-center">
           <tr v-for="item in datosall.items" :key="item.id">
             <td  v-for="header in selected" :key="header.key">
-
-            <span v-if="header.key=='iva'">{{ item[header.key] }} %</span>  
+            <b-badge v-if="header.key=='iva'" class="" style="" variant="info">{{ item[header.key] }} %</b-badge>  
            <span v-if="header.key=='actions'">
             <b-container fluid>
-                  <b-row class="justify-content-md-center">
-
-                    <b-col :md="datosall.resuelve"  lg="12" v-for="permi in getacciones" :key="permi">
-                      <b-button
-                    v-if="permi==1"
-                        size="md"
-                        block
-                        @click.prevent="info(row.item)"
-                        variant="outline-primary"
-                        class="mr-1 mb-1 mt-2"
+            <b-row class="justify-content-md-center">
+             <b-col :md="datosall.resuelve"  lg="12" v-for="permi in getacciones" :key="permi">
+             <b-button
+             v-if="permi==1"
+                   size="md"
+                   block
+                   @click.prevent="info(row.item)"
+                   variant="outline-primary"
+                   class="mr-1 mb-1 mt-2"
                       >
                         <b-icon icon="pencil"></b-icon>Editar
                       </b-button>
@@ -212,33 +211,278 @@
                   </b-row>
                                 </b-container>           
            </span>
-             <span v-if="header.key=='moneda'">${{ item[header.key] }}</span>  
-
-   <span v-if="header.key=='archivos'">
-   
-   <span>
-      {{buclecuenta(item['ref'][0]['archivos'])}} 
-   
-   
-    </span>
-
-   ${{ item[header.key] }}
-   
-   
-   
-   </span>  
-            
-             
-       
+           <span  v-if="header.key=='comentario'" >
            
+            <span v-if="item[header.key]===''||item[header.key]===null">Sin Comentarios</span>
+               <span v-else>{{item[header.key]}}</span></span> 
+
+             <span
+              v-if="header.key=='moneda'" 
+             >
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>{{item[header.key]}}</span></span>  
+
+   <span v-if="header.key=='usuarios'" >
+   <b-link>
+   <span v-if="item['ref'][0]['usersref'].length==0">
+   Sin Usarios
+    </span>
+   <span v-else>
+   Usuarios({{item['ref'][0]['usersref'].length}})
+   </span>
+        </b-link> 
+       
+   </span>             
+         <b-badge v-if="header.key=='monto_bruto'" 
+              variant="success">
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>${{item[header.key]}}</span></b-badge>
+               <b-badge
+              v-if="header.key=='monto_solicitado'" 
+              variant="success">
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>${{item[header.key]}}</span></b-badge>    
+                  <span
+              v-if="header.key=='concepto'" 
+            >
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>{{item[header.key]}}</span></span> 
+  <span  v-if="header.key=='titulo'" 
+             >
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>{{item[header.key]}}</span></span>       
+            
+    <span v-if="header.key=='usersin'" 
+             >
+             <b-row >
+             <b-col cols="12">
+             <b-img v-if="item[header.key][0].photo==null||item[header.key][0].photo==''" 
+              src="https://pagosfile.s3-us-west-2.amazonaws.com/imagenes_basicas/profile/sinfoto.png"
+              rounded="circle" alt="Circle image" width="30px" class="mr-1"></b-img>
+             <b-img
+              :src="'https://pagosfile.s3-us-west-2.amazonaws.com/'+item[header.key][0].photo" 
+              rounded="circle"
+               alt="Circle image"
+                width="30px" class="mr-1"
+                v-else></b-img>
+            </b-col>
+             <b-col cols="12">
+                <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+               <span v-else>
+               {{item[header.key][0].name}}           
+            </span>
              
+            </b-col>
+             
+
+
+             
+             </b-row>
+            
+           </span> 
+  <span              v-if="header.key=='visto'" 
+             >
+               <span v-if="item[header.key]===''||item[header.key]===null">Sin datos</span>
+              
+               <span v-else>
+               <b-badge variant="danger" class="text-white" v-if="item[header.key]=='no'">
+               
+               Aún no
+               </b-badge>
+               <b-badge v-else variant="success" class="text-white">
+               Visto
+               </b-badge>
+               
+               </span></span>  
+<span v-if="header.key=='recurrente'" >
+
+<span v-if="item['ref'][0]['recurrencia'].length==0">
+<b-row>
+<b-col cols="12">
+El pago es único
+</b-col>
+</b-row>
+</span>
+<span v-else >
+<b-row>
+<b-col cols="12"  style="text-align:center">
+<strong>Inicia</strong>
+</b-col>
+<b-col cols="12"  style="text-align:center">
+{{item['ref'][0]['recurrencia'][0].inicia}}
+</b-col>
+<b-col cols="12"   style="text-align:center">
+<strong>Termina</strong>
+</b-col>
+<b-col cols="12" style="text-align:center">
+{{item['ref'][0]['recurrencia'][0].termina}}
+</b-col>
+<b-col cols="12" style="text-align:center">
+<strong>Recurrencia</strong>
+</b-col>
+<b-col cols="12"  style="text-align:center">
+{{item['ref'][0]['recurrencia'][0].tipo}}
+</b-col>
+<b-col cols="12"  style="text-align:center">
+<strong>Pagos:</strong>
+</b-col>
+<b-col cols="12"  style="text-align:center">
+{{item['ref'][0]['recurrencia'][0].total_pagos}}
+</b-col>
+</b-row>
+
+
+</span>
+               </span> 
+
+
+<b-row v-if="header.key=='links'">
+  <b-col v-if="item['ref'][0]['linkspagos'].length==0" cols="12" >
+    Sin Links     </b-col>
+<b-col v-else >
+ <b-row >              
+ <b-col cols="12" style="text-align:center">
+ <b-link variant="success" v-for="link in item['ref'][0]['linkspagos']" :key="link.id" target="_blank" :href="link.link">
+{{link.link}}
+<br>
+</b-link>
+</b-col>
+</b-row>
+</b-col>
+</b-row>
+<b-row v-if="header.key=='tag'">
+  <b-col v-if="item['ref'][0]['tags'].length==0" cols="12" >
+    Sin Tags     </b-col>
+               <b-col v-else >
+                <b-row >              
+                <b-col cols="12" style="text-align:center">
+<b-badge variant="success" v-for="tag in item['ref'][0]['tags']" :key="tag.id" class="mr-1">
+#{{tag.tag}}
+
+</b-badge>
+</b-col>
+</b-row>
+</b-col>
+</b-row>
+<b-row v-if="header.key=='cuenta'">
+               
+               <b-col v-if="item['ref'][0]['cuentas'].length==0" cols="12" >
+               Sin datos
+               
+               </b-col>
+
+               <b-col v-else >
+                <b-row v-for="cuenta in item['ref'][0]['cuentas']" :key="cuenta.id">
+                <b-col cols="12" style="text-align:center">
+<strong>Nombre</strong>
+</b-col>
+<b-col cols="12" style="text-align:center">
+{{cuenta.nombre_cuenta}}
+</b-col>
+
+<b-col cols="12" style="text-align:center">
+<strong>número</strong>
+</b-col>
+<b-col cols="12" style="text-align:center">
+{{cuenta.numero_cuenta}}
+</b-col>
+<b-col cols="12" style="text-align:center">
+<strong>banco</strong>
+</b-col>
+<b-col cols="12" style="text-align:center">
+{{cuenta.banco}}
+</b-col>        
+                
+                </b-row>
+               
+               
+               </b-col>
+               
+</b-row>
+     <b-row v-if="header.key=='proyecto'">
+              
+               <b-col v-if="item['ref'][0]['proyectos'].length==0" cols="12" >
+               Ningún proyecto destinado
+               
+               </b-col>
+
+               <b-col v-else >
+                <b-row v-for="proyecto in item['ref'][0]['proyectos']" :key="proyecto.id">
+                <b-col cols="12" style="text-align:center">
+<strong>Nombre</strong>
+</b-col>
+<b-col cols="12" style="text-align:center">
+{{proyecto.nombre}}
+</b-col>
+                </b-row>
+               
+               
+               </b-col>
+               
+</b-row>       
+
+   <b-row v-if="header.key=='archivos'" >
+   <span v-show="false">{{coming_data=buclecuenta(item['ref'][0]['archivos'])}}</span>
+   <b-link>
+   <span v-if="coming_data.length==0">
+   Sin archivos
+    </span>
+   <span v-if="coming_data.hasOwnProperty('Factura')">
+   Factura({{ coming_data['Factura'].length}}),
+   </span>
+    <span v-if="coming_data.hasOwnProperty('Cotización')">
+   Cotización({{ coming_data['Cotización'].length}}),
+   </span>
+       <span v-if="coming_data.hasOwnProperty('Comprobante de Pago')">
+   Comprobante de Pago({{ coming_data['Comprobante de Pago'].length}}),
+   </span>
+      <span v-if="coming_data.hasOwnProperty('Orden de Compra')">
+  Orden de Compra({{ coming_data['Orden de Compra'].length}}),
+   </span>   <span v-if="coming_data.hasOwnProperty('Extras')">
+   Extras({{ coming_data['Extras'].length}}),
+   </span>
+        </b-link> 
+       
+   </b-row> 
+    <b-row v-if="header.key=='ticket'">
+              
+               <b-col v-if="item.historial.length==0" cols="12" >
+               <b-button variant="success">Crear Ticket</b-button>               
+               </b-col>
+
+               <b-col v-else >
+
+                  <b-button variant="info" class="text-white">Tickets({{item.historial.length}})</b-button>
+               
+               
+               </b-col>
+               
+</b-row> 
+<b-row v-if="header.key=='status'">
+
+
+ <b-col v-if="item.status.length==0" cols="12" >
+               Ningún Status
+               
+               </b-col>
+<b-col v-else>
+<b-button variant="danger" v-if="item.status[0].status=='Denegado'">Denegado</b-button>
+<b-button variant="warning" v-if="item.status[0].status=='Pendiente'" class="text-white">Pendiente</b-button>
+<b-button variant="success" v-if="item.status[0].status=='Aprobado'">Aprobado</b-button>
+
+
+</b-col>
+
+</b-row>
              </td>
             
           </tr>
         </tbody>
-       
       </table>
+      </b-form-group>
+      
  </b-col>
+
       </b-row>
     
 
@@ -373,10 +617,8 @@
 
   </CRow>
 </template>
-
-
-
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
     <style type="text/css" scoped> 
    thead tr th { 
             position: sticky;
@@ -395,6 +637,7 @@
 import HorizontalScroll from 'vue-horizontal-scroll'
   import draggable from 'vuedraggable'
   import Multiselect from 'vue-multiselect'
+import _ from 'lodash';
 
 import 'vue-horizontal-scroll/dist/vue-horizontal-scroll.css'
 import sidebarcustom from '@/views/empresas/sidebarcustom';
@@ -425,24 +668,24 @@ export default {
         },
 
       ////
-      columns:[ { key: "user", label: "Usuarios", sortable: true,},
+      columns:[ { key: "usersin", label: "Entregado a", sortable: true,},
                         { key: "concepto", label: "Concepto de Pago", sortable: true},
                         { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                        
                         { key: "moneda",label: "Moneda", sortable: true, class: "text-center"},
                         { key: "iva",label: "Iva", sortable: true, class: "text-center"},
                         { key: "monto_solicitado",label: "Monto Solicitado", sortable: true, class: "text-center"},
-                        { key: "usersin", label: "Solicitado a", class: "text-center"},///todos los usuarios
+                        { key: "usuarios", label: "Usuarios", class: "text-center"},///todos los usuarios
                         { key: "titulo", label: "Tipo", class: "text-center"},
                         { key: "visto", label: "Visto", class: "text-center"},
                         { key: "recurrente", label: "Recurrente", class: "text-center"},
-                        { key: "tiempo_recurrencia", label: "Tiempos de Recurrencia", class: "text-center"},
                         { key: "cuenta", label: "Cuenta Bancaria", class: "text-center"},
                         { key: "links", label: "Links", class: "text-center"},
                         { key: "proyecto", label: "Proyecto", class: "text-center"},
                         { key: "comentario", label: "Comentario", class: "text-center"},
-                        { key: "status", label: "Status", class: "text-center"},
-                        { key: "enviado", label: "Enviado", class: "text-center"},
+                        { key: "status", label: "Status Pago", class: "text-center"},
                         { key: "tag", label: "Tags", class: "text-center"},
+                        { key: "ticket", label: "Tickets", class: "text-center"},
+                        { key: "status_factura", label: "Status Factura", class: "text-center"},
 
                         { key: "archivos", label: "Archivos", class: "text-center"},
                         
@@ -517,20 +760,27 @@ export default {
   },
 
   methods: {
-    buclecuenta(archivo){
-                  let listos=[];
-                  if(archivo.length>0){
-                    return archivo.map(e=>e);
-                  let nuevo= archivo.map(e=>e.filetype_id==archivo[0].filetype_id);
-                         
+
+    buclecuentauser(users){
+   if(users.length>0){
+                       let nuevos2= _.groupBy (users, 'id');
+                       console.log(nuevos2)
+                      return nuevos2;                         
                   }else{
-                    return "nada";
+                    return users;
                   }
-          for(let a=0;a<archivo.length;a++){
-              let nuevo=archivo.map(e=>e.filetype_id==archivo[a].filetype_id); ////en la primera vuelta le damos todo el recorrido
-            listos.push(nuevo)
-          }
-          return listos;
+
+    },
+    buclecuenta(archivo){
+                
+                  if(archivo.length>0){
+                       let nuevos2= _.groupBy (archivo, 'gettipo.tipo');
+                       console.log(nuevos2)
+                      return nuevos2;                         
+                  }else{
+                    return archivo;
+                  }
+      
     },
     ordenar(item){
         console.log("ordena por"+item)
@@ -608,6 +858,8 @@ this.$emit('info',item);
   }, 
   mounted: function(){
  // this.getNotes();
+ console.log(this)
+ console.log("her")
   },
   computed:{
      dragOptions() {

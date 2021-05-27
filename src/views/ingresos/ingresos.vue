@@ -45,7 +45,7 @@
     <!-- <modalrelation @itemscuentaupdatemodal="items=$event" ></modalrelation>-->
     <!-- Main table element -->
     <!-- Info modal -->
-           <pagosmodal @reload="getitems"></pagosmodal>
+           <pagosmodal @reload="cambia"></pagosmodal>
 
   </b-container>
   
@@ -240,7 +240,6 @@ metodo?this.getitems():this.getitemsback();
 
        },
            async getitemsback() {
-            
       try {
         let repoitems = repo();
       let self = this;
@@ -255,14 +254,10 @@ metodo?this.getitems():this.getitemsback();
           itemsLimit:   self.itemsLimit,
           currentpage: self.currentpage
         }).then((res) => {
-
-              console.log(res);
-             
-                  let datosgenericos={
+console.log(res)
+         let datosgenericos={
                   placeholder:"Busca Pago",
                     columns:[
-
-
                              ],
             totalfilasmostradas:5,
             items:res.data,
@@ -435,6 +430,7 @@ metodo?this.getitems():this.getitemsback();
       }
     },
     async getparams($params) {
+      console.log("thisparams")
           let self=this;
           self.sorter=$params.sorter;
           self.tableFilter=$params.tableFilter;

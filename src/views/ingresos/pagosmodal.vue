@@ -474,7 +474,7 @@
         <span v-if="form.inicio.iva==0">{{data.item.monto}}</span>
         <span v-else > 
         
-         {{((form.inicio.bruto/100)*data.item.range).toFixed(2)}}
+         {{((form.inicio.bruto/100)*data.item.range).toFixed(2)}},{{form.inicio.bruto}}
         </span>
       </template>
    <template #cell(iva)="data">
@@ -1019,8 +1019,9 @@ this.mensajeok="Todo Listo"
             }
     },
  validashared() {
+
     if(!this.debug){
- 
+      if(this.form.shared.users.showcomplete.length>0){   /////seleccionar al menos un usuario ya sea por email o por select user
    if(this.revisadatos()||this.form.shared.tipo=='replicar'){////validacion 1.- monto igual 2.-ningun usuario es igual a 0 
      this.next=false;
  if(!this.$v.form.shared.$invalid&&!this.$v.form.inicio.$invalid&&!this.$v.items.$invalid){/// si es valido el form
@@ -1056,6 +1057,17 @@ this.mensajeok="Todo Listo"
    }else{
      return false;
    }
+      }else{
+          Swal.fire({
+          position: "center",
+          icon: "error",
+          title: "Selecciona un usuario para enviar el pago",
+          showConfirmButton: false,
+          timer: 1000,
+        });
+
+        return false;
+      }
     }else{
       return true;
     }
@@ -1177,11 +1189,13 @@ this.mensajeok="Todo Listo"
     async secondsend(){ 
     
       this.animationall = true;
-
+console.log(this.form)
       
       try {
         let repoitems = repo();
         await repoitems.addsolicitudformal(this.form).then((res) => {
+
+          console.log(res);
           if(res.length>0){
             this.next=true;
              this.form.sends=res;
@@ -1527,6 +1541,7 @@ this.calculaporcentaje();
   this.form.shared.users.alloption=[];
   this.form.shared.users.detalle=[];
   this.items=[];
+  this.form.sends=[];
         
     
          
