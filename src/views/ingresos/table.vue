@@ -46,7 +46,7 @@
      
 
    
- <b-col lg="6" class="my-1 mt-3">
+ <b-col lg="6" class="my-1 mt-4">
        
           <h4 class="typo__label text-center" >Columnas que desea visualizar</h4>
   <multiselect
@@ -55,49 +55,13 @@
     placeholder="Columna a visualizar"
      label="label" track-by="key" 
      :options="columns" :multiple="true" 
-     :taggable="true"></multiselect>
+     :taggable="true"
+       @input="onChange"
+     ></multiselect>
 
      
       </b-col>
-      <b-col lg="6" class="my-1 mt-3">
-                 <h4 class="typo__label text-center" >Filtrar por Columnas</h4>
-
-  <multiselect
-   v-model="value" 
-   tag-placeholder="Add this as new tag"
-    placeholder="Columna a filtrar"
-     label="label" track-by="key" 
-     :options="columns" :multiple="true" 
-     :taggable="true"></multiselect>
-
-     
-      </b-col>
-   <b-col lg="6" class="my-1 mt-3">
-        <b-form-group
-         
-          label-for="filter-input"
-          label-cols-sm="3"
-          label-align-sm="right"
-          label-size="sm"
-          class="mb-0"
-        >
-         <h4 class="typo__label text-center" >Buscar</h4>
-
-          <b-input-group size="sm">
-            <b-form-input
-              id="filter-input"
-              v-model="filter"
-              type="search"
-              placeholder="Buscar..."
-            ></b-form-input>
-
-            <b-input-group-append>
-              <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
-            </b-input-group-append>
-          </b-input-group>
-        </b-form-group>
-      </b-col>
-      <b-col sm="5" md="6" class="my-1 mt-3">
+       <b-col  lg="6" class="">
         <b-form-group
           label-for="per-page-select"
           label-cols-sm="6"
@@ -107,18 +71,74 @@
           label-size="sm"
           class="mb-0"
         >
-                          <h4 class="typo__label text-center" >Registros Mostrados</h4>
+                          <h4 class="text-center" >Registros Mostrados</h4>
 
           <b-form-select
             id="per-page-select"
             v-model="itemsLimit"
             :options="pageOptions"
-            size="sm"
             @change="eventdispatch"
           ></b-form-select>
         </b-form-group>
       </b-col>
+      <b-col lg="4" class="my-1 mt-5">
+       <h4 class="typo__label text-center" >Filtrar por Columnas</h4>
 
+  <multiselect
+   v-model="value" 
+   tag-placeholder="Add this as new tag"
+    placeholder="Columna a filtrar"
+     label="label" track-by="key" 
+     :options="Filter_Columns" :multiple="false" 
+     :taggable="true"
+   
+     ></multiselect>
+
+     
+      </b-col>
+   <b-col lg="4" class="my-1 mt-4">
+        <b-form-group
+         
+          label-for="filter-input"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+         <h4 class="typo__label text-center" >Parametro</h4>
+  <div>
+    <b-form-select v-model="option_logic" :options="Options_Logics" :select-size="2"></b-form-select>
+    <div class="mt-3">Selected: <strong>{{ selected }}</strong></div>
+  </div>
+         
+        </b-form-group>
+      </b-col>
+     
+<b-col cols="4" class="mt-3">
+<b-form-group
+         
+          label-for="filter-input"
+          label-cols-sm="3"
+          label-align-sm="right"
+          label-size="sm"
+          class="mb-0"
+        >
+         <h4 class="typo__label text-center" >Criterio</h4>
+ <b-input-group size="md">
+            <b-form-input
+              id="filter-input"
+              v-model="filter"
+              type="search"
+              placeholder="Buscar..."
+              @keyup.enter="tableFilterin"
+            ></b-form-input>
+
+            <b-input-group-append>
+              <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+            </b-input-group-append>
+          </b-input-group>
+</b-form-group>
+</b-col>
       <b-col sm="7" md="6" class="my-1">
         <b-pagination
           v-model="activePage"
@@ -155,8 +175,8 @@
             </th>
           </draggable>
         </thead>
-        <tbody class="text-center">
-          <tr v-for="item in datosall.items" :key="item.id">
+        <tbody class="text-center" v-if="false">
+          <tr v-for="item in  getreplicas(datosall.items)" :key="item.id">
             <td  v-for="header in selected" :key="header.key">
             <b-badge v-if="header.key=='iva'" class="" style="" variant="info">{{ item[header.key] }} %</b-badge>  
            <span v-if="header.key=='actions'">
@@ -350,6 +370,15 @@ El pago es único
 </b-row>
 </b-col>
 </b-row>
+<b-row v-if="header.key=='creado'">
+  
+             
+ <b-col cols="12" style="text-align:center">
+
+    <span>{{item.created_at}}</span>
+</b-col>
+
+</b-row>
 <b-row v-if="header.key=='tag'">
   <b-col v-if="item['ref'][0]['tags'].length==0" cols="12" >
     Sin Tags     </b-col>
@@ -420,7 +449,21 @@ El pago es único
                </b-col>
                
 </b-row>       
+    <b-row v-if="header.key=='id_propio'">
+              
+           
+               <b-col v-if="item.pivot.id_propio" cols="12" >
+                 <span>   {{item.pivot.id_propio}}       </span>
+         
+               </b-col>
 
+               <b-col v-else cols="12" >
+                    <span> Aún no tiene id</span>
+               
+               
+               </b-col>
+               
+</b-row>  
    <b-row v-if="header.key=='archivos'" >
    <span v-show="false">{{coming_data=buclecuenta(item['ref'][0]['archivos'])}}</span>
    <b-link>
@@ -445,15 +488,13 @@ El pago es único
        
    </b-row> 
     <b-row v-if="header.key=='ticket'">
-              
-               <b-col v-if="item.historial.length==0" cols="12" >
-               <b-button variant="success">Crear Ticket</b-button>               
-               </b-col>
+         
 
-               <b-col v-else >
+               <b-col cols="12">
 
-                  <b-button variant="info" class="text-white">Tickets({{item.historial.length}})</b-button>
-               
+                  <b-button variant="info" class="text-white" @click="showticket(item.id)" v-if="item.visto_chat=='no'">Chat</b-button>
+                <b-button variant="success" class="text-white" @click="showticket(item.id)" v-else>Chat</b-button>
+
                
                </b-col>
                
@@ -650,6 +691,43 @@ export default {
 
     return {
       ////
+      Options_Logics:[
+        
+        {value:">",text:'> mayor que' },
+        {value:">=",text:'>= mayor o igual que' },
+        {value:"<",text:'< menor que' },
+        {value:"<=",text:'< menor o igual que' },
+        {value:"==",text:'= igual que ' },
+        {value:"!=",text:'!= diferente que' },      
+        {value:"beetween",text:'=D entre ' },
+      ],
+      option_logic:0,
+      Filter_Numeric:[
+
+                        { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                    
+
+                        { key: "monto_solicitado",label: "Monto Solicitado", sortable: true, class: "text-center"},
+
+      ],
+      Filter_Columns:[
+                        { key: "usersin", label: "Entregado a", sortable: true,},
+                        { key: "concepto", label: "Concepto de Pago", sortable: true},
+                        { key: "iva",label: "Iva", sortable: true, class: "text-center"},
+                        { key: "usuarios", label: "Usuarios", class: "text-center"},///todos los usuarios
+                        { key: "titulo", label: "Tipo", class: "text-center"},
+                        { key: "cuenta", label: "Cuenta Bancaria", class: "text-center"},
+                        { key: "links", label: "Links", class: "text-center"},
+                        { key: "proyecto", label: "Proyecto", class: "text-center"},
+                        { key: "comentario", label: "Comentario", class: "text-center"},
+                        { key: "status", label: "Status Pago", class: "text-center"},
+                        { key: "tag", label: "Tags", class: "text-center"},
+                        { key: "status_factura", label: "Status Factura", class: "text-center"},
+                       { key: "id_propio", label: "Id", class: "text-center"},
+
+
+      
+      
+      ],
     excolumns:['uno','dos','tres'],
     value: [ ],
  totalRows: 1,
@@ -668,7 +746,12 @@ export default {
         },
 
       ////
-      columns:[ { key: "usersin", label: "Entregado a", sortable: true,},
+      columns:[
+              { key: "clear",label: "Quitar Todos", sortable: true, class: "text-center"},
+                            { key: "all",label: "Seleccionar Todo", sortable: true, class: "text-center"},
+
+
+        { key: "usersin", label: "Entregado a", sortable: true,},
                         { key: "concepto", label: "Concepto de Pago", sortable: true},
                         { key: "monto_bruto",label: "Monto Bruto", sortable: true, class: "text-center"},                        
                         { key: "moneda",label: "Moneda", sortable: true, class: "text-center"},
@@ -684,8 +767,11 @@ export default {
                         { key: "comentario", label: "Comentario", class: "text-center"},
                         { key: "status", label: "Status Pago", class: "text-center"},
                         { key: "tag", label: "Tags", class: "text-center"},
-                        { key: "ticket", label: "Tickets", class: "text-center"},
+                        { key: "ticket", label: "Chat", class: "text-center"},
                         { key: "status_factura", label: "Status Factura", class: "text-center"},
+                       { key: "id_propio", label: "Id", class: "text-center"},
+                      { key: "creado",label: "Fecha de Solicitud", sortable: true, class: "text-center"},
+                
 
                         { key: "archivos", label: "Archivos", class: "text-center"},
                         
@@ -750,21 +836,61 @@ export default {
       },
       deep: true
     },
-    tableFilter(){
-
-      this.eventdispatch();
-    },
+  
+  
     columnFilter(){
        this.eventdispatch();
     }
   },
 
   methods: {
+      tableFilterin(){
+
+
+          
+     this.eventdispatch();
+    },
+      onChange (value) {
+      let clear =value.filter(e=>e.key=='clear');
+      let all=value.filter(e=>e.key=='all');
+      if (clear.length>0){         
+         this.selected = []
+      }
+         if (all.length>0){         
+         this.selected = this.columns.filter((e)=>{ return e.key!='clear'&&e.key!='all'});
+
+      }
+
+    },
+     getreplicas(array){
+
+          if(array){
+      array.forEach(element => {
+
+        let fecha= new Date(element.created_at);
+          let nuevo=fecha.toDateString("es-ES")
+            
+       element.created_at=nuevo; 
+        
+
+      });
+         return array;
+          }
+          else{
+            return [];
+          }
+
+ 
+    },
+    showticket(item){
+
+     this.$emit('showtickets',item);
+
+    },
 
     buclecuentauser(users){
    if(users.length>0){
                        let nuevos2= _.groupBy (users, 'id');
-                       console.log(nuevos2)
                       return nuevos2;                         
                   }else{
                     return users;
@@ -775,7 +901,6 @@ export default {
                 
                   if(archivo.length>0){
                        let nuevos2= _.groupBy (archivo, 'gettipo.tipo');
-                       console.log(nuevos2)
                       return nuevos2;                         
                   }else{
                     return archivo;
@@ -842,12 +967,15 @@ this.$emit('info',item);
     eventdispatch(){
 
  
-      
+      let columnas=this.filter;
+
+         
    this.$emit('getparams',{
+            
              currentpage:this.activePage,
              itemsLimit: this.itemsLimit,
-             columnFilter:this.columnFilter,
-             tableFilter:this.tableFilter,
+             columnFilter:this.value.map(e=>e.key),
+             tableFilter:this.filter,
              sorter:this.sorter
 
           });
@@ -858,8 +986,7 @@ this.$emit('info',item);
   }, 
   mounted: function(){
  // this.getNotes();
- console.log(this)
- console.log("her")
+
   },
   computed:{
      dragOptions() {

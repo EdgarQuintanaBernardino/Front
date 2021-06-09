@@ -99,6 +99,8 @@ const getters={
   gettoken(state){ return  state.token;},
   getcargamenutop(state){ return  state.cargatop;},
   getphoto(state){ return  state.usuario.photo;},
+  getuser(state){ return  state.usuario;},
+
   getmetodo(state){ return  state.metodo;}
 
 

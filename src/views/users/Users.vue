@@ -230,7 +230,7 @@ metodo?this.getitems():this.getitemsback();
                              { key: "roles", label: "Roles", class: "text-center",sorteable:true},
                         { key: "nickname", label: "NickName", class: "text-center"},
                    
-                        { key: "actions", label: "Acciones", class: "text-center"},
+                        { key: "actions", label: "Acciones1", class: "text-center"},
 
                       
                         ],

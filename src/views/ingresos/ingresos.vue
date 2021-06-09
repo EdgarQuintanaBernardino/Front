@@ -34,6 +34,7 @@
        :idedit="ideditback"
         @info="info"
         @roles="roles"
+        @showtickets="chat"
 
 
 
@@ -46,6 +47,7 @@
     <!-- Main table element -->
     <!-- Info modal -->
            <pagosmodal @reload="cambia"></pagosmodal>
+           <chatmodal></chatmodal>
 
   </b-container>
   
@@ -59,13 +61,16 @@ import respuestas from "@/assets/repositoriosjs/respuestas.js";
 import alertas from '@/assets/repositoriosjs/alertas';
 import Swal from "sweetalert2";
 import pagosmodal from "@/views/ingresos/pagosmodal";
+import chatmodal from "@/views/ingresos/chat";
+
 
 export default {
       name:'Users',
       components:{
-        back,allfront,pagosmodal
+        back,allfront,pagosmodal,chatmodal
       },
       watch:{
+        
         metodo:function(newval,oldvar){
         this.resetvalores();
         this.prueba(newval)
@@ -73,6 +78,7 @@ export default {
       },
       data(){
         return{
+          id_ticket:0,
           revisa:false,
           show:false,
           itemscolumns:[''],
@@ -130,6 +136,12 @@ export default {
     },
        },
      methods: {
+
+       chat(id){
+this.id_ticket=id;
+  this.$bvModal.show("modal-historial");
+
+       },
        descripcionpermisos(allpermissions){
          this.allpermissionsd=allpermissions.map(r=>r.descripcion);
 
@@ -254,7 +266,9 @@ metodo?this.getitems():this.getitemsback();
           itemsLimit:   self.itemsLimit,
           currentpage: self.currentpage
         }).then((res) => {
-console.log(res)
+
+          console.log(res)
+          let maximo=Math.round(res.count/self.itemsLimit);
          let datosgenericos={
                   placeholder:"Busca Pago",
                     columns:[
@@ -263,9 +277,9 @@ console.log(res)
             items:res.data,
             resuelve:6,////el col
             initrows:res.data.length,
-            totalRow:res.total,
+            totalRow:res.count,
             acciones:[1,3],
-            maxPages:res.last_page,
+            maxPages:maximo,
             ///header
             header:true,///bolean heeader
             headername:'Pagos Registrados',
@@ -281,7 +295,7 @@ console.log(res)
             component:"empresashow"
 
                 }
-                this.totalrowsend=res.total;
+                this.totalrowsend=res.count;
             this.datosallback=datosgenericos;
      //   self.datosallback =res.data;
       //  self.maxPages = res.last_page;

@@ -125,6 +125,16 @@ let apiaddtags = `${server}/pagos/addtags`;
 let apideletefile = `${server}/pagos/deletefile`;
 let apifinishpago = `${server}/pagos/finish`;
 let apiPagosBack = `${server}/pagos/getpagosback`;
+let Api_Message_Id = `${server}/pagos/get_message_id`;
+
+///Historial
+let Api_Message_Send = `${server}/historial/send_message`;
+
+let Api_Message_First= `${server}/historial/first_message`;
+
+let Api_canastas1= `${server}/productos/get_productos1`;
+
+let Api_canastas2= `${server}/productos/get_productos2`;
 
 const response = respuestas();
 const alerts = alertas();
@@ -246,6 +256,70 @@ const finishpago = async(request) => {
     return result;
 
 }
+
+const Get_Messages_For_Id = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(Api_Message_Id, request, configin).then((res) => {
+        
+        //return res;
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+       // return error;
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+
+
+
+const Send_Message = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(Api_Message_Send, request, configin).then((res) => {
+        
+      //  return res;
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+       // return error;
+       return response.filtraerror(error);
+    });
+    return result;
+
+}
+const First_Message = async(request) => {
+
+    let tokenin = store.getters.gettoken;
+
+    let configin = {
+        headers: { Authorization: `Bearer ${tokenin}` }
+    };
+    let result = await Axios.post(Api_Message_First, request, configin).then((res) => {
+        
+        return res;
+        return response.verifyrequest(res.data)
+
+    }).catch((error) => {
+        return error;
+        return response.filtraerror(error);
+    });
+    return result;
+
+}
+
+
+
 const PagosBack = async(request) => {
 
     let tokenin = store.getters.gettoken;
@@ -254,9 +328,12 @@ const PagosBack = async(request) => {
         headers: { Authorization: `Bearer ${tokenin}` }
     };
     let result = await Axios.post(apiPagosBack, request, configin).then((res) => {
+        
+        return res;
         return response.verifyrequest(res.data)
 
     }).catch((error) => {
+        return error;
         return response.filtraerror(error);
     });
     return result;
@@ -1530,6 +1607,9 @@ const updateproductoshared = async(request) => {
 }
 
 export default () => ({
+    First_Message,
+    Send_Message,
+    Get_Messages_For_Id,
     PagosBack,
     finishpago,
     deletefile,
